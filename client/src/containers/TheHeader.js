@@ -6,7 +6,8 @@ import {
   CHeaderBrand,
   CHeaderNav,
   CHeaderNavItem,
-  CHeaderNavLink
+  CHeaderNavLink,
+  CButton
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 
@@ -14,6 +15,8 @@ import {
   TheHeaderDropdown,
   TheHeaderDropdownNotif
 }  from './index'
+
+import "./theheader.css"
 
 const TheHeader = () => {
   const dispatch = useDispatch()
@@ -47,18 +50,24 @@ const TheHeader = () => {
 
       <CHeaderNav className="d-md-down-none mr-auto">
         <CHeaderNavItem className="px-3" >
-          <CHeaderNavLink to="/dashboard">Ana Sayfa</CHeaderNavLink>
+          <CHeaderNavLink className = "anaSayfa-mr" to="/dashboard">Ana Sayfa</CHeaderNavLink>
         </CHeaderNavItem>
         <CHeaderNavItem  className="px-3">
           <CHeaderNavLink to="/users">Eczaneler</CHeaderNavLink>
         </CHeaderNavItem>
-        {/* <CHeaderNavItem className="px-3">
-          <CHeaderNavLink>Settings</CHeaderNavLink>
-        </CHeaderNavItem> */}
+        <CButton block color="secondary" className = "yeniTalep-button px-3">Yeni Teklif</CButton>
+      </CHeaderNav>
+
+      <CHeaderNav>
+        <TheHeaderDropdownNotif/>
+      </CHeaderNav>
+
+      <CHeaderNav className = "align-items-center " >
+          <strong className = "px-3" >Bakiye:</strong>
+          <strong className = "success" color = "success" > 1000.00 TL</strong>
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
-        <TheHeaderDropdownNotif/>
         {/* <TheHeaderDropdownTasks/> */}
         {/* <TheHeaderDropdownMssg/> */}
         <TheHeaderDropdown/>
