@@ -4,8 +4,7 @@ import {
   CDropdown,
   CDropdownItem,
   CDropdownMenu,
-  CDropdownToggle,
-  CProgress
+  CDropdownToggle
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 
@@ -27,21 +26,21 @@ const TheHeaderDropdownNotif = () => {
           className="text-center"
           color="light"
         >
-          <strong>You have {itemsCount} notifications</strong>
+          <strong>Sizin {itemsCount} yeni bildiriminiz var</strong>
         </CDropdownItem>
-        <CDropdownItem><CIcon name="cil-user-follow" className="mr-2 text-success" /> New user registered</CDropdownItem>
-        <CDropdownItem><CIcon name="cil-user-unfollow" className="mr-2 text-danger" /> User deleted</CDropdownItem>
-        <CDropdownItem><CIcon name="cil-chart-pie" className="mr-2 text-info" /> Sales report is ready</CDropdownItem>
-        <CDropdownItem><CIcon name="cil-basket" className="mr-2 text-primary" /> New client</CDropdownItem>
-        <CDropdownItem><CIcon name="cil-speedometer" className="mr-2 text-warning" /> Server overloaded</CDropdownItem>
-        <CDropdownItem
+        <CDropdownItem><CIcon name="cil-user-follow" className="mr-2 text-success" /> Yeni bir teklif girildi</CDropdownItem>
+        <CDropdownItem><CIcon name="cil-user-unfollow" className="mr-2 text-danger" /> Eczane teklif sildi</CDropdownItem>
+        {/* <CDropdownItem><CIcon name="cil-chart-pie" className="mr-2 text-info" /> </CDropdownItem> */}
+        <CDropdownItem><CIcon name="cil-basket" className="mr-2 text-primary" /> Yeni bir teklif girildi</CDropdownItem>
+        {/* <CDropdownItem><CIcon name="cil-speedometer" className="mr-2 text-warning" /> Server overloaded</CDropdownItem> */}
+        {/* <CDropdownItem
           header
           tag="div"
           color="light"
         >
           <strong>Server</strong>
-        </CDropdownItem>
-        <CDropdownItem className="d-block">
+        </CDropdownItem> */}
+        {/* <CDropdownItem className="d-block">
           <div className="text-uppercase mb-1">
             <small><b>CPU Usage</b></small>
           </div>
@@ -61,7 +60,7 @@ const TheHeaderDropdownNotif = () => {
           </div>
           <CProgress size="xs" color="danger" value={90} />
           <small className="text-muted">243GB/256GB</small>
-        </CDropdownItem>
+        </CDropdownItem> */}
       </CDropdownMenu>
     </CDropdown>
   )

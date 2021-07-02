@@ -35,6 +35,7 @@ const Tables = () => {
             </CCardHeader>
             <CCardBody>
             <CDataTable
+              tableFilter
               items={usersData}
               fields={fields}
               itemsPerPage={5}
