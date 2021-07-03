@@ -2,3 +2,20 @@
     display: flex;
     justify-content: center;
 }
+
+.anasayfaTableDetails-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+}
+
+.anasayfaTableKatilButton {
+    max-width: 100px;
+    min-height: 50px;
+}
+
+.ansayfaTalepFormControl {
+    display: flex;
+    justify-content: space-between;
+}

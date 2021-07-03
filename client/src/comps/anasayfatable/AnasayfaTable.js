@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CRow, CCol } from "@coreui/react";
+import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CFormText } from "@coreui/react";
 import "./anasayfatable.css"
 
 const usersData = [
@@ -33,43 +33,87 @@ const eczData = [
     {
         id: 0,
         eczane: "Hayat Eczanesi",
-        İlaç: "paracetol",
+        İlaç: "PARACETOL",
         hedef: "20/50",
-        birimFiyat: 39,
+        kampanya: "15 + 4",
+        birimFiyat: "39 TL",
         sonTarih: "2018/01/09",
         durum: "beklemede"
     },
     {
         id: 1,
         eczane: "Birgül Eczanesi",
-        İlaç: "Steroids",
+        İlaç: "STEROIDS",
         hedef: "15/25",
-        birimFiyat: 16,
+        kampanya: "15 + 4",
+        birimFiyat: "16 TL",
         sonTarih: "2018/01/01",
         durum: "beklemede"
     },
     {
         id: 2,
         eczane: "Dolmuş Eczanesi",
-        İlaç: "Fake Juice",
+        İlaç: "FAKE JUICE",
         hedef: "69/100",
-        birimFiyat: 99,
+        kampanya: "15 + 4",
+        birimFiyat: "99 TL",
         sonTarih: "2018/04/25",
         durum: "beklemede"
     },
     {
         id: 3,
         eczane: "Başka Eczanesi",
-        İlaç: "Başkamamol",
+        İlaç: "BAŞKAMAMOL",
         hedef: "13/46",
-        birimFiyat: 498,
+        kampanya: "15 + 4",
+        birimFiyat: "498 TL",
         sonTarih: "2018/08/01",
         durum: "beklemede"
-    }
+    },
+    {
+      id: 4,
+      eczane: "Hayat Eczanesi",
+      İlaç: "PARACETOL",
+      hedef: "20/50",
+      kampanya: "15 + 4",
+      birimFiyat: "39 TL",
+      sonTarih: "2018/01/09",
+      durum: "beklemede"
+  },
+  {
+      id: 5,
+      eczane: "Birgül Eczanesi",
+      İlaç: "STEROIDS",
+      hedef: "15/25",
+      kampanya: "15 + 4",
+      birimFiyat: "16 TL",
+      sonTarih: "2018/01/01",
+      durum: "beklemede"
+  },
+  {
+      id: 6,
+      eczane: "Dolmuş Eczanesi",
+      İlaç: "FAKE JUICE",
+      hedef: "69/100",
+      kampanya: "15 + 4",
+      birimFiyat: "99 TL",
+      sonTarih: "2018/04/25",
+      durum: "beklemede"
+  },
+  {
+      id: 7,
+      eczane: "Başka Eczanesi",
+      İlaç: "BAŞKAMAMOL",
+      hedef: "13/46",
+      kampanya: "15 + 4",
+      birimFiyat: "498 TL",
+      sonTarih: "2018/08/01",
+      durum: "beklemede"
+  }
 ]
 
 
-const BasvurularGoruntule = () => {
+const AnasayfaTable = () => {
     const [details, setDetails] = useState([])
     // const [items, setItems] = useState(usersData)
   
@@ -86,10 +130,11 @@ const BasvurularGoruntule = () => {
   
   
     const fields = [
-      { key: 'eczane', _style: { width: '20%'} },
-      { key: 'İlaç', _style: { width: '20%'} },
-      { key: 'hedef', _style: { width: '20%'} },
+      { key: 'eczane', _style: { width: '10%'} },
+      { key: 'İlaç', _style: { width: '30%'} },
+      'hedef',
       'birimFiyat',
+      'kampanya',
       'sonTarih',
       'durum',
       {
@@ -117,12 +162,38 @@ const BasvurularGoruntule = () => {
         fields={fields}
         columnFilter
         footer
-        itemsPerPageSelect
-        itemsPerPage={10}
+        itemsPerPage={50}
         hover
         sorter
         pagination
+        border
         scopedSlots = {{
+          'eczane':
+            (item)=>(
+              <td style = {{fontSize: "12px"}} >
+                  {item.eczane}
+              </td>
+            ),
+          'İlaç':
+          (item)=>(
+            <td>
+               <b>{item.İlaç}</b>
+            </td>
+            ),
+          'hedef':
+            (item)=>(
+              <td>
+                <CBadge color={"secondary"}>
+                  {item.hedef}
+                </CBadge>
+              </td>
+            ),
+          'kampanya':
+          (item)=>(
+            <td style = {{color: "green"}} >
+                {item.kampanya}
+            </td>
+          ),
           'durum':
             (item)=>(
               <td>
@@ -150,24 +221,87 @@ const BasvurularGoruntule = () => {
           'details':
               (item, index)=>{
                 return (
-                <CCollapse show={details.includes(index)}>
-                    <CRow className = "anasayfaTable-center" >
-                        <CCol lg = "2" >
-                            <CCardBody>
-                                <h4>
-                                {item.eczane}
-                                </h4>
-                                <p className="text-muted">User since: {item.sonTarih}</p>
-                                <CButton size="sm" color="info">
-                                User Settings
-                                </CButton>
-                                <CButton size="sm" color="danger" className="ml-1">
-                                Delete
-                                </CButton>
-                            </CCardBody>
-                        </CCol>
-                    </CRow>
-                </CCollapse>
+                  <CCollapse show={details.includes(index)}>
+                    <CCardBody>
+                      <CCol xs="12" sm="12">
+                        <CCard>
+                          <CCardHeader>Detaylar</CCardHeader>
+                          <CCardBody>
+                            <CFormGroup row>
+                              <CCol xs="12" md="6">
+                                <CLabel htmlFor="textarea-input">Açıklama:</CLabel>
+                                <CTextarea 
+                                  name="textarea-input" 
+                                  id="textarea-input" 
+                                  rows="9"
+                                  placeholder="Birşeyler yapalım arkadaşlar xDDD" 
+                                />
+                              </CCol>
+                              <CCol xs="12" md="6">
+                                <CLabel>Katılanlar:</CLabel>
+                                <table className = "table">
+                                  <tr>
+                                    <td>Hayat Eczanesi</td>
+                                    <td>15/20</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Başka Eczanesi</td>
+                                    <td>5/20</td>
+                                  </tr>
+                                </table>
+                                <div className = "ansayfaTalepFormControl">
+                                  <div>
+                                    <CLabel htmlFor="email-input">Siz</CLabel>
+                                  </div>
+                                  <div>
+                                  <CInput type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
+                                  <CFormText className="help-block">Almak istediğiniz adeti giriniz</CFormText>
+                                  </div>
+                                </div>
+                                {/* <CCol md="2">
+                                  <CLabel htmlFor="email-input">Adet</CLabel>
+                                </CCol>
+                                <CCol xs="12" md="4">
+                                  <CInput type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
+                                  <CFormText className="help-block">Please enter your email</CFormText>
+                                </CCol> */}
+                              </CCol>
+                            </CFormGroup>
+                            <CFormGroup>
+                              <CLabel htmlFor="company">Company</CLabel>
+                              <CInput id="company" placeholder="Enter your company name" />
+                            </CFormGroup>
+                            <CFormGroup>
+                              <CLabel htmlFor="vat">VAT</CLabel>
+                              <CInput id="vat" placeholder="DE1234567890" />
+                            </CFormGroup>
+                            <CFormGroup>
+                              <CLabel htmlFor="street">Street</CLabel>
+                              <CInput id="street" placeholder="Enter street name" />
+                            </CFormGroup>
+                            <CFormGroup row className="my-0">
+                              <CCol xs="8">
+                                <CFormGroup>
+                                  <CLabel htmlFor="city">City</CLabel>
+                                  <CInput id="city" placeholder="Enter your city" />
+                                </CFormGroup>
+                              </CCol>
+                              <CCol xs="4">
+                                <CFormGroup>
+                                  <CLabel htmlFor="postal-code">Postal Code</CLabel>
+                                  <CInput id="postal-code" placeholder="Postal Code" />
+                                </CFormGroup>
+                              </CCol>
+                            </CFormGroup>
+                            <CFormGroup>
+                              <CLabel htmlFor="country">Country</CLabel>
+                              <CInput id="country" placeholder="Country name" />
+                            </CFormGroup>
+                          </CCardBody>
+                        </CCard>
+                      </CCol>
+                    </CCardBody>
+                  </CCollapse>
               )
             }
         }}
@@ -175,4 +309,4 @@ const BasvurularGoruntule = () => {
     )
 }
 
-export default BasvurularGoruntule;
+export default AnasayfaTable;
