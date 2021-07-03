@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CFormText } from "@coreui/react";
+import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
 import "./anasayfatable.css"
 
 const usersData = [
@@ -240,63 +240,40 @@ const AnasayfaTable = () => {
                               <CCol xs="12" md="6">
                                 <CLabel>Katılanlar:</CLabel>
                                 <table className = "table">
-                                  <tr>
-                                    <td>Hayat Eczanesi</td>
-                                    <td>15/20</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Başka Eczanesi</td>
-                                    <td>5/20</td>
-                                  </tr>
+                                  <tbody>
+                                    <tr>
+                                      <td>Hayat Eczanesi</td>
+                                      <td>15/20</td>
+                                    </tr>
+                                    <tr>
+                                      <td>Başka Eczanesi</td>
+                                      <td>5/20</td>
+                                    </tr>
+                                  </tbody>
                                 </table>
-                                <div className = "ansayfaTalepFormControl">
-                                  <div>
-                                    <CLabel htmlFor="email-input">Siz</CLabel>
-                                  </div>
-                                  <div>
-                                  <CInput type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                  <CFormText className="help-block">Almak istediğiniz adeti giriniz</CFormText>
-                                  </div>
-                                </div>
-                                {/* <CCol md="2">
-                                  <CLabel htmlFor="email-input">Adet</CLabel>
-                                </CCol>
-                                <CCol xs="12" md="4">
-                                  <CInput type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                  <CFormText className="help-block">Please enter your email</CFormText>
-                                </CCol> */}
-                              </CCol>
-                            </CFormGroup>
-                            <CFormGroup>
-                              <CLabel htmlFor="company">Company</CLabel>
-                              <CInput id="company" placeholder="Enter your company name" />
-                            </CFormGroup>
-                            <CFormGroup>
-                              <CLabel htmlFor="vat">VAT</CLabel>
-                              <CInput id="vat" placeholder="DE1234567890" />
-                            </CFormGroup>
-                            <CFormGroup>
-                              <CLabel htmlFor="street">Street</CLabel>
-                              <CInput id="street" placeholder="Enter street name" />
-                            </CFormGroup>
-                            <CFormGroup row className="my-0">
-                              <CCol xs="8">
-                                <CFormGroup>
-                                  <CLabel htmlFor="city">City</CLabel>
-                                  <CInput id="city" placeholder="Enter your city" />
+                                <CFormGroup row className = "justify-content-end" >
+                                  <CCol md = "3" className = "ansayfaTalepFormControl">
+                                    <CLabel htmlFor="hf-email">Siz</CLabel>
+                                    <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
+                                  </CCol>
                                 </CFormGroup>
                               </CCol>
-                              <CCol xs="4">
-                                <CFormGroup>
-                                  <CLabel htmlFor="postal-code">Postal Code</CLabel>
-                                  <CInput id="postal-code" placeholder="Postal Code" />
-                                </CFormGroup>
+                              
+                            </CFormGroup>
+                            <CFormGroup row className = "justify-content-end" >
+                              <CCol md = "1" >
+                                <CButton color = "success" >Onayla</CButton>
                               </CCol>
                             </CFormGroup>
-                            <CFormGroup>
-                              <CLabel htmlFor="country">Country</CLabel>
-                              <CInput id="country" placeholder="Country name" />
-                            </CFormGroup>
+                            {/* <CFormGroup row className = "justify-content-end" >
+                              <CCol md = "2" className = "ansayfaTalepFormControl">
+                                <CLabel htmlFor="hf-email">Siz</CLabel>
+                                <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
+                              </CCol>
+                              <CCol md = "2">
+                                <CButton color = "success" >Onayla</CButton>
+                              </CCol>
+                            </CFormGroup> */}
                           </CCardBody>
                         </CCard>
                       </CCol>
