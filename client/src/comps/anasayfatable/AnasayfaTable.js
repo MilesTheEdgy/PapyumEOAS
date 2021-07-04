@@ -258,6 +258,12 @@ const AnasayfaTable = () => {
                                   </CCol>
                                 </CFormGroup>
                               </CCol>
+                              <CFormGroup row className = "justify-content-end" >
+                                  <CCol md = "3" className = "ansayfaTalepFormControl">
+                                    <CLabel htmlFor="hf-email">BAKIYENIZDEN KESILCEK TUTAR</CLabel>
+                                    <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
+                                  </CCol>
+                              </CFormGroup>
                               
                             </CFormGroup>
                             <CFormGroup row className = "justify-content-end" >

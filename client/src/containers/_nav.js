@@ -13,6 +13,12 @@ const _nav =  [
     }
   },
   {
+    _tag: 'CSidebarNavItem',
+    name: 'Ürün Ekle',
+    to: '/urunekle',
+    icon: <CIcon name="cil-speedometer" customClasses="c-sidebar-nav-icon"/>,
+  },
+  {
     _tag: 'CSidebarNavTitle',
     _children: ['Theme']
   },

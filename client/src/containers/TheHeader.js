@@ -54,7 +54,9 @@ const TheHeader = () => {
         <CHeaderNavItem  className="px-3">
           <CHeaderNavLink to="/users">Eczaneler</CHeaderNavLink>
         </CHeaderNavItem>
-        <CButton block color="secondary" className = "yeniTalep-button px-3" onClick = {() => dispatch({type: 'YENI_TEKLIF_ON'})} >Yeni Teklif</CButton>
+        <CButton block color="secondary" className = "yeniTalep-button px-3" onClick = {() => {
+          dispatch({type: 'YENI_TEKLIF_ON'})
+          }} >Yeni Teklif</CButton>
       </CHeaderNav>
 
       <CHeaderNav>
