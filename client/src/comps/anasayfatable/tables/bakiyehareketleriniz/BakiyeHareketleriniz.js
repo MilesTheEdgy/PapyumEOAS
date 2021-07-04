@@ -51,43 +51,12 @@ const eczData = [
       birimFiyat: "39 TL",
       sonTarih: "2018/01/09",
       durum: "beklemede"
-  },
-  {
-      id: 5,
-      eczane: "Birgül Eczanesi",
-      İlaç: "STEROIDS",
-      hedef: "15/25",
-      kampanya: "15 + 4",
-      birimFiyat: "16 TL",
-      sonTarih: "2018/01/01",
-      durum: "beklemede"
-  },
-  {
-      id: 6,
-      eczane: "Dolmuş Eczanesi",
-      İlaç: "FAKE JUICE",
-      hedef: "69/100",
-      kampanya: "15 + 4",
-      birimFiyat: "99 TL",
-      sonTarih: "2018/04/25",
-      durum: "beklemede"
-  },
-  {
-      id: 7,
-      eczane: "Başka Eczanesi",
-      İlaç: "BAŞKAMAMOL",
-      hedef: "13/46",
-      kampanya: "15 + 4",
-      birimFiyat: "498 TL",
-      sonTarih: "2018/08/01",
-      durum: "beklemede"
   }
 ]
 
 
-const TumTeklifler = () => {
+const BakiyeHareketleriniz = () => {
     const [details, setDetails] = useState([])
-    // const [items, setItems] = useState(usersData)
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -132,12 +101,12 @@ const TumTeklifler = () => {
     <>
     <CRow>
       <CCol>
-        <CLabel className = "tableLabel tumtekliflerGradient" >Tüm Teklifler</CLabel>
+        <CLabel className = "tableLabel bakiyehareketlerinizGradient" >Bakiye Hareketleriniz</CLabel>
       </CCol>
     </CRow>
     <CRow>
       <CCol>
-        <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
+        <div style = {{border: "solid 1px rgb(249, 177, 21, 0.35)"}} >
           <CDataTable
             header
             items={eczData}
@@ -280,4 +249,4 @@ const TumTeklifler = () => {
     )
 }
 
-export default TumTeklifler;
+export default BakiyeHareketleriniz;

@@ -16,7 +16,6 @@ import { useDispatch } from 'react-redux'
 
 const WidgetsDropdown = () => {
   const dispatch = useDispatch()
-
   return (
     <CRow>
       <CCol sm="6" lg="3">

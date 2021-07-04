@@ -27,3 +27,28 @@
     max-width: 120px;
     /* height: 50px; */
 }
+
+.tableLabel {
+    font-size: large;
+    border-radius: 1%;
+    color: white;
+    padding: 8px 20px 8px 80px;
+    width: 100%;
+
+}
+
+.tumtekliflerGradient {
+    background: radial-gradient(circle, rgba(185,49,68,1) 0%, rgba(229,83,83,1) 100%);
+}
+
+.sizintekliflerinizGradient {
+    background: radial-gradient(circle, rgba(50,31,219,1) 0%, rgba(34,9,149,1) 100%);
+}
+
+.bekleyentekliflerGradient {
+    background: radial-gradient(circle, rgba(52,127,203,1) 0%, rgba(55,145,230,1) 100%);
+}
+
+.bakiyehareketlerinizGradient {
+    background: radial-gradient(circle, rgba(215,170,73,1) 0%, rgba(220,172,52,1) 100%);
+}

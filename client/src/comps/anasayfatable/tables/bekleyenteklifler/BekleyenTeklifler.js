@@ -51,43 +51,12 @@ const eczData = [
       birimFiyat: "39 TL",
       sonTarih: "2018/01/09",
       durum: "beklemede"
-  },
-  {
-      id: 5,
-      eczane: "Birgül Eczanesi",
-      İlaç: "STEROIDS",
-      hedef: "15/25",
-      kampanya: "15 + 4",
-      birimFiyat: "16 TL",
-      sonTarih: "2018/01/01",
-      durum: "beklemede"
-  },
-  {
-      id: 6,
-      eczane: "Dolmuş Eczanesi",
-      İlaç: "FAKE JUICE",
-      hedef: "69/100",
-      kampanya: "15 + 4",
-      birimFiyat: "99 TL",
-      sonTarih: "2018/04/25",
-      durum: "beklemede"
-  },
-  {
-      id: 7,
-      eczane: "Başka Eczanesi",
-      İlaç: "BAŞKAMAMOL",
-      hedef: "13/46",
-      kampanya: "15 + 4",
-      birimFiyat: "498 TL",
-      sonTarih: "2018/08/01",
-      durum: "beklemede"
   }
 ]
 
 
-const TumTeklifler = () => {
+const BekleyenTeklifler = () => {
     const [details, setDetails] = useState([])
-    // const [items, setItems] = useState(usersData)
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -132,12 +101,12 @@ const TumTeklifler = () => {
     <>
     <CRow>
       <CCol>
-        <CLabel className = "tableLabel tumtekliflerGradient" >Tüm Teklifler</CLabel>
+        <CLabel className = "tableLabel bekleyentekliflerGradient" >Bekleyen Teklifler</CLabel>
       </CCol>
     </CRow>
     <CRow>
       <CCol>
-        <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
+        <div style = {{border: "solid 1px rgb(51, 153, 255, 0.35)"}} >
           <CDataTable
             header
             items={eczData}
@@ -253,15 +222,6 @@ const TumTeklifler = () => {
                                     <CButton color = "success" >Onayla</CButton>
                                   </CCol>
                                 </CFormGroup>
-                                {/* <CFormGroup row className = "justify-content-end" >
-                                  <CCol md = "2" className = "ansayfaTalepFormControl">
-                                    <CLabel htmlFor="hf-email">Siz</CLabel>
-                                    <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                  </CCol>
-                                  <CCol md = "2">
-                                    <CButton color = "success" >Onayla</CButton>
-                                  </CCol>
-                                </CFormGroup> */}
                               </CCardBody>
                             </CCard>
                           </CCol>
@@ -280,4 +240,4 @@ const TumTeklifler = () => {
     )
 }
 
-export default TumTeklifler;
+export default BekleyenTeklifler;
