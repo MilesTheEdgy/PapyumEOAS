@@ -1,29 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from "react-redux"
 import {
   CButton,
-  CCard,
-  CCardBody,
-  CCardHeader,
   CCol,
   CModal,
   CModalBody,
   CModalFooter,
   CModalHeader,
   CModalTitle,
-  CRow,
   CFormGroup,
   CLabel,
   CInput,
-  CSelect,
   CForm,
   CFormText,
   CTextarea,
-  CSwitch,
-  CInputRadio,
-  CInputCheckbox,
-  CInputFile,
-  CCardFooter
+  CInputRadio
 } from '@coreui/react'
 
 import "./yeniteklif.css"
@@ -48,7 +39,7 @@ const Modals = () => {
                 <CLabel htmlFor="text-input">Ürün Adı</CLabel>
               </CCol>
               <CCol xs="12" md="6">
-                <CInput list = "medicine-list" id="text-input" name="text-input" placeholder="İlaç ismini giriniz" />
+                <CInput list = "medicine-list" placeholder="İlaç ismini giriniz" />
                 <datalist id = "medicine-list">
                   <option value="Chocolate" />
                   <option value="Coconut" />
@@ -74,7 +65,7 @@ const Modals = () => {
                 <CLabel htmlFor="text-input">Her adet</CLabel>
               </CCol>
               <CCol xs="12" md="2">
-                <CInput id="text-input" name="text-input" placeholder="örn: 65" />
+                <CInput placeholder="örn: 65" />
                 <CFormText>Birim fiyatını giriniz</CFormText>
               </CCol>
               <CCol md="2">

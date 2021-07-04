@@ -1,10 +1,18 @@
 import { createStore } from 'redux'
 
+//Actions
+export const SIZIN_TEKLIFLERINIZ = "SIZIN_TEKLIFLERINIZ";
+export const BEKELEYEN_TEKLIFLER = "BEKELEYEN_TEKLIFLER";
+export const BAKIYE_HAREKETLERI = "BAKIYE_HAREKETLERI";
+export const TUM_TEKLIFLER = "TUM_TEKLIFLER";
+//
+
 const initialState = {
   sidebarShow: 'responsive',
   modals: {
     yeniTeklifModal: false
-  }
+  },
+  dashboardTable: TUM_TEKLIFLER
 }
 
 const changeState = (state = initialState, { type, ...rest }) => {
@@ -26,6 +34,11 @@ const changeState = (state = initialState, { type, ...rest }) => {
           ...state.modals,
           yeniTeklifModal: false
         }
+      }
+    case 'SET_DASHBOARD_TABLE':
+      return {
+        ...state,
+        ...rest
       }
     default:
       return state

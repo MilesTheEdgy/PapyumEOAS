@@ -1,6 +1,6 @@
-import React, { lazy } from 'react'
+import { lazy } from 'react'
 
-const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
+const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown'))
 const AnasayfaTable = lazy(() => import('../../../src/comps/anasayfatable/AnasayfaTable'));
 
 

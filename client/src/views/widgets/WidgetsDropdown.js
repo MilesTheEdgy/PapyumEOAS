@@ -11,9 +11,12 @@ import {
 import CIcon from '@coreui/icons-react'
 import ChartLineSimple from '../charts/ChartLineSimple'
 import ChartBarSimple from '../charts/ChartBarSimple'
+import { TUM_TEKLIFLER, BAKIYE_HAREKETLERI, BEKELEYEN_TEKLIFLER, SIZIN_TEKLIFLERINIZ} from "../../store"
+import { useDispatch } from 'react-redux'
 
 const WidgetsDropdown = () => {
-  // render
+  const dispatch = useDispatch()
+
   return (
     <CRow>
       <CCol sm="6" lg="3">
@@ -35,7 +38,7 @@ const WidgetsDropdown = () => {
               <CIcon name="cil-settings"/>
             </CDropdownToggle>
             <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem>Action</CDropdownItem>
+              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: SIZIN_TEKLIFLERINIZ})}>Görüntüle</CDropdownItem>
             </CDropdownMenu>
           </CDropdown>
         </CWidgetDropdown>
@@ -64,7 +67,7 @@ const WidgetsDropdown = () => {
               <CIcon name="cil-location-pin"/>
             </CDropdownToggle>
             <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem>Action</CDropdownItem>
+              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: BEKELEYEN_TEKLIFLER})} >Görüntüle</CDropdownItem>
             </CDropdownMenu>
           </CDropdown>
         </CWidgetDropdown>
@@ -74,7 +77,7 @@ const WidgetsDropdown = () => {
         <CWidgetDropdown
           color="gradient-warning"
           header="9.823"
-          text="Eczaneler Bakiye Hareketleri"
+          text="Bakiye Hareketleriniz"
           footerSlot={
             <ChartLineSimple
               className="mt-3"
@@ -93,7 +96,7 @@ const WidgetsDropdown = () => {
               <CIcon name="cil-settings"/>
             </CDropdownToggle>
             <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem>Action</CDropdownItem>
+              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: BAKIYE_HAREKETLERI})} >Görüntüle</CDropdownItem>
             </CDropdownMenu>
           </CDropdown>
         </CWidgetDropdown>
@@ -103,7 +106,7 @@ const WidgetsDropdown = () => {
         <CWidgetDropdown
           color="gradient-danger"
           header="9.823"
-          text="Şimdilik Boş"
+          text="Tüm Teklifler"
           footerSlot={
             <ChartBarSimple
               className="mt-3 mx-3"
@@ -119,7 +122,7 @@ const WidgetsDropdown = () => {
               <CIcon name="cil-settings"/>
             </CDropdownToggle>
             <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem>Action</CDropdownItem>
+              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: TUM_TEKLIFLER})} >Görüntüle</CDropdownItem>
             </CDropdownMenu>
           </CDropdown>
         </CWidgetDropdown>
