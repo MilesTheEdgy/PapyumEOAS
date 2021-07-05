@@ -96,7 +96,7 @@ const YeniTeklif = () => {
                 <CLabel htmlFor="text-input"><b> Hedef</b></CLabel>
               </CCol>
               <CCol md="2">
-                <CInput {...input2} placeholder="örn: 65" type = "number" onChange = {(e) => validateNumInput(e, valInput2, setinp2)} />
+                <CInput {...input2} type = "number" onChange = {(e) => validateNumInput(e, valInput2, setinp2)} />
                 <CFormText>Ulaşmak istediğiniz alım hedefi</CFormText>
               </CCol>
             </CFormGroup>
