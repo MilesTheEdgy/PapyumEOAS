@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
+import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CTextarea, CRow } from "@coreui/react";
 
 const eczData = [
     {
