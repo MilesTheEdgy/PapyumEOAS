@@ -38,7 +38,18 @@ const changeState = (state = initialState, { type, ...rest }) => {
           }
         }
       }
-    
+    case 'LOG_OUT':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          ...rest,
+          properties: {
+            ...state.user.properties,
+            isLogged: false
+          }
+        }
+      }
     case 'YENI_TEKLIF_ON':
       return {
         ...state,

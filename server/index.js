@@ -105,8 +105,8 @@ const userData = [
   }
 ]
 
-function generateAccessToken(username) {
-  return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+function generateAccessToken(data) {
+  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '18s' });
 }
 
 function authenticateToken(req, res, next) {
@@ -119,8 +119,6 @@ function authenticateToken(req, res, next) {
   }
 
   jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-    console.log(err)
-
     if (err) {
       console.log(err);
       return res.sendStatus(403)
@@ -137,8 +135,8 @@ function authenticateToken(req, res, next) {
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === "hayat" && password === "boss") {
-    const token = generateAccessToken({ username: req.body.username, ID: 1, bakiye: 1000 });
-    res.status(200).json("your token is: ", token);
+    const token = generateAccessToken({ username: req.body.username, ID: 1 });
+    res.status(200).json({username, ID: 1, token});
   } else {
     res.status(401).json("not authorized")
   }

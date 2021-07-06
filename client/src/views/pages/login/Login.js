@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import {
   CButton,
   CCard,
@@ -15,23 +15,36 @@ import {
   CRow
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-
-const state = {name: "michael", age: 15}
+import { useDispatch } from 'react-redux'
 
 const Login = () => {
-
+  const dispatch = useDispatch()
+  const history = useHistory()
+  const [username, setUsername] = React.useState("")
+  const [password, setPassword] = React.useState("")
   const submitHandeler = async () => {
     const response = await fetch(`/api/login`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        username: "Hayat Eczanesi",
-        password: "boss"
+        username: username,
+        password: password
       })
     })
-    const data = await response.json()
-    document.cookie = `pyecztoken=${data}`
-    console.log(data);
+    if (response.status === 200) {
+      const data = await response.json()
+
+      console.log("success");
+      document.cookie = `pyecztoken=${data.token}`
+      dispatch({type: 'LOG_IN', username: data.username})
+      history.push('/dashboard')
+    } else if (response.status === 401) {
+      console.log('failed login')
+    } else {
+      console.log('server error')
+    }
+    // const data = await response.json()
+    // console.log(data);
   }
 
   return (
@@ -51,7 +64,7 @@ const Login = () => {
                           <CIcon name="cil-user" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="text" placeholder="kullanıcı isminiz" autoComplete="username" />
+                      <CInput type="text" placeholder="kullanıcı isminiz" autoComplete="username" onChange = {(e) => setUsername(e.target.value)} />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupPrepend>
@@ -59,7 +72,7 @@ const Login = () => {
                           <CIcon name="cil-lock-locked" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="password" placeholder="şifreniz" autoComplete="current-password" />
+                      <CInput type="password" placeholder="şifreniz" autoComplete="current-password" onChange = {(e) => setPassword(e.target.value)} />
                     </CInputGroup>
                     <CRow>
                       <CCol xs="6">
@@ -79,7 +92,7 @@ const Login = () => {
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
                       labore et dolore magna aliqua.</p>
                     <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>Register Now!</CButton>
+                      <CButton color="primary" className="mt-3" active tabIndex={-1}>Kayıt olun!</CButton>
                     </Link>
                   </div>
                 </CCardBody>
