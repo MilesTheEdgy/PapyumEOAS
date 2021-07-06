@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 import {
   CButton,
@@ -20,50 +20,149 @@ import "./yeniteklif.css"
 
 const dummy = ["Chocolate", "Coconut", "Mint", "Strawberry", "Vanilla"]
 
-const setAdetFiyat = (e, hedef, setToplamState) => {
-  const value = e.target.value;
-  setToplamState(hedef * value)
+const dateHandeler = (e, setState, validateState) => {
+  setState(e.target.value)
+  const inputDate = new Date(e.target.value)
+  const today = new Date()
+  if (inputDate.setHours(0, 0, 0, 0) <= today.setHours(0, 0, 0, 0)) {
+    validateState({invalid: true})
+  } else {
+    validateState({valid: true})
+  }
+  
 }
 
-const validateUrunAdi = (e, valState, setState, data) => {
-  const input = e.target.value
-  setState(input)
-  for (let i = 0; i < data.length; i++) {
-    if (input.toLowerCase() === data[i].toLowerCase()) {
-      return valState({valid: true, invalid: false})
-    } else {
-      return valState({valid: false, invalid: true})      
-    }
+const aciklamaHandler = (e, setState, validateState) => {
+  const value = e.target.value;
+  setState(value)
+  if (value !== "") {
+    validateState({valid: true})
+  } else {
+    validateState({invalid: true})
   }
 }
 
-const validateNumInput = (e, valState, setState) => {
+const toplamAlimSartInput = async (e, setToplamVal, adetValue, validateInputs) => {
+  const value = e.target.value;
+  await setToplamVal(value);
+  if (value > 0 && adetValue > 0) {
+    validateInputs({valid: true})
+  } else {
+    validateInputs({invalid: true})
+  }
+}
+
+const adetAlımSartInput = async (e, setAdetVal, toplamValue, validateInputs) => {
+  const value = e.target.value;
+  await setAdetVal(value);
+  if (value > 0 && toplamValue > 0) {
+    validateInputs({valid: true})
+  } else {
+    validateInputs({invalid: true})
+  }
+}
+
+const alimSartRadio = (e, validateInput, displaySartState) => {
+  const value = e.target.value
+  if (value === "yes") {
+    displaySartState(true)
+    validateInput({valid: true})
+  } else if (value === "no") {
+    displaySartState(false)
+    validateInput({valid: true})
+  } else {
+    validateInput({invalid: true})
+  }
+}
+
+const toplamFiyatFunc = (e, hedef, setToplamState, setAdetState) => {
+  const value = e.target.value;
+  setToplamState(value);
+  if (hedef) {
+    let res = value / hedef
+    setAdetState(res.toFixed(2))
+  }
+}
+
+const adetFiyatFunc = async (e, hedef, setAdetState, setToplamState) => {
+  const value = e.target.value;
+  await setAdetState(value)
+  await setToplamState(hedef * value)
+}
+
+const validateUrunAdi = (e, valState, setState, data) => {
+  const input = e.target.value.toLowerCase()
+  setState(input)
+  for (let i = 0; i < data.length; i++) {
+    if(input === data[i].toLowerCase()) {
+      return valState({valid: true})
+    }
+  }
+  valState({invalid: true})
+}
+
+const validateHedefInput = (e, valState, setState, setAdetState, toplamState) => {
   const input = e.target.value
   setState(input)
+  if (toplamState > 0) {
+    let res = input / toplamState
+    setAdetState(res.toFixed(2))
+  }
   if (input > 0) {
-    return valState({valid: true, invalid: false})
+    return valState({valid: true})
   } else {
-    return valState({valid: false, invalid: true})     
+    return valState({invalid: true})     
   }
 }
 
 const YeniTeklif = () => {
-  
-  const [sart, setSart] = React.useState(false)
-  const [input1, valInput1] = React.useState({valid: false, invalid: true})
-  const [input2, valInput2] = React.useState({valid: false, invalid: true})
-  const [input3, valInput3] = React.useState({valid: false, invalid: true})
-  const [input4, valInput4] = React.useState({valid: false, invalid: true})
-  const [input5, valInput5] = React.useState({valid: false, invalid: true})
-  const [inp1, setinp1] = React.useState("")
-  const [inp2, setinp2] = React.useState(0)
-  const [inp3, setinp3] = React.useState(0)
-  const [inp4, setinp4] = React.useState("")
-  const [inp5, setinp5] = React.useState("")
 
+  const submitHandeler = () => {
+    const formValid = sartRadio?
+    [urunAdiValid, hedefValid, adetFiyatValid, toplamFiyatValid, alimSartValid, sartValid, aciklamaValid, dateValid]
+    :
+    [urunAdiValid, hedefValid, adetFiyatValid, toplamFiyatValid, alimSartValid, aciklamaValid, dateValid]
+    let formValidArr = []
+    for (let i = 0; i < formValid.length; i++) {
+      formValidArr[i] = Object.keys(formValid[i])
+    }
+    for (let i = 0; i < formValidArr.length; i++) {
+      if (formValidArr[i].indexOf('invalid') >= 0) {
+        return alert('found missing info: ', formValidArr[i])
+      }
+    }
+    alert('all good!: ')
+  }
+
+  const [sartRadio, setSartRadio] = useState(false)
+  const [urunAdiValid, setUrunAdiValid] = useState({invalid: true})
+  const [urunAdi, setUrunAdi] = useState("")
+  const [hedefValid, setHedefValid] = useState({invalid: true})
+  const [hedef, setHedef] = useState(0)
+  const [adetFiyat, setAdetFiyat] = useState(0)
+  const [adetFiyatValid, setAdetFiyatValid] = useState({invalid: true})
+  const [toplamFiyat, setToplamFiyat] = useState(0)
+  const [toplamFiyatValid, setToplamFiyatValid] = useState({invalid: true})
+  const [alimSartValid, setAlimSartValid] = useState({invalid: true})
+  const [sartToplam, setSartToplam] = useState(0)
+  const [sartAdet, setSartAdet] = useState(0)
+  const [sartValid, setSartValid] = useState({invalid: true})
+  const [aciklama, setAciklama] = useState("")
+  const [aciklamaValid, setAciklamaValid] = useState({invalid: true})
+  const [date, setDate] = useState("")
+  const [dateValid, setDateValid] = useState({invalid: true})
+  
+  
   const yeniTeklifModal = useSelector(state => state.modals.yeniTeklifModal)
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    if (adetFiyat > 0 && toplamFiyat > 0) {
+      setAdetFiyatValid({valid: true})
+      setToplamFiyatValid({valid: true})
+    }
+  }, [adetFiyat, toplamFiyat])
+  
   return (
     <CModal
         centered
@@ -81,14 +180,14 @@ const YeniTeklif = () => {
                 <CLabel htmlFor="text-input" ><b> Ürün Adı</b></CLabel>
               </CCol>
               <CCol xs="12" md="6">
-                <CInput list = "medicine-list" placeholder="İlaç ismini giriniz" {...input1}
-                 onChange = {(e) => validateUrunAdi(e, valInput1, setinp1, dummy)}/>
+                <CInput list = "medicine-list" placeholder="İlaç ismini giriniz" {...urunAdiValid}
+                 onChange = {(e) => validateUrunAdi(e, setUrunAdiValid, setUrunAdi, dummy)}/>
                 <datalist id = "medicine-list">
-                  <option value="Chocolate" />
-                  <option value="Coconut" />
-                  <option value="Mint" />
-                  <option value="Strawberry" />
-                  <option value="Vanilla" />
+                {
+                  dummy.map((v, i )=> {
+                    return <option value = {v} key = {i} />
+                  })
+                }
                 </datalist>
                 <CFormText>Almak istediğiniz ürün</CFormText>
               </CCol>
@@ -96,7 +195,8 @@ const YeniTeklif = () => {
                 <CLabel htmlFor="text-input"><b> Hedef</b></CLabel>
               </CCol>
               <CCol md="2">
-                <CInput {...input2} type = "number" onChange = {(e) => validateNumInput(e, valInput2, setinp2)} />
+                <CInput {...hedefValid} type = "number"
+                 onChange = {(e) => validateHedefInput(e, setHedefValid, setHedef, setAdetFiyat, toplamFiyat)} />
                 <CFormText>Ulaşmak istediğiniz alım hedefi</CFormText>
               </CCol>
             </CFormGroup>
@@ -113,7 +213,8 @@ const YeniTeklif = () => {
                     <CLabel htmlFor="text-input">Her adet</CLabel>
                   </div>
                   <div className = "col-md-6">
-                    <CInput placeholder="örn: 65" defaultValue = {null} onChange = {(e) => setAdetFiyat(e, input2, setinp3)} />
+                    <CInput {...adetFiyatValid} type = "number" value = {adetFiyat}
+                     onChange = {(e) => adetFiyatFunc(e, hedef, setAdetFiyat, setToplamFiyat)} />
                     <CFormText>Birim fiyatını giriniz</CFormText>
                   </div>
                 </div>
@@ -122,7 +223,8 @@ const YeniTeklif = () => {
                     <CLabel htmlFor="text-input" >Toplam</CLabel>
                   </div>
                   <div className = "col-md-6">
-                    <CInput placeholder="örn: 890" defaultValue = {null} />
+                    <CInput {...toplamFiyatValid} type = "number" value = {toplamFiyat}
+                     onChange = {(e) => toplamFiyatFunc(e, hedef, setToplamFiyat, setAdetFiyat)} />
                     <CFormText>Toplam fiyatını giriniz</CFormText>
                   </div>
                 </div> 
@@ -137,24 +239,28 @@ const YeniTeklif = () => {
                   </div>
                   <div className = "col-md-6">
                     <CFormGroup variant="custom-radio" inline>
-                      <CInputRadio custom id="inline-radio1" name="inline-radios" value="option1" onClick = {() => setSart(true)} />
+                      <CInputRadio {...alimSartValid} custom id="inline-radio1" name="inline-radios" value="yes"
+                      onClick = {(e) => alimSartRadio(e, setAlimSartValid, setSartRadio)} />
                       <CLabel variant="custom-checkbox" htmlFor="inline-radio1">Var</CLabel>
                     </CFormGroup>
                     <CFormGroup variant="custom-radio" inline>
-                      <CInputRadio custom id="inline-radio2" name="inline-radios" value="option2" onClick = {() => setSart(false)} />
+                      <CInputRadio {...alimSartValid} custom id="inline-radio2" name="inline-radios" value="no"
+                       onClick = {(e) => alimSartRadio(e, setAlimSartValid, setSartRadio)} />
                       <CLabel variant="custom-checkbox" htmlFor="inline-radio2">Yok</CLabel>
                     </CFormGroup>
                   </div>
                 </div>
-                <div className =  {`${sart ? "" : "hidden"} row align-items-center`}>
-                  <div className = "col-md-6">
+                <div className =  {`${sartRadio ? "" : "hidden"} row align-items-center`}>
+                  <div className = "col-md-4">
                     <CLabel htmlFor="text-input"><b> Şartı</b></CLabel>
                   </div>
-                  <div className = "col-md-6">
+                  <div className = "col-md-8">
                     <div style = {{display: "flex", alignItems: "center"}} >
-                      <input style = {{maxWidth : "50px", maxHeight: "30px"}} className = "form-control" placeholder = "70" />
+                      <CInput {...sartValid} style = {{maxWidth : "100px ", maxHeight: "35px"}} className = "form-control" placeholder = "70"
+                      onChange = {(e) => toplamAlimSartInput(e, setSartToplam, sartAdet, setSartValid)} type = "number" />
                       <p style = {{fontSize : "25px", marginTop: "15px"}} >+</p>
-                      <input style = {{maxWidth : "50px", maxHeight: "30px"}} className = "form-control" placeholder = "8" />
+                      <CInput {...sartValid} style = {{maxWidth : "100px", maxHeight: "35px"}} className = "form-control" placeholder = "8"
+                      onChange = {(e) => adetAlımSartInput(e, setSartAdet, sartToplam, setSartValid)} type = "number" />
                     </div>
                   </div>
                 </div>
@@ -168,7 +274,9 @@ const YeniTeklif = () => {
                 <CLabel htmlFor="textarea-input"><b>Açıklama</b></CLabel>
               </CCol>
               <CCol xs="12" md="6">
-                <CTextarea 
+                <CTextarea
+                  {...aciklamaValid}
+                  onChange = {(e) => aciklamaHandler(e, setAciklama, setAciklamaValid)}
                   name="textarea-input" 
                   id="textarea-input" 
                   rows="9"
@@ -179,13 +287,13 @@ const YeniTeklif = () => {
               </CCol>
               <CCol md="3">
                 <CLabel htmlFor="date-input"><b>Bitiş tarih</b></CLabel>
-                <CInput type="date" id="date-input" name="date-input" />
+                <CInput {...dateValid} type="date" id="date-input" name="date-input" onChange = {(e) => dateHandeler(e, setDate, setDateValid)} />
               </CCol>
             </CFormGroup>
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="primary" onClick = {() => console.log(inp1, inp2, inp3)} >Teklif oluştur</CButton>
+          <CButton color="primary" onClick = {() => submitHandeler()} >Teklif oluştur</CButton>
           <CButton color="secondary" onClick={() => dispatch({type: "YENI_TEKLIF_OFF"})}>İptal et</CButton>
         </CModalFooter>
       </CModal>
