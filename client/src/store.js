@@ -12,13 +12,33 @@ const initialState = {
   modals: {
     yeniTeklifModal: false
   },
-  dashboardTable: TUM_TEKLIFLER
+  dashboardTable: TUM_TEKLIFLER,
+  user: {
+    username: "",
+    bakiye: 0,
+    properties: {
+      isLogged: false
+    }
+  }
 }
 
 const changeState = (state = initialState, { type, ...rest }) => {
   switch (type) {
     case 'set':
       return {...state, ...rest }
+    case 'LOG_IN':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          ...rest,
+          properties: {
+            ...state.user.properties,
+            isLogged: true
+          }
+        }
+      }
+    
     case 'YENI_TEKLIF_ON':
       return {
         ...state,

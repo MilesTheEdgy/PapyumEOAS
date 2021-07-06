@@ -294,7 +294,18 @@ const YeniTeklif = () => {
         </CModalBody>
         <CModalFooter>
           <CButton color="primary" onClick = {() => submitHandeler()} >Teklif oluştur</CButton>
-          <CButton color="secondary" onClick={() => dispatch({type: "YENI_TEKLIF_OFF"})}>İptal et</CButton>
+          <CButton color="secondary" onClick={() => {
+            // setSartRadio(false)
+            // setUrunAdi("")
+            // setHedef(0)
+            // setAdetFiyat(0)
+            // setToplamFiyat(0)
+            // setSartToplam(0)
+            // setSartAdet(0)
+            // setAciklama("")
+            // setDate("")
+            dispatch({type: "YENI_TEKLIF_OFF"})
+            }}>İptal et</CButton>
         </CModalFooter>
       </CModal>
   )
