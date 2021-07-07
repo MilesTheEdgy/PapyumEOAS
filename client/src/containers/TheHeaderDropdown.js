@@ -6,8 +6,11 @@ import {
   CDropdownToggle
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { useSelector, useDispatch } from 'react-redux'
 
 const TheHeaderDropdown = () => {
+  const userSettings = useSelector(state => state.user.userSettings)
+  const dispatch = useDispatch();
   return (
     <CDropdown
       inNav
@@ -15,7 +18,7 @@ const TheHeaderDropdown = () => {
       direction="down"
     >
       <CDropdownToggle className="c-header-nav-link" caret={true}>
-        <strong> Hayat Eczanesi </strong>
+        <strong> {userSettings.eczaneName} </strong>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownItem
@@ -34,7 +37,10 @@ const TheHeaderDropdown = () => {
           Ayarlar
         </CDropdownItem>
         <CDropdownItem divider />
-        <CDropdownItem>
+        <CDropdownItem onClick = { () => {
+          document.cookie = `pyecztoken=resetted`
+          dispatch({type: "LOG_OUT"})
+          }} >
           <CIcon name="cil-lock-locked" className="mfe-2" />
           Çıkış yap
         </CDropdownItem>

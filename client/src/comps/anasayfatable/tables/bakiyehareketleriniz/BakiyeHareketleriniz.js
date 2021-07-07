@@ -1,62 +1,11 @@
-import React, { useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
-
-const eczData = [
-    {
-        id: 0,
-        eczane: "Hayat Eczanesi",
-        İlaç: "PARACETOL",
-        hedef: "20/50",
-        kampanya: "15 + 4",
-        birimFiyat: "39 TL",
-        sonTarih: "2018/01/09",
-        durum: "beklemede"
-    },
-    {
-        id: 1,
-        eczane: "Birgül Eczanesi",
-        İlaç: "STEROIDS",
-        hedef: "15/25",
-        kampanya: "15 + 4",
-        birimFiyat: "16 TL",
-        sonTarih: "2018/01/01",
-        durum: "beklemede"
-    },
-    {
-        id: 2,
-        eczane: "Dolmuş Eczanesi",
-        İlaç: "FAKE JUICE",
-        hedef: "69/100",
-        kampanya: "15 + 4",
-        birimFiyat: "99 TL",
-        sonTarih: "2018/04/25",
-        durum: "beklemede"
-    },
-    {
-        id: 3,
-        eczane: "Başka Eczanesi",
-        İlaç: "BAŞKAMAMOL",
-        hedef: "13/46",
-        kampanya: "15 + 4",
-        birimFiyat: "498 TL",
-        sonTarih: "2018/08/01",
-        durum: "beklemede"
-    },
-    {
-      id: 4,
-      eczane: "Hayat Eczanesi",
-      İlaç: "PARACETOL",
-      hedef: "20/50",
-      kampanya: "15 + 4",
-      birimFiyat: "39 TL",
-      sonTarih: "2018/01/09",
-      durum: "beklemede"
-  }
-]
-
+import React, { useState, useEffect } from "react";
+import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CRow } from "@coreui/react";
+import Loader from "src/comps/loader/Loader";
 
 const BakiyeHareketleriniz = () => {
     const [details, setDetails] = useState([])
+    const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true)
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -71,13 +20,11 @@ const BakiyeHareketleriniz = () => {
   
   
     const fields = [
-      { key: 'eczane', _style: { width: '10%'} },
-      { key: 'İlaç', _style: { width: '30%'} },
-      'hedef',
-      'birimFiyat',
-      'kampanya',
-      'sonTarih',
-      'durum',
+      { key: 'ID', _style: { width: '10%'} },
+      { key: 'İlaç', _style: { width: '20%'} },
+      { key: 'tür'},
+      'tarih',
+      'bakiye',
       {
         key: 'show_details',
         label: '',
@@ -87,15 +34,55 @@ const BakiyeHareketleriniz = () => {
       }
     ]
   
-    const getBadge = (status)=>{
+    const bakiyeBadge = (status)=>{
       switch (status) {
-        case 'Active': return 'success'
-        case 'Inactive': return 'secondary'
-        case 'beklemede': return 'warning'
-        case 'Banned': return 'danger'
+        case 'Satış': return 'success'
+        case 'Alış': return 'danger'
         default: return 'primary'
       }
     }
+
+    const plusOrMinus = (status) => {
+      switch (status) {
+        case 'Satış': return '+'
+        case 'Alış': return '-'
+        default: return 'bir sorun olmuştur'
+      }
+    }
+
+    const turCustomizing = (tur)=>{
+      switch (tur) {
+        case 'Satış': return 'green'
+        case 'Alış': return 'red'
+        default: return ''
+      }
+    }
+
+    useEffect(() => {
+
+      const fetchData = async () => {
+        console.log('fetching items for BAKİYE hareketleri')
+  
+        const res = await fetch(`/api/data/table/hareket`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'authorization': `Bearer ${document.cookie.slice(11)} `
+          }
+        })
+  
+        if (res.status === 200) {
+          const data = await res.json()
+          console.log(data);
+          setData(data)
+          setLoading(false)
+        }
+  
+        console.log('finished fetching for BAKİYE hareketleri')
+      }
+
+      fetchData()
+
+    }, [])
   
     return (
     <>
@@ -105,145 +92,124 @@ const BakiyeHareketleriniz = () => {
       </CCol>
     </CRow>
     <CRow>
-      <CCol>
-        <div style = {{border: "solid 1px rgb(249, 177, 21, 0.35)"}} >
-          <CDataTable
-            header
-            items={eczData}
-            fields={fields}
-            columnFilter
-            footer
-            itemsPerPage={50}
-            hover
-            sorter
-            pagination
-            border
-            scopedSlots = {{
-              'eczane':
-                (item)=>(
-                  <td style = {{fontSize: "12px"}} >
-                      {item.eczane}
-                  </td>
-                ),
-              'İlaç':
-              (item)=>(
-                <td>
-                  <b>{item.İlaç}</b>
-                </td>
-                ),
-              'hedef':
+
+      {
+        loading ?
+        <Loader />
+        :
+          <CCol>
+          <div style = {{border: "solid 1px rgb(249, 177, 21, 0.35)"}} >
+            <CDataTable
+              header
+              items={data}
+              fields={fields}
+              columnFilter
+              footer
+              itemsPerPage={50}
+              hover
+              sorter
+              pagination
+              border
+              scopedSlots = {{
+                'İlaç':
                 (item)=>(
                   <td>
-                    <CBadge color={"secondary"}>
-                      {item.hedef}
+                    <b>{item.İlaç}</b>
+                  </td>
+                  ),
+                'tür':
+                (item)=>(
+                  <td>
+                    <b style = {{color: turCustomizing(item.tür)}}>{item.tür}</b>
+                  </td>
+                  ),
+                'bakiye':
+                (item)=>(
+                  <td>
+                    <CBadge style = {{minWidth: "50px", fontSize: "15px"}} color={bakiyeBadge(item.tür)}>
+                      {plusOrMinus(item.tür)}{item.bakiye}TL
                     </CBadge>
                   </td>
                 ),
-              'kampanya':
-              (item)=>(
-                <td style = {{color: "green"}} >
-                    {item.kampanya}
-                </td>
-              ),
-              'durum':
-                (item)=>(
-                  <td>
-                    <CBadge color={getBadge(item.durum)}>
-                      {item.durum}
-                    </CBadge>
-                  </td>
-                ),
-              'show_details':
-                (item, index)=>{
-                  return (
-                    <td className="py-2">
-                      <CButton
-                        color="primary"
-                        variant="outline"
-                        shape="square"
-                        size="sm"
-                        onClick={()=>{toggleDetails(index)}}
-                      >
-                        {details.includes(index) ? 'Sakla' : 'Göster'}
-                      </CButton>
-                    </td>
-                    )
-                },
-              'details':
+                'show_details':
                   (item, index)=>{
                     return (
-                      <CCollapse show={details.includes(index)}>
-                        <CCardBody>
-                          <CCol xs="12" sm="12">
-                            <CCard>
-                              <CCardHeader>Detaylar</CCardHeader>
-                              <CCardBody>
-                                <CFormGroup row>
-                                  <CCol xs="12" md="6">
-                                    <CLabel htmlFor="textarea-input">Açıklama:</CLabel>
-                                    <CTextarea 
-                                      name="textarea-input" 
-                                      id="textarea-input" 
-                                      rows="9"
-                                      placeholder="Birşeyler yapalım arkadaşlar xDDD" 
-                                    />
-                                  </CCol>
-                                  <CCol xs="12" md="6">
-                                    <CLabel>Katılanlar:</CLabel>
-                                    <table className = "table">
-                                      <tbody>
-                                        <tr>
-                                          <td>Hayat Eczanesi</td>
-                                          <td>15/20</td>
-                                        </tr>
-                                        <tr>
-                                          <td>Başka Eczanesi</td>
-                                          <td>5/20</td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
-                                    <CFormGroup row className = "justify-content-end" >
-                                      <CCol md = "3" className = "ansayfaTalepFormControl">
-                                        <CLabel htmlFor="hf-email">Siz</CLabel>
-                                        <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                      </CCol>
-                                    </CFormGroup>
-                                  </CCol>
-                                  <CFormGroup row className = "justify-content-end" >
-                                      <CCol md = "3" className = "ansayfaTalepFormControl">
-                                        <CLabel htmlFor="hf-email">BAKIYENIZDEN KESILCEK TUTAR</CLabel>
-                                        <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                      </CCol>
+                      <td className="py-2">
+                        <CButton
+                          color="primary"
+                          variant="outline"
+                          shape="square"
+                          size="sm"
+                          onClick={()=>{toggleDetails(index)}}
+                        >
+                          {details.includes(index) ? 'Sakla' : 'Göster'}
+                        </CButton>
+                      </td>
+                      )
+                  },
+                'details':
+                    (item, index)=>{
+                      return (
+                        <CCollapse show={details.includes(index)}>
+                          <CCardBody>
+                            <CCol xs="12" sm="12">
+                              <CCard>
+                                <CCardHeader>Detaylar</CCardHeader>
+                                <CCardBody>
+                                  <CFormGroup row>
+                                    <CCol xs="12" md="12">
+                                      <CLabel
+                                      style = {{display: "flex", justifyContent: "center", color: "green", fontSize: "1.25em"}}
+                                      >
+                                      Alıcı Eczane:
+                                      </CLabel>
+                                      <table className = "table">
+                                        <tbody>
+                                          <tr>
+                                            <td><b>Hayat Eczanesi</b></td>
+                                            <td>20/80</td>
+                                            <td> <p style = {{color: "green"}} >+1125 TL</p></td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                      <CLabel
+                                      style = {{display: "flex", justifyContent: "center", color: "red", fontSize: "1.1em"}}
+                                      >
+                                      Katılan Eczaneler:
+                                      </CLabel>                                    
+                                      <table className = "table">
+                                        <tbody>
+                                          <tr>
+                                            <td>Hayat Eczanesi</td>
+                                            <td>20/80</td>
+                                            <td> <p style = {{color: "red"}} >-112 TL</p></td>
+                                          </tr>
+                                          <tr>
+                                            <td>Hayat Eczanesi</td>
+                                            <td>15/20</td>
+                                            <td> <p style = {{color: "red"}} >-125 TL</p></td>
+                                          </tr>
+                                          <tr>
+                                            <td>Başka Eczanesi</td>
+                                            <td>5/20</td>
+                                            <td> <p style = {{color: "red"}} >-115 TL</p></td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </CCol>
                                   </CFormGroup>
-                                  
-                                </CFormGroup>
-                                <CFormGroup row className = "justify-content-end" >
-                                  <CCol md = "1" >
-                                    <CButton color = "success" >Onayla</CButton>
-                                  </CCol>
-                                </CFormGroup>
-                                {/* <CFormGroup row className = "justify-content-end" >
-                                  <CCol md = "2" className = "ansayfaTalepFormControl">
-                                    <CLabel htmlFor="hf-email">Siz</CLabel>
-                                    <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                  </CCol>
-                                  <CCol md = "2">
-                                    <CButton color = "success" >Onayla</CButton>
-                                  </CCol>
-                                </CFormGroup> */}
-                              </CCardBody>
-                            </CCard>
-                          </CCol>
-                        </CCardBody>
-                      </CCollapse>
-                  )
-                }
-            }}
-          />
-        </div>
-
-      </CCol>
-
+                                </CCardBody>
+                              </CCard>
+                            </CCol>
+                          </CCardBody>
+                        </CCollapse>
+                    )
+                  }
+              }}
+            />
+          </div>
+        </CCol>
+      }      
     </CRow>
     </>
     )

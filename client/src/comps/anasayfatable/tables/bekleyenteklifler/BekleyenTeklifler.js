@@ -1,62 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
-
-const eczData = [
-    {
-        id: 0,
-        eczane: "Hayat Eczanesi",
-        İlaç: "PARACETOL",
-        hedef: "20/50",
-        kampanya: "15 + 4",
-        birimFiyat: "39 TL",
-        sonTarih: "2018/01/09",
-        durum: "beklemede"
-    },
-    {
-        id: 1,
-        eczane: "Birgül Eczanesi",
-        İlaç: "STEROIDS",
-        hedef: "15/25",
-        kampanya: "15 + 4",
-        birimFiyat: "16 TL",
-        sonTarih: "2018/01/01",
-        durum: "beklemede"
-    },
-    {
-        id: 2,
-        eczane: "Dolmuş Eczanesi",
-        İlaç: "FAKE JUICE",
-        hedef: "69/100",
-        kampanya: "15 + 4",
-        birimFiyat: "99 TL",
-        sonTarih: "2018/04/25",
-        durum: "beklemede"
-    },
-    {
-        id: 3,
-        eczane: "Başka Eczanesi",
-        İlaç: "BAŞKAMAMOL",
-        hedef: "13/46",
-        kampanya: "15 + 4",
-        birimFiyat: "498 TL",
-        sonTarih: "2018/08/01",
-        durum: "beklemede"
-    },
-    {
-      id: 4,
-      eczane: "Hayat Eczanesi",
-      İlaç: "PARACETOL",
-      hedef: "20/50",
-      kampanya: "15 + 4",
-      birimFiyat: "39 TL",
-      sonTarih: "2018/01/09",
-      durum: "beklemede"
-  }
-]
+import Loader from "src/comps/loader/Loader";
 
 
 const BekleyenTeklifler = () => {
+    const [loading, setLoading] = useState(true)
     const [details, setDetails] = useState([])
+    const [data, setData] = useState([])
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -96,6 +46,30 @@ const BekleyenTeklifler = () => {
         default: return 'primary'
       }
     }
+    useEffect(() => {
+
+      const fetchData = async () => {
+        console.log('fetching items for BEKLEYEN teklifler')
+  
+        const res = await fetch(`/api/data/table/tum`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'authorization': `Bearer ${document.cookie.slice(11)} `
+          }
+        })
+  
+        if (res.status === 200) {
+          const data = await res.json()
+          setData(data)
+          setLoading(false)
+        }
+  
+        console.log('finished fetching for BEKLEYEN teklifler')
+      }
+
+      fetchData()
+
+    }, [])
   
     return (
     <>
@@ -105,11 +79,15 @@ const BekleyenTeklifler = () => {
       </CCol>
     </CRow>
     <CRow>
-      <CCol>
+      {
+        loading ?
+        <Loader />
+        :
+        <CCol>
         <div style = {{border: "solid 1px rgb(51, 153, 255, 0.35)"}} >
           <CDataTable
             header
-            items={eczData}
+            items={data}
             fields={fields}
             columnFilter
             footer
@@ -139,6 +117,12 @@ const BekleyenTeklifler = () => {
                     </CBadge>
                   </td>
                 ),
+              'birimFiyat':
+              (item)=>(
+                <td>
+                  {item.birimFiyat} TL
+                </td>
+              ),
               'kampanya':
               (item)=>(
                 <td style = {{color: "green"}} >
@@ -202,25 +186,31 @@ const BekleyenTeklifler = () => {
                                         </tr>
                                       </tbody>
                                     </table>
-                                    <CFormGroup row className = "justify-content-end" >
-                                      <CCol md = "3" className = "ansayfaTalepFormControl">
-                                        <CLabel htmlFor="hf-email">Siz</CLabel>
-                                        <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                      </CCol>
-                                    </CFormGroup>
+                                    <div style = {{display: "flex", justifyContent: "space-between"}}>
+                                      <p style = {{marginLeft: "15px"}} >Siz</p>
+                                      <CInput style = {{maxWidth: "150px"}} type="number" placeholder="örnek: 15" autoComplete="number"/>
+                                    </div>
                                   </CCol>
-                                  <CFormGroup row className = "justify-content-end" >
-                                      <CCol md = "3" className = "ansayfaTalepFormControl">
+                                  {/* <CFormGroup row>
+                                      <CCol md = "12" >
                                         <CLabel htmlFor="hf-email">BAKIYENIZDEN KESILCEK TUTAR</CLabel>
-                                        <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
+                                        <CInput type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
                                       </CCol>
-                                  </CFormGroup>
+                                  </CFormGroup> */}
                                   
                                 </CFormGroup>
-                                <CFormGroup row className = "justify-content-end" >
-                                  <CCol md = "1" >
+                                <CFormGroup row style = {{marginTop: "50px", display: "flex", justifyContent: "space-around"}} >
+                                  <div style = {{display: "flex"}} >
+                                    <CLabel>Toplam:</CLabel>
+                                    <p style = {{marginLeft: "10px"}}>1000 TL</p>
+                                  </div>
+                                  <div style = {{display: "flex", marginLeft: "20px"}} >
+                                    <CLabel>Bakiyenizden kesilecek tutar:</CLabel>
+                                    <p style = {{marginLeft: "10px"}}>-1500 TL</p>
+                                  </div>
+                                  <div style = {{marginLeft: "20px"}} >
                                     <CButton color = "success" >Onayla</CButton>
-                                  </CCol>
+                                  </div>
                                 </CFormGroup>
                               </CCardBody>
                             </CCard>
@@ -232,9 +222,8 @@ const BekleyenTeklifler = () => {
             }}
           />
         </div>
-
       </CCol>
-
+      }
     </CRow>
     </>
     )

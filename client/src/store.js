@@ -12,12 +12,17 @@ const initialState = {
   modals: {
     yeniTeklifModal: false
   },
-  dashboardTable: TUM_TEKLIFLER,
+  dashboardTable: BEKELEYEN_TEKLIFLER,
   user: {
-    username: "",
-    bakiye: 0,
-    properties: {
+    session: {
       isLogged: false
+    },
+    userSettings: {
+      eczaneName: "",
+      username: ""
+    },
+    userInfo: {
+      bakiye: 0
     }
   }
 }
@@ -31,10 +36,31 @@ const changeState = (state = initialState, { type, ...rest }) => {
         ...state,
         user: {
           ...state.user,
-          ...rest,
-          properties: {
-            ...state.user.properties,
+          session: {
+            ...state.user.session,
             isLogged: true
+          }
+        }
+      }
+    case 'FILL_USER_SETTINGS':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          userSettings: {
+            ...state.user.userSettings,
+            ...rest
+          }
+        }
+      }
+    case 'FILL_USER_INFO':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          userInfo: {
+            ...state.user.userInfo,
+            ...rest
           }
         }
       }
@@ -43,10 +69,18 @@ const changeState = (state = initialState, { type, ...rest }) => {
         ...state,
         user: {
           ...state.user,
-          ...rest,
-          properties: {
-            ...state.user.properties,
+          session: {
+            ...state.user.session,
             isLogged: false
+          },
+          userSettings: {
+            ...state.user.userSettings,
+            eczaneName: "",
+            username: ""
+          },
+          userInfo: {
+            ...state.user.userInfo,
+            bakiye: 0
           }
         }
       }

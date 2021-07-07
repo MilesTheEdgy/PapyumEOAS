@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Route, useHistory } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import SafeHOC from "../safehoc/SafeHOC";
 
 const AuthHOC = (props) => {
-        // const [isTokenValid, setTokenValid] = useState(true)
+        // this AuthHOC takes care of verifiyng token and filling user info on each route change
         const history = useHistory();
         const dispatch = useDispatch();
-        const isLogged = useSelector(state => state.user.properties.isLogged)
+        const isLogged = useSelector(state => state.user.session.isLogged)
         useEffect(() => {
             return history.listen(async (location) => {
                 console.log('sending validation request to server')
@@ -19,16 +19,15 @@ const AuthHOC = (props) => {
                     }
                 })
                 if (res.status < 405 && res.status > 400) {
-                    console.log('error happened at AUTHHOC: ', res.status)
-                    dispatch({type: 'LOG_OUT', username: "", bakiye: 0})
-                    history.push('/login')
+                    console.log('error happened at AUTHHOC: token likely to have expired ', res.status)
+                    dispatch({type: 'LOG_OUT'})
                 } else if (res.status === 200) {
-                    // let payload = await res.json()
-                    dispatch({type: 'LOG_IN', username: "Hayat Eczanesi", bakiye: 1000})
-                    // console.log(payload);
+                    const data = await res.json()
+                    dispatch({type: 'FILL_USER_SETTINGS', eczaneName: data.eczaneName, username: data.username})
+                    dispatch({type: 'FILL_USER_INFO', bakiye: data.bakiye})
                 }
             }
-        ) 
+        )
     },[history, dispatch, isLogged, props])
 
         if (isLogged) {

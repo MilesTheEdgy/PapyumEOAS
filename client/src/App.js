@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { HashRouter, Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
+import { connect } from "react-redux"
 import AuthHOC from './comps/authhoc/AuthHOC';
 import './scss/style.scss';
 
@@ -28,13 +29,13 @@ class App extends Component {
       })
 
       if (response.status === 200) {
+        const data = await response.json()
         console.log('still authorized, routing to dashboard...')
+        this.props.dispatch({type: 'FILL_USER_SETTINGS', eczaneName: data.eczaneName, username: data.username})
+        this.props.dispatch({type: 'FILL_USER_INFO', bakiye: data.bakiye})
+        this.props.dispatch({type: 'LOG_IN'})
         this.props.history.push('/dashboard')
-        
       }
-
-      const data = await response.json()
-      console.log(data);
     }
     submitHandeler()
   }
@@ -52,4 +53,4 @@ class App extends Component {
   }
 }
 
-export default withRouter(App);
+export default connect()(withRouter(App));

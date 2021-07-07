@@ -16,6 +16,89 @@ const eczData = [
       İlaç: "PARACETOL",
       hedef: "20/50",
       kampanya: "15 + 4",
+      birimFiyat: 39,
+      sonTarih: "2018/01/09",
+      durum: "beklemede"
+  },
+  {
+      id: 1,
+      eczane: "Birgül Eczanesi",
+      İlaç: "STEROIDS",
+      hedef: "15/25",
+      kampanya: "15 + 4",
+      birimFiyat: 29,
+      sonTarih: "2018/01/01",
+      durum: "beklemede"
+  },
+  {
+      id: 2,
+      eczane: "Dolmuş Eczanesi",
+      İlaç: "FAKE JUICE",
+      hedef: "69/100",
+      kampanya: "15 + 4",
+      birimFiyat: 32,
+      sonTarih: "2018/04/25",
+      durum: "beklemede"
+  },
+  {
+      id: 3,
+      eczane: "Başka Eczanesi",
+      İlaç: "BAŞKAMAMOL",
+      hedef: "13/46",
+      kampanya: "15 + 4",
+      birimFiyat: 73,
+      sonTarih: "2018/08/01",
+      durum: "beklemede"
+  },
+  {
+    id: 4,
+    eczane: "Hayat Eczanesi",
+    İlaç: "PARACETOL",
+    hedef: "20/50",
+    kampanya: "15 + 4",
+    birimFiyat: 13,
+    sonTarih: "2018/01/09",
+    durum: "beklemede"
+},
+{
+    id: 5,
+    eczane: "Birgül Eczanesi",
+    İlaç: "STEROIDS",
+    hedef: "15/25",
+    kampanya: "15 + 4",
+    birimFiyat: 53,
+    sonTarih: "2018/01/01",
+    durum: "beklemede"
+},
+{
+    id: 6,
+    eczane: "Dolmuş Eczanesi",
+    İlaç: "FAKE JUICE",
+    hedef: "69/100",
+    kampanya: "15 + 4",
+    birimFiyat: 13,
+    sonTarih: "2018/04/25",
+    durum: "beklemede"
+},
+{
+    id: 7,
+    eczane: "Başka Eczanesi",
+    İlaç: "BAŞKAMAMOL",
+    hedef: "13/46",
+    kampanya: "15 + 4",
+    birimFiyat: 17,
+    sonTarih: "2018/08/01",
+    durum: "beklemede"
+}
+]
+
+const eczDataBekleyen = [
+  {
+      id: 0,
+      eczane: "Hayat Eczanesi",
+      İlaç: "PARACETOL",
+      hedef: "20/50",
+      kampanya: "15 + 4",
       birimFiyat: "39 TL",
       sonTarih: "2018/01/09",
       durum: "beklemede"
@@ -51,68 +134,46 @@ const eczData = [
       durum: "beklemede"
   },
   {
-      id: 4,
-      eczane: "Hayat Eczanesi",
-      İlaç: "PARACETOL",
-      hedef: "20/50",
-      kampanya: "15 + 4",
-      birimFiyat: "39 TL",
-      sonTarih: "2018/01/09",
-      durum: "beklemede"
-  },
-  {
-      id: 5,
-      eczane: "Birgül Eczanesi",
-      İlaç: "STEROIDS",
-      hedef: "15/25",
-      kampanya: "15 + 4",
-      birimFiyat: "16 TL",
-      sonTarih: "2018/01/01",
-      durum: "beklemede"
-  },
-  {
-      id: 6,
-      eczane: "Dolmuş Eczanesi",
-      İlaç: "FAKE JUICE",
-      hedef: "69/100",
-      kampanya: "15 + 4",
-      birimFiyat: "99 TL",
-      sonTarih: "2018/04/25",
-      durum: "beklemede"
-  },
-  {
-      id: 7,
-      eczane: "Başka Eczanesi",
-      İlaç: "BAŞKAMAMOL",
-      hedef: "13/46",
-      kampanya: "15 + 4",
-      birimFiyat: "498 TL",
-      sonTarih: "2018/08/01",
-      durum: "beklemede"
-  }
+    id: 4,
+    eczane: "Hayat Eczanesi",
+    İlaç: "PARACETOL",
+    hedef: "20/50",
+    kampanya: "15 + 4",
+    birimFiyat: "39 TL",
+    sonTarih: "2018/01/09",
+    durum: "beklemede"
+}
 ]
 
-const userData = [
+const eczDataBakiyehrkt = [
   {
-    username: "Hayat Eczanesi",
-    password: "boss",
-    bakiye: 1000
+    ID: 0,
+    İlaç: "PARACETOL",
+    eczane: "Hayat Eczanesi",
+    tür: "Satış",
+    tarih: "2018/01/09",
+    bakiye: "500"
   },
   {
-    username: "Başka Eczanesi",
-    password: "boss",
-    bakiye: 1000
-  }
+    ID: 1,
+    İlaç: "DEPRECAMOL",
+    eczane: "Başka Eczanesi",
+    tür: "Alış",
+    tarih: "2018/01/09",
+    bakiye: "150"
+  },
 ]
+
 
 function generateAccessToken(data) {
-  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '18s' });
+  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '1000s' });
 }
 
 function authenticateToken(req, res, next) {
   console.log('verifiying')
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
+  console.log(`the token being verified: ${authHeader.split(' ')[1]}`);
 
   if (token == null) {
     return res.sendStatus(401)
@@ -124,7 +185,7 @@ function authenticateToken(req, res, next) {
       return res.sendStatus(403)
     }
 
-    console.log(user);
+    // console.log(user);
 
     req.user = user
 
@@ -135,21 +196,31 @@ function authenticateToken(req, res, next) {
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === "hayat" && password === "boss") {
-    const token = generateAccessToken({ username: req.body.username, ID: 1 });
-    res.status(200).json({username, ID: 1, token});
+    const token = generateAccessToken({ username: req.body.username , ID: 1, role : "eczane" });
+    res.status(200).json({username, eczaneName: "Hayat Eczanesi", ID: 1, bakiye: 500, token});
   } else {
     res.status(401).json("not authorized")
   }
 })
 
 app.post('/api', authenticateToken, (req, res) => {
-  console.log('api posting')
-  res.json("you're good!")
+  const { username, ID } = req.user
+  console.log(req.user);
+  res.status(200).json({username, eczaneName: "Hayat Eczanesi", ID, bakiye: 500});
 })
 
-// app.get('/api', (req, res) => {
-//   res.status(200).json("hello")
-// })
+app.get('/api/data/table/tum', authenticateToken, (req, res) => {
+  // tum teklifler
+  res.status(200).json(eczData)
+})
+
+app.get('/api/data/table/bekleyen', authenticateToken, (req, res) => {
+  res.status(200).json(eczDataBekleyen)
+})
+
+app.get('/api/data/table/hareket', authenticateToken, (req, res) => {
+  res.status(200).json(eczDataBakiyehrkt)
+})
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

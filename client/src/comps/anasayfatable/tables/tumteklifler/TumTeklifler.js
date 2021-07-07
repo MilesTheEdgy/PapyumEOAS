@@ -1,93 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
+import Loader from "src/comps/loader/Loader";
+import { useSelector } from "react-redux";
 
-const eczData = [
-    {
-        id: 0,
-        eczane: "Hayat Eczanesi",
-        İlaç: "PARACETOL",
-        hedef: "20/50",
-        kampanya: "15 + 4",
-        birimFiyat: "39 TL",
-        sonTarih: "2018/01/09",
-        durum: "beklemede"
-    },
-    {
-        id: 1,
-        eczane: "Birgül Eczanesi",
-        İlaç: "STEROIDS",
-        hedef: "15/25",
-        kampanya: "15 + 4",
-        birimFiyat: "16 TL",
-        sonTarih: "2018/01/01",
-        durum: "beklemede"
-    },
-    {
-        id: 2,
-        eczane: "Dolmuş Eczanesi",
-        İlaç: "FAKE JUICE",
-        hedef: "69/100",
-        kampanya: "15 + 4",
-        birimFiyat: "99 TL",
-        sonTarih: "2018/04/25",
-        durum: "beklemede"
-    },
-    {
-        id: 3,
-        eczane: "Başka Eczanesi",
-        İlaç: "BAŞKAMAMOL",
-        hedef: "13/46",
-        kampanya: "15 + 4",
-        birimFiyat: "498 TL",
-        sonTarih: "2018/08/01",
-        durum: "beklemede"
-    },
-    {
-      id: 4,
-      eczane: "Hayat Eczanesi",
-      İlaç: "PARACETOL",
-      hedef: "20/50",
-      kampanya: "15 + 4",
-      birimFiyat: "39 TL",
-      sonTarih: "2018/01/09",
-      durum: "beklemede"
-  },
-  {
-      id: 5,
-      eczane: "Birgül Eczanesi",
-      İlaç: "STEROIDS",
-      hedef: "15/25",
-      kampanya: "15 + 4",
-      birimFiyat: "16 TL",
-      sonTarih: "2018/01/01",
-      durum: "beklemede"
-  },
-  {
-      id: 6,
-      eczane: "Dolmuş Eczanesi",
-      İlaç: "FAKE JUICE",
-      hedef: "69/100",
-      kampanya: "15 + 4",
-      birimFiyat: "99 TL",
-      sonTarih: "2018/04/25",
-      durum: "beklemede"
-  },
-  {
-      id: 7,
-      eczane: "Başka Eczanesi",
-      İlaç: "BAŞKAMAMOL",
-      hedef: "13/46",
-      kampanya: "15 + 4",
-      birimFiyat: "498 TL",
-      sonTarih: "2018/08/01",
-      durum: "beklemede"
-  }
-]
 
 
 const TumTeklifler = () => {
+    const [loading, setLoading] = useState(true)
+    const [data, setData] = useState([])
     const [details, setDetails] = useState([])
-    // const [items, setItems] = useState(usersData)
+    const [clickedItemIndex, setClickedItemIndex] = useState(0)
+    const [order, setOrder] = useState(0)
+    const [total, setTotal] = useState(0)
+    const [bakiyeSonra, setBakiyeSonra] = useState(0)
+
+    const bakiye = useSelector(state => state.user.userInfo.bakiye)
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -95,7 +22,10 @@ const TumTeklifler = () => {
       if (position !== -1) {
         newDetails.splice(position, 1)
       } else {
-        newDetails = [...details, index]
+        setOrder(0);
+        setTotal(0);
+        setBakiyeSonra(0);
+        newDetails = [index]
       }
       setDetails(newDetails)
     }
@@ -127,6 +57,39 @@ const TumTeklifler = () => {
         default: return 'primary'
       }
     }
+
+    useEffect(() => {
+      const fetchData = async () => {
+        console.log('fetching items for TUM teklifler')
+  
+        const res = await fetch(`/api/data/table/tum`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'authorization': `Bearer ${document.cookie.slice(11)} `
+          }
+        })
+  
+        if (res.status === 200) {
+          const data = await res.json()
+          setData(data)
+          setLoading(false)
+        }
+  
+        console.log('finished fetching for TUM teklifler')
+      }
+
+      fetchData()
+
+    }, [])
+
+    useEffect(() => {
+      if (order > 0) {
+        // console.log("order is: ", order, "and birimFiyat is: ", data[clickedItemIndex].birimFiyat);
+        setTotal(order * data[clickedItemIndex].birimFiyat)
+        // console.log('changing total to: ', total)
+        setBakiyeSonra(bakiye - total)
+      }
+    }, [order, total, clickedItemIndex])
   
     return (
     <>
@@ -136,74 +99,87 @@ const TumTeklifler = () => {
       </CCol>
     </CRow>
     <CRow>
-      <CCol>
-        <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
-          <CDataTable
-            header
-            items={eczData}
-            fields={fields}
-            columnFilter
-            footer
-            itemsPerPage={50}
-            hover
-            sorter
-            pagination
-            border
-            scopedSlots = {{
-              'eczane':
-                (item)=>(
-                  <td style = {{fontSize: "12px"}} >
-                      {item.eczane}
-                  </td>
-                ),
-              'İlaç':
-              (item)=>(
-                <td>
-                  <b>{item.İlaç}</b>
-                </td>
-                ),
-              'hedef':
-                (item)=>(
-                  <td>
-                    <CBadge color={"secondary"}>
-                      {item.hedef}
-                    </CBadge>
-                  </td>
-                ),
-              'kampanya':
-              (item)=>(
-                <td style = {{color: "green"}} >
-                    {item.kampanya}
-                </td>
-              ),
-              'durum':
-                (item)=>(
-                  <td>
-                    <CBadge color={getBadge(item.durum)}>
-                      {item.durum}
-                    </CBadge>
-                  </td>
-                ),
-              'show_details':
-                (item, index)=>{
-                  return (
-                    <td className="py-2">
-                      <CButton
-                        color="primary"
-                        variant="outline"
-                        shape="square"
-                        size="sm"
-                        onClick={()=>{toggleDetails(index)}}
-                      >
-                        {details.includes(index) ? 'Sakla' : 'Göster'}
-                      </CButton>
+      {
+        loading ?
+        <Loader />
+        :
+        <CCol>
+          <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
+            <CDataTable
+              header
+              items={data}
+              fields={fields}
+              columnFilter
+              footer
+              itemsPerPage={50}
+              hover
+              sorter
+              pagination
+              border
+              scopedSlots = {{
+                'eczane':
+                  (item)=>(
+                    <td style = {{fontSize: "12px"}} >
+                        {item.eczane}
                     </td>
-                    )
-                },
-              'details':
+                  ),
+                'İlaç':
+                (item)=>(
+                  <td>
+                    <b>{item.İlaç}</b>
+                  </td>
+                  ),
+                'hedef':
+                  (item)=>(
+                    <td>
+                      <CBadge color={"secondary"}>
+                        {item.hedef}
+                      </CBadge>
+                    </td>
+                  ),
+                  'birimFiyat':
+                (item)=>(
+                  <td>
+                    {item.birimFiyat} TL
+                  </td>
+                ),
+                'kampanya':
+                (item)=>(
+                  <td style = {{color: "green"}} >
+                      {item.kampanya}
+                  </td>
+                ),
+                'durum':
+                  (item)=>(
+                    <td>
+                      <CBadge color={getBadge(item.durum)}>
+                        {item.durum}
+                      </CBadge>
+                    </td>
+                  ),
+                'show_details':
                   (item, index)=>{
                     return (
-                      <CCollapse show={details.includes(index)}>
+                      <td className="py-2">
+                        <CButton
+                          color="primary"
+                          variant="outline"
+                          shape="square"
+                          size="sm"
+                          onClick={()=>{
+                            toggleDetails(index)
+                            setClickedItemIndex(index)
+                            }}
+                        >
+                          {details.includes(index) ? 'Sakla' : 'Göster'}
+                        </CButton>
+                      </td>
+                      )
+                  },
+                'details':
+                    (item, index)=>{
+                      return (
+                        <CCollapse show={details.includes(index)}>
                         <CCardBody>
                           <CCol xs="12" sm="12">
                             <CCard>
@@ -233,48 +209,37 @@ const TumTeklifler = () => {
                                         </tr>
                                       </tbody>
                                     </table>
-                                    <CFormGroup row className = "justify-content-end" >
-                                      <CCol md = "3" className = "ansayfaTalepFormControl">
-                                        <CLabel htmlFor="hf-email">Siz</CLabel>
-                                        <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                      </CCol>
-                                    </CFormGroup>
-                                  </CCol>
-                                  <CFormGroup row className = "justify-content-end" >
-                                      <CCol md = "3" className = "ansayfaTalepFormControl">
-                                        <CLabel htmlFor="hf-email">BAKIYENIZDEN KESILCEK TUTAR</CLabel>
-                                        <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                      </CCol>
-                                  </CFormGroup>
-                                  
-                                </CFormGroup>
-                                <CFormGroup row className = "justify-content-end" >
-                                  <CCol md = "1" >
-                                    <CButton color = "success" >Onayla</CButton>
+                                    <div style = {{display: "flex", justifyContent: "space-between"}}>
+                                      <p style = {{marginLeft: "15px"}} >Siz</p>
+                                      <CInput onChange = {e => setOrder(e.target.value)} style = {{maxWidth: "150px"}} type="number" placeholder="örnek: 15" autoComplete="number"/>
+                                    </div>
                                   </CCol>
                                 </CFormGroup>
-                                {/* <CFormGroup row className = "justify-content-end" >
-                                  <CCol md = "2" className = "ansayfaTalepFormControl">
-                                    <CLabel htmlFor="hf-email">Siz</CLabel>
-                                    <CInput className = "anasayfaClientAdetInput" type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                  </CCol>
-                                  <CCol md = "2">
-                                    <CButton color = "success" >Onayla</CButton>
-                                  </CCol>
-                                </CFormGroup> */}
+                                <CFormGroup row style = {{marginTop: "50px", display: "flex", justifyContent: "space-around"}} >
+                                  <div style = {{display: "flex"}} >
+                                    <CLabel>Toplam:</CLabel>
+                                    <p style = {{marginLeft: "10px"}}>{total} TL</p>
+                                  </div>
+                                  <div style = {{display: "flex", marginLeft: "20px"}} >
+                                    <CLabel>Sipraişten Sonra Bakiyeniz:</CLabel>
+                                    <p style = {{marginLeft: "10px"}}>{bakiyeSonra} TL</p>
+                                  </div>
+                                  <div style = {{marginLeft: "20px"}} >
+                                    <CButton color = "success" onClick = {() => console.log("item is: ", item, "and index is: ", index)} >Onayla</CButton>
+                                  </div>
+                                </CFormGroup>
                               </CCardBody>
                             </CCard>
                           </CCol>
                         </CCardBody>
                       </CCollapse>
-                  )
-                }
-            }}
-          />
-        </div>
-
-      </CCol>
-
+                    )
+                  }
+              }}
+            />
+          </div>
+        </CCol>
+      }
     </CRow>
     </>
     )

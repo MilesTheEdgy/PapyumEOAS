@@ -31,20 +31,22 @@ const Login = () => {
         password: password
       })
     })
+
     if (response.status === 200) {
       const data = await response.json()
-
-      console.log("success");
+      console.log(data);
       document.cookie = `pyecztoken=${data.token}`
-      dispatch({type: 'LOG_IN', username: data.username})
+      dispatch({type: 'LOG_IN'})
+      dispatch({type: 'FILL_USER_SETTINGS', eczaneName: data.eczaneName, username: data.username})
+      dispatch({type: 'FILL_USER_INFO', bakiye: data.bakiye})
       history.push('/dashboard')
-    } else if (response.status === 401) {
+    }
+     else if (response.status === 401) {
       console.log('failed login')
-    } else {
+    }
+     else {
       console.log('server error')
     }
-    // const data = await response.json()
-    // console.log(data);
   }
 
   return (

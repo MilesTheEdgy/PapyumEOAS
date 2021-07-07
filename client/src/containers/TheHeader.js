@@ -21,6 +21,7 @@ import "./theheader.css"
 const TheHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector(state => state.sidebarShow)
+  const userInfo = useSelector(state => state.user.userInfo)
   const toggleSidebar = () => {
     const val = [true, 'responsive'].includes(sidebarShow) ? false : 'responsive'
     dispatch({type: 'set', sidebarShow: val})
@@ -65,7 +66,7 @@ const TheHeader = () => {
 
       <CHeaderNav className = "align-items-center " >
           <strong className = "px-3" >Bakiye:</strong>
-          <strong className = "success" color = "success" > 1000.00 TL</strong>
+          <strong className = "success" color = "success" > {userInfo.bakiye} TL</strong>
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
