@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
+import { useSelector } from "react-redux";
+import { isBelow0 } from "src/comps/helperfunctions/helperfunctions";
 
 
 const BekleyenTeklifler = () => {
+
     const [loading, setLoading] = useState(true)
-    const [details, setDetails] = useState([])
     const [data, setData] = useState([])
+    const [details, setDetails] = useState([])
+    const [clickedItemIndex, setClickedItemIndex] = useState(0)
+    const [order, setOrder] = useState(0)
+    const [total, setTotal] = useState(0)
+    const [bakiyeSonra, setBakiyeSonra] = useState(0)
+
+    const bakiye = useSelector(state => state.user.userInfo.bakiye)
+
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -14,7 +24,10 @@ const BekleyenTeklifler = () => {
       if (position !== -1) {
         newDetails.splice(position, 1)
       } else {
-        newDetails = [...details, index]
+        setOrder(0);
+        setTotal(0);
+        setBakiyeSonra(0);
+        newDetails = [index]
       }
       setDetails(newDetails)
     }
@@ -47,7 +60,6 @@ const BekleyenTeklifler = () => {
       }
     }
     useEffect(() => {
-
       const fetchData = async () => {
         console.log('fetching items for BEKLEYEN teklifler')
   
@@ -70,6 +82,15 @@ const BekleyenTeklifler = () => {
       fetchData()
 
     }, [])
+
+    useEffect(() => {
+      if (order > 0) {
+        // console.log("order is: ", order, "and birimFiyat is: ", data[clickedItemIndex].birimFiyat);
+        setTotal(order * data[clickedItemIndex].birimFiyat)
+        // console.log('changing total to: ', total)
+        setBakiyeSonra(bakiye - total)
+      }
+    }, [order, total, clickedItemIndex, bakiye, data])
   
     return (
     <>
@@ -79,84 +100,87 @@ const BekleyenTeklifler = () => {
       </CCol>
     </CRow>
     <CRow>
-      {
+    {
         loading ?
         <Loader />
         :
         <CCol>
-        <div style = {{border: "solid 1px rgb(51, 153, 255, 0.35)"}} >
-          <CDataTable
-            header
-            items={data}
-            fields={fields}
-            columnFilter
-            footer
-            itemsPerPage={50}
-            hover
-            sorter
-            pagination
-            border
-            scopedSlots = {{
-              'eczane':
-                (item)=>(
-                  <td style = {{fontSize: "12px"}} >
-                      {item.eczane}
-                  </td>
-                ),
-              'İlaç':
-              (item)=>(
-                <td>
-                  <b>{item.İlaç}</b>
-                </td>
-                ),
-              'hedef':
-                (item)=>(
-                  <td>
-                    <CBadge color={"secondary"}>
-                      {item.hedef}
-                    </CBadge>
-                  </td>
-                ),
-              'birimFiyat':
-              (item)=>(
-                <td>
-                  {item.birimFiyat} TL
-                </td>
-              ),
-              'kampanya':
-              (item)=>(
-                <td style = {{color: "green"}} >
-                    {item.kampanya}
-                </td>
-              ),
-              'durum':
-                (item)=>(
-                  <td>
-                    <CBadge color={getBadge(item.durum)}>
-                      {item.durum}
-                    </CBadge>
-                  </td>
-                ),
-              'show_details':
-                (item, index)=>{
-                  return (
-                    <td className="py-2">
-                      <CButton
-                        color="primary"
-                        variant="outline"
-                        shape="square"
-                        size="sm"
-                        onClick={()=>{toggleDetails(index)}}
-                      >
-                        {details.includes(index) ? 'Sakla' : 'Göster'}
-                      </CButton>
+          <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
+            <CDataTable
+              header
+              items={data}
+              fields={fields}
+              columnFilter
+              footer
+              itemsPerPage={50}
+              hover
+              sorter
+              pagination
+              border
+              scopedSlots = {{
+                'eczane':
+                  (item)=>(
+                    <td style = {{fontSize: "12px"}} >
+                        {item.eczane}
                     </td>
-                    )
-                },
-              'details':
+                  ),
+                'İlaç':
+                (item)=>(
+                  <td>
+                    <b>{item.İlaç}</b>
+                  </td>
+                  ),
+                'hedef':
+                  (item)=>(
+                    <td>
+                      <CBadge color={"secondary"}>
+                        {item.hedef}
+                      </CBadge>
+                    </td>
+                  ),
+                  'birimFiyat':
+                (item)=>(
+                  <td>
+                    {item.birimFiyat} TL
+                  </td>
+                ),
+                'kampanya':
+                (item)=>(
+                  <td style = {{color: "green"}} >
+                      {item.kampanya}
+                  </td>
+                ),
+                'durum':
+                  (item)=>(
+                    <td>
+                      <CBadge color={getBadge(item.durum)}>
+                        {item.durum}
+                      </CBadge>
+                    </td>
+                  ),
+                'show_details':
                   (item, index)=>{
                     return (
-                      <CCollapse show={details.includes(index)}>
+                      <td className="py-2">
+                        <CButton
+                          color="primary"
+                          variant="outline"
+                          shape="square"
+                          size="sm"
+                          onClick={()=>{
+                            toggleDetails(index)
+                            setClickedItemIndex(index)
+                            }}
+                        >
+                          {details.includes(index) ? 'Sakla' : 'Göster'}
+                        </CButton>
+                      </td>
+                      )
+                  },
+                'details':
+                    (item, index)=>{
+                      return (
+                        <CCollapse show={details.includes(index)}>
                         <CCardBody>
                           <CCol xs="12" sm="12">
                             <CCard>
@@ -168,48 +192,43 @@ const BekleyenTeklifler = () => {
                                     <CTextarea 
                                       name="textarea-input" 
                                       id="textarea-input" 
-                                      rows="9"
-                                      placeholder="Birşeyler yapalım arkadaşlar xDDD" 
+                                      rows="7"
+                                      value = "Birşeyler yapalım arkadaşlar xDDD"
+                                      readOnly
                                     />
                                   </CCol>
                                   <CCol xs="12" md="6">
                                     <CLabel>Katılanlar:</CLabel>
-                                    <table className = "table">
+                                    <table className = "table table-striped" style = {{textAlign: "center", verticalAlign: "middle"}} >
                                       <tbody>
                                         <tr>
-                                          <td>Hayat Eczanesi</td>
-                                          <td>15/20</td>
+                                          <td><b>Hayat Eczanesi</b></td>
+                                          <td><h5>15/20</h5></td>
                                         </tr>
                                         <tr>
-                                          <td>Başka Eczanesi</td>
-                                          <td>5/20</td>
+                                          <td><b>Başka Eczanesi</b></td>
+                                          <td><h5>5/20</h5></td>
                                         </tr>
                                       </tbody>
                                     </table>
-                                    <div style = {{display: "flex", justifyContent: "space-between"}}>
-                                      <p style = {{marginLeft: "15px"}} >Siz</p>
-                                      <CInput style = {{maxWidth: "150px"}} type="number" placeholder="örnek: 15" autoComplete="number"/>
+                                    <div style = {{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                      <h5 style = {{marginLeft: "15px"}} >Siz</h5>
+                                      <CInput style = {{maxWidth: "150px", marginLeft: "20px"}} type="number" placeholder="örnek: 15" 
+                                      onChange = {e => setOrder(e.target.value)} />
                                     </div>
                                   </CCol>
-                                  {/* <CFormGroup row>
-                                      <CCol md = "12" >
-                                        <CLabel htmlFor="hf-email">BAKIYENIZDEN KESILCEK TUTAR</CLabel>
-                                        <CInput type="number" id="number-input" name="number-input" placeholder="örnek: 15" autoComplete="number"/>
-                                      </CCol>
-                                  </CFormGroup> */}
-                                  
                                 </CFormGroup>
                                 <CFormGroup row style = {{marginTop: "50px", display: "flex", justifyContent: "space-around"}} >
                                   <div style = {{display: "flex"}} >
                                     <CLabel>Toplam:</CLabel>
-                                    <p style = {{marginLeft: "10px"}}>1000 TL</p>
+                                    <p style = {{marginLeft: "10px"}}> <b> {total} TL</b></p>
                                   </div>
                                   <div style = {{display: "flex", marginLeft: "20px"}} >
-                                    <CLabel>Bakiyenizden kesilecek tutar:</CLabel>
-                                    <p style = {{marginLeft: "10px"}}>-1500 TL</p>
+                                    <CLabel>Sipraişten Sonra Bakiyeniz:</CLabel>
+                                    <p style = {{marginLeft: "10px", color: isBelow0(bakiyeSonra) }}>{bakiyeSonra} TL</p>
                                   </div>
                                   <div style = {{marginLeft: "20px"}} >
-                                    <CButton color = "success" >Onayla</CButton>
+                                    <CButton color = "success" onClick = {() => console.log("item is: ", item, "and index is: ", index)} >Onayla</CButton>
                                   </div>
                                 </CFormGroup>
                               </CCardBody>
@@ -217,12 +236,12 @@ const BekleyenTeklifler = () => {
                           </CCol>
                         </CCardBody>
                       </CCollapse>
-                  )
-                }
-            }}
-          />
-        </div>
-      </CCol>
+                    )
+                  }
+              }}
+            />
+          </div>
+        </CCol>
       }
     </CRow>
     </>
