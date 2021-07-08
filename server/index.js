@@ -14,24 +14,24 @@ const eczData = [
       id: 0,
       eczane: "Hayat Eczanesi",
       İlaç: "PARACETOL",
-      pledge: 15,
-      hedef: 55,
+      pledge: 10,
+      hedef: 25,
       kampanya: "15 + 4",
-      birimFiyat: 39,
+      birimFiyat: 29,
       sonTarih: "2018/01/09",
       durum: "beklemede",
       katılanlar: [
         {
-          name: "Hayat Eczanesi",
-          pledged: 15
-        },
-        {
-          name: "Başka Eczanesi",
-          pledged: 5
-        },
-        {
-          name: "Samsun Eczanesi",
+          name: "Miles Eczanesi",
           pledged: 4
+        },
+        {
+          name: "Phoenix Eczanesi",
+          pledged: 9
+        },
+        {
+          name: "Emily Eczanesi",
+          pledged: 6
         }
       ]
   },
