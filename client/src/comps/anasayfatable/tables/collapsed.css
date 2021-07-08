@@ -1,0 +1,20 @@
+
+.collapsedMine-hedefeKalanH5 {
+    margin: 20px 0px 0px 20px;
+    border-bottom: 1px solid gray;
+}
+
+.collapsedMine-hedefeKalanH4 {
+    margin: 20px 0px 0px 20px;
+}
+
+.collapsedMine-table {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.collapsedMine-footerControlButtons {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-around;
+}

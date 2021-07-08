@@ -16,14 +16,8 @@ import {
 
 import "./urunekle.css"
 
-const usersData = [
-    {id: 0, İlaç: 'John Doe', eklendiğiTarih: '2018/01/01', ekleyenEczane: 'Guest'},
-    {id: 1, İlaç: 'Samppa Nori', eklendiğiTarih: '2018/01/01', ekleyenEczane: 'Member'},
-    {id: 2, İlaç: 'Estavan Lykos', eklendiğiTarih: '2018/02/01', ekleyenEczane: 'Staff'},
-    {id: 3, İlaç: 'Chetan Mohamed', eklendiğiTarih: '2018/02/01', ekleyenEczane: 'Admin'},
-    {id: 4, İlaç: 'Derick Maximinus', eklendiğiTarih: '2018/03/01', ekleyenEczane: 'Member'},
-    {id: 5, İlaç: 'Friderik Dávid', eklendiğiTarih: '2018/01/21', ekleyenEczane: 'Staff'},
-  ]
+// object keys:
+// ID İlaç eklendiğiTarih ekleyenEczane
 
 const UrunEkle = () => {
     const [details, setDetails] = React.useState([])
@@ -67,7 +61,7 @@ const UrunEkle = () => {
         <CLabel>ÜRÜN SORGULAMA</CLabel>
         <CDataTable
               tableFilter
-              items={usersData}
+            //   items={usersData}
               fields={fields}
               itemsPerPage={5}
               pagination

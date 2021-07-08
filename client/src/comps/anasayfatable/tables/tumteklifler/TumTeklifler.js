@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
+import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CLabel, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
 import { useSelector } from "react-redux";
-import { fields, getBadge, toggleDetails, whichCollapsedToRender, initialState, reducer } from "../";
+import { fields, getBadge, toggleDetails, whichCollapsedToRender } from "../";
 import "../style.css"
 
 const TumTeklifler = () => {

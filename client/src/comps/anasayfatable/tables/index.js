@@ -1,8 +1,12 @@
-import { CollapseMine, CollapseJoin } from "./tumteklifler/Collapsed"
+import { CollapseMine, CollapseJoin } from "./Collapsed"
 
 export const initialState = {
   rows: [],
   totalPledges: 0,
+  hedefeKalanMine: 0,
+  hedefeKalanJoin: 0,
+  userInputJoin: 0,
+  hedefeKalanIs0: false,
   pickedRows: [],
   isCollapsed: false,
 }
@@ -45,14 +49,69 @@ export function reducer (state, action) {
         ]
       }
     
-    case "HEDEF_HESAPLA":
-      const posterPledge = action.payload
-      const toplamHedef = state.pickedRows.reduce((accumulator, current) => accumulator + current.pledged, posterPledge);
-      return {
-        ...state,
-        totalPledges: toplamHedef
+    case "HEDEF_HESAPLA_COLLAPSED_MINE":
+      const posterPledgeMine = action.payload
+      const hedefMine = action.hedef
+      const toplamHedefMine = state.pickedRows.reduce((accumulator, current) => accumulator + current.pledged, posterPledgeMine);
+      const hedefeKalanMine = hedefMine - toplamHedefMine
+      if (hedefeKalanMine === 0) {
+        return {
+          ...state,
+          totalPledges: toplamHedefMine,
+          hedefeKalanMine: hedefeKalanMine,
+          hedefeKalanIs0: true
+        }
+      } else {
+        return {
+          ...state,
+          totalPledges: toplamHedefMine,
+          hedefeKalanMine: hedefeKalanMine,
+          hedefeKalanIs0: false
+        }
       }
-    
+
+    case "HEDEF_HESAPLA_COLLAPSED_JOIN":
+      const posterPledgeJoin = action.payload
+      const hedefJoin = action.hedef
+      const toplamHedefJoin = state.rows.reduce((accumulator, current) => accumulator + current.pledged, posterPledgeJoin);
+      const hedefeKalanJoin = hedefJoin - toplamHedefJoin
+      if (hedefeKalanJoin === 0) {
+        return {
+          ...state,
+          totalPledges: toplamHedefJoin,
+          hedefeKalanJoin: hedefeKalanJoin,
+          hedefeKalanIs0: true
+        }
+      } else {
+        return {
+          ...state,
+          totalPledges: toplamHedefJoin,
+          hedefeKalanJoin: hedefeKalanJoin,
+          hedefeKalanIs0: false
+        }
+      }
+
+    case "HEDEFE_EKLE_INPUT_COLLAPSED_JOIN":
+      const input = action.payload;
+      if (typeof input === "string") {
+        if (input === "") {
+          return {
+            ...state,
+            userInputJoin: 0
+          }
+        }
+        let parsedInput = parseInt(input)
+        return {
+          ...state,
+          userInputJoin: parsedInput
+        }
+      } else {
+        return {
+          ...state,
+          userInputJoin: input
+        }
+      }
+  
     default:
       return state
   }

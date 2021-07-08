@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken")
 const PORT = process.env.PORT || 3001;
 const app = express();
 const dotenv = require('dotenv');
+const pool = require("./db")
 
 dotenv.config();
 process.env.TOKEN_SECRET;
@@ -20,6 +21,7 @@ const eczData = [
       birimFiyat: 29,
       sonTarih: "2018/01/09",
       durum: "beklemede",
+      description: "Birşeyler yapalım arkadaşlar xDDD",
       katılanlar: [
         {
           name: "Miles Eczanesi",
@@ -290,25 +292,19 @@ function generateAccessToken(data) {
 }
 
 function authenticateToken(req, res, next) {
-  console.log('verifiying')
+  console.log('verifiying token...')
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
-  console.log(`the token being verified: ${authHeader.split(' ')[1]}`);
-
+  // console.log(`the token being verified: ${authHeader.split(' ')[1]}`);
   if (token == null) {
     return res.sendStatus(401)
   }
-
   jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
     if (err) {
       console.log(err);
       return res.sendStatus(403)
     }
-
-    // console.log(user);
-
     req.user = user
-
     next()
   })
 }
@@ -341,6 +337,19 @@ app.get('/api/data/table/bekleyen', authenticateToken, (req, res) => {
 app.get('/api/data/table/hareket', authenticateToken, (req, res) => {
   res.status(200).json(eczDataBakiyehrkt)
 })
+
+app.get('/api/data/products', authenticateToken, (req, res) => {
+  return
+})
+
+// app.get('/api/testingsql', async (req, res) => {
+//   try {
+//     const sql = await pool.query("SELECT * FROM users")
+//     res.status(200).json(sql)
+//   } catch (error) {
+//     console.log(error)
+//   }
+// })
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
