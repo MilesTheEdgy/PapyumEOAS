@@ -1,17 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
 import { useSelector } from "react-redux";
-import { isBelow0 } from "src/comps/helperfunctions/helperfunctions";
+import { isBelow0, toggleDetails } from "../";
+import "../style.css"
 
+const initialState = {
+  rows: [],
+  totalPledges: 0
+}
+
+const reducer = (state, action) => {
+  switch(action.type) {
+    
+    case "TOGGLE_CLASS":
+      console.log('prev state is: ', state.rows)
+      const index = state.rows.findIndex(row => row.name ===action.payload)
+      const newArray = [...state.rows]
+      newArray[index].clicked = !state.rows[index].clicked
+      console.log('new state is: ', newArray)
+      return {
+        ...state,
+        rows: newArray,
+      }
+
+    case "ADD_ROW":
+      return {
+        ...state,
+        rows: [
+          ...state.rows,
+          action.payload
+        ]
+      }
+    case "HEDEF_HESAPLA":
+      const toplamHedef = state.rows.reduce((accumulator, current) => accumulator + current.pledged, 0);
+      return {
+        ...state,
+        totalPledges: toplamHedef
+      }
+    
+    default:
+      return state
+  }
+}
 
 const TekliflerCollapseJoin = ({item, index, setOrder, total, bakiyeSonra}) => {
   return (
-    <CCardBody>
-    <CCol xs="12" sm="12">
-      <CCard>
-        <CCardHeader>Detaylar</CCardHeader>
-        <CCardBody>
+        <>
           <CFormGroup row>
             <CCol xs="12" md="6">
               <CLabel htmlFor="textarea-input">Açıklama:</CLabel>
@@ -57,20 +92,25 @@ const TekliflerCollapseJoin = ({item, index, setOrder, total, bakiyeSonra}) => {
               <CButton color = "success" onClick = {() => console.log("item is: ", item, "and index is: ", index)} >Onayla</CButton>
             </div>
           </CFormGroup>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CCardBody>
+        </>
   )
 }
 
 const TekliflerCollapseMine = ({item, index, setOrder, total, bakiyeSonra}) => {
+  
+  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    console.log(item);
+    const { katılanlar } = item
+    for (let i = 0 ; i < item.katılanlar.length; i++) {
+      dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
+      dispatch({type: "HEDEF_HESAPLA"})
+    }
+    //eslint-disable-next-lineDELETETHISWORD
+  }, [])
+
   return (
-    <CCardBody>
-    <CCol xs="12" sm="12">
-      <CCard>
-        <CCardHeader>Detaylar</CCardHeader>
-        <CCardBody>
+        <>
           <CFormGroup row>
             <CCol xs="12" md="6">
               <CLabel htmlFor="textarea-input">Açıklamanız:</CLabel>
@@ -81,19 +121,27 @@ const TekliflerCollapseMine = ({item, index, setOrder, total, bakiyeSonra}) => {
                 value = "Birşeyler yapalım arkadaşlar xDDD"
                 readOnly
               />
+              <div style = {{display: "flex"}} >
+              <h5 style = {{margin: "20px 0px 0px 20px", borderBottom: "1px solid gray"}} >Hedefe kalan adet:</h5>
+              <h4 style = {{margin: "20px 0px 0px 20px", color: "#321fdb"}}>{item.hedef - state.totalPledges}</h4>
+              </div>
             </CCol>
             <CCol xs="12" md="6">
               <CLabel>Katılanlar:</CLabel>
               <table className = "table table-striped" style = {{textAlign: "center", verticalAlign: "middle"}} >
                 <tbody>
-                  <tr>
-                    <td><b>Hayat Eczanesi</b></td>
-                    <td><h5>15/20</h5></td>
-                  </tr>
-                  <tr>
-                    <td><b>Başka Eczanesi</b></td>
-                    <td><h5>5/20</h5></td>
-                  </tr>
+                  {
+                item.katılanlar.map((element, i) => {
+             return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
+                      <td><input type="checkbox" id='joiner1' name={element.name}
+                       onChange = {(e) => {
+                         dispatch({type: "TOGGLE_CLASS", payload: e.target.name})
+                         }} /></td>
+                      <td><label htmlFor = "joiner1"><b>{element.name}</b></label></td>
+                      <td><h5>{element.pledged} / {item.hedef}</h5></td>
+                    </tr>
+                    })
+                  }
                 </tbody>
               </table>
               <div style = {{display: "flex", justifyContent: "center", alignItems: "center"}}>
@@ -116,10 +164,7 @@ const TekliflerCollapseMine = ({item, index, setOrder, total, bakiyeSonra}) => {
               <CButton color = "success" onClick = {() => console.log("item is: ", item, "and index is: ", index)} >Onayla</CButton>
             </div>
           </CFormGroup>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CCardBody>
+        </>
   )
 }
 
@@ -142,21 +187,6 @@ const TumTeklifler = () => {
     
     const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
     const bakiye = useSelector(state => state.user.userInfo.bakiye)
-  
-    const toggleDetails = (index) => {
-      const position = details.indexOf(index)
-      let newDetails = details.slice()
-      if (position !== -1) {
-        newDetails.splice(position, 1)
-      } else {
-        setOrder(0);
-        setTotal(0);
-        setBakiyeSonra(0);
-        newDetails = [index]
-      }
-      setDetails(newDetails)
-    }
-  
   
     const fields = [
       { key: 'eczane', _style: { width: '10%'} },
@@ -211,9 +241,7 @@ const TumTeklifler = () => {
 
     useEffect(() => {
       if (order > 0) {
-        // console.log("order is: ", order, "and birimFiyat is: ", data[clickedItemIndex].birimFiyat);
         setTotal(order * data[clickedItemIndex].birimFiyat)
-        // console.log('changing total to: ', total)
         setBakiyeSonra(bakiye - total)
       }
     }, [order, total, clickedItemIndex, bakiye, data])
@@ -260,7 +288,7 @@ const TumTeklifler = () => {
                     (item)=>(
                       <td>
                         <CBadge color={"secondary"}>
-                          {item.hedef}
+                        {item.pledge}/{item.hedef}
                         </CBadge>
                       </td>
                     ),
@@ -294,7 +322,7 @@ const TumTeklifler = () => {
                             shape="square"
                             size="sm"
                             onClick={()=>{
-                              toggleDetails(index)
+                              toggleDetails(index, details, setDetails, setOrder, setTotal, setBakiyeSonra)
                               setClickedItemIndex(index)
                               }}
                           >
@@ -307,7 +335,16 @@ const TumTeklifler = () => {
                       (item, index)=>{
                         return (
                         <CCollapse show={details.includes(index)}>
-                          {whichCollapsedToRender(eczaneName, item.eczane, item, index)}
+                          <CCardBody>
+                            <CCol xs="12" sm="12">
+                              <CCard>
+                                <CCardHeader>Detaylar</CCardHeader>
+                                <CCardBody>
+                                  {whichCollapsedToRender(eczaneName, item.eczane, item, index)}
+                                </CCardBody>
+                              </CCard>
+                            </CCol>
+                          </CCardBody>
                         </CCollapse>
                       )
                     }

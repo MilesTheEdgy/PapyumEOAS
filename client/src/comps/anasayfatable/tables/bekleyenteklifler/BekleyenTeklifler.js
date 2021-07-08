@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CInput, CTextarea, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
 import { useSelector } from "react-redux";
-import { isBelow0 } from "src/comps/helperfunctions/helperfunctions";
+import { isBelow0 } from "../";
 
 
 const BekleyenTeklifler = () => {

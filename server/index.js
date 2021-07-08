@@ -14,81 +14,201 @@ const eczData = [
       id: 0,
       eczane: "Hayat Eczanesi",
       İlaç: "PARACETOL",
-      hedef: "20/50",
+      pledge: 15,
+      hedef: 55,
       kampanya: "15 + 4",
       birimFiyat: 39,
       sonTarih: "2018/01/09",
-      durum: "beklemede"
+      durum: "beklemede",
+      katılanlar: [
+        {
+          name: "Hayat Eczanesi",
+          pledged: 15
+        },
+        {
+          name: "Başka Eczanesi",
+          pledged: 5
+        },
+        {
+          name: "Samsun Eczanesi",
+          pledged: 4
+        }
+      ]
   },
   {
       id: 1,
       eczane: "Birgül Eczanesi",
       İlaç: "STEROIDS",
-      hedef: "15/25",
+      pledge: 15,
+      hedef: 55,
       kampanya: "15 + 4",
       birimFiyat: 29,
       sonTarih: "2018/01/01",
-      durum: "beklemede"
+      durum: "beklemede",
+      katılanlar: [
+        {
+          name: "Hayat Eczanesi",
+          pledged: 15
+        },
+        {
+          name: "Başka Eczanesi",
+          pledged: 5
+        },
+        {
+          name: "Samsun Eczanesi",
+          pledged: 4
+        }
+      ]
   },
   {
       id: 2,
       eczane: "Dolmuş Eczanesi",
       İlaç: "FAKE JUICE",
-      hedef: "69/100",
+      pledge: 15,
+      hedef: 55,
       kampanya: "15 + 4",
       birimFiyat: 32,
       sonTarih: "2018/04/25",
-      durum: "beklemede"
+      durum: "beklemede",
+      katılanlar: [
+        {
+          name: "Hayat Eczanesi",
+          pledged: 15
+        },
+        {
+          name: "Başka Eczanesi",
+          pledged: 5
+        },
+        {
+          name: "Samsun Eczanesi",
+          pledged: 4
+        }
+      ]
   },
   {
       id: 3,
       eczane: "Başka Eczanesi",
       İlaç: "BAŞKAMAMOL",
-      hedef: "13/46",
+      pledge: 15,
+      hedef: 55,
       kampanya: "15 + 4",
       birimFiyat: 73,
       sonTarih: "2018/08/01",
-      durum: "beklemede"
+      durum: "beklemede",
+      katılanlar: [
+        {
+          name: "Hayat Eczanesi",
+          pledged: 15
+        },
+        {
+          name: "Başka Eczanesi",
+          pledged: 5
+        },
+        {
+          name: "Samsun Eczanesi",
+          pledged: 4
+        }
+      ]
   },
   {
     id: 4,
     eczane: "Hayat Eczanesi",
     İlaç: "PARACETOL",
-    hedef: "20/50",
+    pledge: 15,
+    hedef: 88,
     kampanya: "15 + 4",
-    birimFiyat: 13,
+    birimFiyat: 59,
     sonTarih: "2018/01/09",
-    durum: "beklemede"
+    durum: "beklemede",
+    katılanlar: [
+      {
+        name: "Hayat Eczanesi",
+        pledged: 15
+      },
+      {
+        name: "Başka Eczanesi",
+        pledged: 5
+      },
+      {
+        name: "Samsun Eczanesi",
+        pledged: 4
+      }
+    ]
 },
 {
     id: 5,
     eczane: "Birgül Eczanesi",
     İlaç: "STEROIDS",
-    hedef: "15/25",
+    pledge: 15,
+    hedef: 55,
     kampanya: "15 + 4",
     birimFiyat: 53,
     sonTarih: "2018/01/01",
-    durum: "beklemede"
+    durum: "beklemede",
+    katılanlar: [
+      {
+        name: "Hayat Eczanesi",
+        pledged: 15
+      },
+      {
+        name: "Başka Eczanesi",
+        pledged: 5
+      },
+      {
+        name: "Samsun Eczanesi",
+        pledged: 4
+      }
+    ]
 },
 {
     id: 6,
     eczane: "Dolmuş Eczanesi",
     İlaç: "FAKE JUICE",
-    hedef: "69/100",
+    pledge: 15,
+    hedef: 55,
     kampanya: "15 + 4",
     birimFiyat: 13,
     sonTarih: "2018/04/25",
-    durum: "beklemede"
+    durum: "beklemede",
+    katılanlar: [
+      {
+        name: "Hayat Eczanesi",
+        pledged: 15
+      },
+      {
+        name: "Başka Eczanesi",
+        pledged: 5
+      },
+      {
+        name: "Samsun Eczanesi",
+        pledged: 4
+      }
+    ]
 },
 {
     id: 7,
     eczane: "Başka Eczanesi",
     İlaç: "BAŞKAMAMOL",
-    hedef: "13/46",
+    pledge: 15,
+    hedef: 55,
     kampanya: "15 + 4",
     birimFiyat: 17,
     sonTarih: "2018/08/01",
-    durum: "beklemede"
+    durum: "beklemede",
+    katılanlar: [
+      {
+        name: "Hayat Eczanesi",
+        pledged: 15
+      },
+      {
+        name: "Başka Eczanesi",
+        pledged: 5
+      },
+      {
+        name: "Samsun Eczanesi",
+        pledged: 4
+      }
+    ]
 }
 ]
 
