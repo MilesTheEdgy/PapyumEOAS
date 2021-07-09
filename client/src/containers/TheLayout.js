@@ -5,7 +5,6 @@ import {
   TheFooter,
   TheHeader
 } from './index'
-import YeniTeklif from "../comps/yeniteklif/YeniTeklif"
 
 const TheLayout = () => {
 
@@ -15,8 +14,6 @@ const TheLayout = () => {
       <div className="c-wrapper">
         <TheHeader/>
         <div className="c-body">
-          {/* this bad boy was imported here so it can be rendered at the top level of every component */}
-          <YeniTeklif />
           <TheContent/>
         </div>
         <TheFooter/>

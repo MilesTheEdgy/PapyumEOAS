@@ -289,6 +289,7 @@ const eczDataBakiyehrkt = [
 
 function generateAccessToken(data) {
   return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '1000s' });
+  //add eczane name as well ?
 }
 
 function authenticateToken(req, res, next) {
@@ -338,18 +339,33 @@ app.get('/api/data/table/hareket', authenticateToken, (req, res) => {
   res.status(200).json(eczDataBakiyehrkt)
 })
 
-app.get('/api/data/products', authenticateToken, (req, res) => {
-  return
+app.get('/api/data/products', async (req, res) => {
+  try {
+    const query = await pool.query("SELECT * FROM products")
+    // for (const element of query.rows) {
+    //   const d = new Date(element.date)
+    //   element.date = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
+    // }
+    res.status(200).json(query.rows)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json("server errror")
+  }
 })
 
-// app.get('/api/testingsql', async (req, res) => {
-//   try {
-//     const sql = await pool.query("SELECT * FROM users")
-//     res.status(200).json(sql)
-//   } catch (error) {
-//     console.log(error)
-//   }
-// })
+app.post('/api/data/products', async (req, res) => {
+  try {
+    const { product, added_by, description } = req.body
+    const query = await pool.query('INSERT INTO products(name, added_by, description, date) VALUES ($1, $2, $3, current_timestamp)',
+    [product, added_by, description])
+    console.log(query.rows);
+    res.status(200).json("reached server!")
+  } catch (error) {
+    console.log(error)
+    res.status(500).json("server errror")
+  }
+})
+
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

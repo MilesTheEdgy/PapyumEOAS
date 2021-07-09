@@ -1,6 +1,7 @@
 import React from 'react';
 
 const UrunEkle = React.lazy(() => import('./comps/urunekle/UrunEkle'));
+const YeniTeklif = React.lazy(() => import('./comps/yeniteklif/YeniTeklif'))
 
 const Toaster = React.lazy(() => import('./views/notifications/toaster/Toaster'));
 const Tables = React.lazy(() => import('./views/base/tables/Tables'));
@@ -44,6 +45,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/urunekle', name: 'Ürün Ekle', component: UrunEkle },
+  { path: '/yeniteklif', name: 'Yeni Teklif', component: YeniTeklif },
   { path: '/theme', name: 'Theme', component: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', component: Colors },
   { path: '/theme/typography', name: 'Typography', component: Typography },

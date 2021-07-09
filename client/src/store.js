@@ -9,9 +9,6 @@ export const TUM_TEKLIFLER = "TUM_TEKLIFLER";
 
 const initialState = {
   sidebarShow: 'responsive',
-  modals: {
-    yeniTeklifModal: false
-  },
   dashboardTable: BEKELEYEN_TEKLIFLER,
   user: {
     session: {
@@ -24,7 +21,8 @@ const initialState = {
     userInfo: {
       bakiye: 0
     }
-  }
+  },
+  medicineList: []
 }
 
 const changeState = (state = initialState, { type, ...rest }) => {
@@ -84,27 +82,17 @@ const changeState = (state = initialState, { type, ...rest }) => {
           }
         }
       }
-    case 'YENI_TEKLIF_ON':
-      return {
-        ...state,
-        modals: {
-          ...state.modals,
-          yeniTeklifModal: true
-        }
-      }
-    case 'YENI_TEKLIF_OFF':
-      return {
-        ...state,
-        modals: {
-          ...state.modals,
-          yeniTeklifModal: false
-        }
-      }
     case 'SET_DASHBOARD_TABLE':
       return {
         ...state,
         ...rest
       }
+    case 'FILL_MEDICINE_LIST':
+      return {
+        ...state,
+        ...rest
+      }
+    
     default:
       return state
   }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CButton,
   CCard,
@@ -15,13 +15,37 @@ import {
 } from '@coreui/react'
 
 import "./urunekle.css"
-
-// object keys:
-// ID İlaç eklendiğiTarih ekleyenEczane
+import { useSelector, useDispatch } from 'react-redux'
 
 const UrunEkle = () => {
-    const [details, setDetails] = React.useState([])
-    const [form, showForm] = React.useState(false)
+    const dispatch = useDispatch()
+    // const [data, setData] = useState([])
+    const [details, setDetails] = useState([])
+    const [form, showForm] = useState(false)
+    const [newProduct, setNewProduct] = useState("")
+    const [newDescription, setNewDescription] = useState("")
+    // const eczName = useSelector(state => state.user.userSettings.eczaneName)
+    const medicineList = useSelector(state => state.medicineList)
+
+    const submitProduct = async () => {
+        const res = await fetch(`/api/data/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${document.cookie.slice(11)} `
+            },
+            body: JSON.stringify({
+                product: newProduct,
+                // added_by: eczName,
+                description: newDescription
+            })
+        })
+        if (res.status === 200) {
+            const fetchData = await res.json()
+            console.log(fetchData);
+        }
+
+    }
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -36,8 +60,9 @@ const UrunEkle = () => {
 
     const fields = [
         'İlaç',
-        'eklendiğiTarih',
-        'ekleyenEczane',
+        'barKod',
+        'ATC_Kodu',
+        'reçeteTürü',
         {
             key: 'show_details',
             label: '',
@@ -46,6 +71,28 @@ const UrunEkle = () => {
             filter: false
         }
      ]
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await fetch(`/api/data/products`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'authorization': `Bearer ${document.cookie.slice(11)} `
+                }
+              })
+            if (res.status === 200) {
+                const resData = await res.json()
+                console.log('URUN EKLE resData is: ', resData)
+                const arr = resData.map(obj => {
+                    return { İlaç: obj.medicine, barKod: obj.barcode, ATC_Kodu: obj.ATC_code , reçeteTürü: obj.prescription_type }
+                })
+                // setData(arr)
+                dispatch({type: "FILL_MEDICINE_LIST", medicineList: arr})
+            }
+        }
+        fetchData()
+    }, [dispatch])
 
   return (
     <>
@@ -61,9 +108,9 @@ const UrunEkle = () => {
         <CLabel>ÜRÜN SORGULAMA</CLabel>
         <CDataTable
               tableFilter
-            //   items={usersData}
+              items={medicineList}
               fields={fields}
-              itemsPerPage={5}
+              itemsPerPage={15}
               pagination
               scopedSlots = {{
                 'show_details':
@@ -87,7 +134,7 @@ const UrunEkle = () => {
                         return (
                         <CCollapse show={details.includes(index)}>
                             <CCardBody>
-                                <b>Birşeyler için yarar, çok güzel bir ilaç. Tavsiye ederim. Doktorun söyledikleri</b>
+                                <b>{item.description}</b>
                             </CCardBody>
                         </CCollapse>
                         )
@@ -101,7 +148,7 @@ const UrunEkle = () => {
             <CFormGroup row>
                 <CCol md = "6">
                     <CLabel htmlFor="company">Ürün</CLabel>
-                    <CInput id="company" placeholder="Eklemek istediğiniz ürünü yazın" />
+                    <CInput id="company" placeholder="Eklemek istediğiniz ürünü yazın" onChange = {(e) => setNewProduct(e.target.value)}/>
                 </CCol>
                 <CCol md = "6">
                     <CLabel htmlFor="vat">Açıklama</CLabel>
@@ -110,12 +157,13 @@ const UrunEkle = () => {
                         id="textarea-input" 
                         rows="6"
                         placeholder="Eklemek istediğiniz ürünün hakkında kısa bir açıklama yazın..." 
+                        onChange = {(e) => setNewDescription(e.target.value)}
                     />
                 </CCol>
             </CFormGroup>
             <CFormGroup row>
                 <CCol md = "1" className = "ml-auto justify-content-end" >
-                    <CButton color = "success" >Onayla</CButton>
+                    <CButton color = "success" onClick = {() => submitProduct()} >Onayla</CButton>
                 </CCol>
             </CFormGroup>
         </div>

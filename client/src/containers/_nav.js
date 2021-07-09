@@ -19,6 +19,12 @@ const _nav =  [
     icon: <CIcon name="cil-speedometer" customClasses="c-sidebar-nav-icon"/>,
   },
   {
+    _tag: 'CSidebarNavItem',
+    name: 'Yeni Teklif',
+    to: '/yeniteklif',
+    icon: <CIcon name="cil-speedometer" customClasses="c-sidebar-nav-icon"/>,
+  },
+  {
     _tag: 'CSidebarNavTitle',
     _children: ['Theme']
   },
