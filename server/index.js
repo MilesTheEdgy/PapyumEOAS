@@ -310,6 +310,9 @@ function authenticateToken(req, res, next) {
   })
 }
 
+////////////////////////////////////////
+// ******** LOGIN AND AUTH ********** //
+////////////////////////////////////////
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === "hayat" && password === "boss") {
@@ -326,6 +329,9 @@ app.post('/api', authenticateToken, (req, res) => {
   res.status(200).json({username, eczaneName: "Hayat Eczanesi", ID, bakiye: 500});
 })
 
+////////////////////////////////////////
+// ************ TABLES ************** //
+////////////////////////////////////////
 app.get('/api/data/table/tum', authenticateToken, (req, res) => {
   // tum teklifler
   res.status(200).json(eczData)
@@ -339,6 +345,12 @@ app.get('/api/data/table/hareket', authenticateToken, (req, res) => {
   res.status(200).json(eczDataBakiyehrkt)
 })
 
+
+////////////////////////////////////////
+// ************ PRODUCTS ************** //
+////////////////////////////////////////
+
+//-- get ALL products for medicine search route
 app.get('/api/data/products', async (req, res) => {
   try {
     const query = await pool.query("SELECT * FROM products")
@@ -353,19 +365,29 @@ app.get('/api/data/products', async (req, res) => {
   }
 })
 
-app.post('/api/data/products', async (req, res) => {
+//-- get specific products for new application route
+app.post('/api/data/products', authenticateToken, async (req, res) => {
   try {
-    const { product, added_by, description } = req.body
-    const query = await pool.query('INSERT INTO products(name, added_by, description, date) VALUES ($1, $2, $3, current_timestamp)',
-    [product, added_by, description])
-    console.log(query.rows);
-    res.status(200).json("reached server!")
+    const { input } = req.body
+    const result = Number(input)
+    let query
+    if (Number.isNaN(result)) {
+      console.log('fetching according to medicine name')
+      query = await pool.query("SELECT medicine, barcode FROM products WHERE medicine LIKE '%' || $1 || '%';", [input.toUpperCase()])
+    } else if (!Number.isNaN(result)) {
+      console.log('fetching according to barcode number')
+      query = await pool.query("SELECT medicine, barcode FROM products WHERE barcode::text LIKE '%' || $1 || '%';", [input])
+    }
+    if (query.rows.length == 0) {
+      res.status(404).json("your search inquiry was not found")
+    } else {
+      res.status(200).json(query.rows)
+    }
   } catch (error) {
     console.log(error)
     res.status(500).json("server errror")
   }
 })
-
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

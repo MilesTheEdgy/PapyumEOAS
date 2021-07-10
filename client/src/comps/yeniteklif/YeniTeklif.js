@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from "react-redux"
+import React, { useRef, useReducer, useState } from 'react'
 import {
   CButton,
   CCol,
@@ -12,181 +11,87 @@ import {
   CInputRadio,
   CCard,
   CCardHeader,
-  CCardBody
+  CCardBody,
+  CInputGroup,
+  CInputGroupPrepend,
+  CModal,
+  CModalHeader,
+  CModalBody,
+  CModalFooter,
+  CModalTitle
 } from '@coreui/react'
-import Select from 'react-select'
+import CIcon from '@coreui/icons-react'
 import "./yeniteklif.css"
+import { initialState, yeniTeklifReducer } from '.'
 
-// const dateHandeler = (e, setState, validateState) => {
-//   setState(e.target.value)
-//   const inputDate = new Date(e.target.value)
-//   const today = new Date()
-//   if (inputDate.setHours(0, 0, 0, 0) <= today.setHours(0, 0, 0, 0)) {
-//     validateState({invalid: true})
-//   } else {
-//     validateState({valid: true})
-//   }
-  
-// }
-
-// const aciklamaHandler = (e, setState, validateState) => {
-//   const value = e.target.value;
-//   setState(value)
-//   if (value !== "") {
-//     validateState({valid: true})
-//   } else {
-//     validateState({invalid: true})
-//   }
-// }
-
-// const toplamAlimSartInput = async (e, setToplamVal, adetValue, validateInputs) => {
-//   const value = e.target.value;
-//   await setToplamVal(value);
-//   if (value > 0 && adetValue > 0) {
-//     validateInputs({valid: true})
-//   } else {
-//     validateInputs({invalid: true})
-//   }
-// }
-
-// const adetAlımSartInput = async (e, setAdetVal, toplamValue, validateInputs) => {
-//   const value = e.target.value;
-//   await setAdetVal(value);
-//   if (value > 0 && toplamValue > 0) {
-//     validateInputs({valid: true})
-//   } else {
-//     validateInputs({invalid: true})
-//   }
-// }
-
-// const alimSartRadio = (e, validateInput, displaySartState) => {
-//   const value = e.target.value
-//   if (value === "yes") {
-//     displaySartState(true)
-//     validateInput({valid: true})
-//   } else if (value === "no") {
-//     displaySartState(false)
-//     validateInput({valid: true})
-//   } else {
-//     validateInput({invalid: true})
-//   }
-// }
-
-// const toplamFiyatFunc = (e, hedef, setToplamState, setAdetState) => {
-//   const value = e.target.value;
-//   setToplamState(value);
-//   if (hedef) {
-//     let res = value / hedef
-//     setAdetState(res.toFixed(2))
-//   }
-// }
-
-// const adetFiyatFunc = async (e, hedef, setAdetState, setToplamState) => {
-//   const value = e.target.value;
-//   await setAdetState(value)
-//   await setToplamState(hedef * value)
-// }
-
-// const validateUrunAdi = (e, valState, setState, data) => {
-//   const input = e.target.value.toLowerCase()
-//   setState(input)
-//   for (let i = 0; i < data.length; i++) {
-//     if(input === data[i].İlaç.toLowerCase()) {
-//       return valState({valid: true})
-//     }
-//   }
-//   valState({invalid: true})
-// }
-
-// const validateHedefInput = (e, valState, setState, setAdetState, toplamState) => {
-//     const input = e.target.value
-//     setState(input)
-//     if (toplamState > 0) {
-//       let res = input / toplamState
-//       setAdetState(res.toFixed(2))
-//     }
-//     if (input > 0) {
-//       return valState({valid: true})
-//     } else {
-//       return valState({invalid: true})     
-//     }
-//   }
 const UrunEkle = () => {
-    const handleChange = (e) => {
-      console.log(e)
-    }
-    const medicineDataListHandeler = (list) => {
-        const listCopy = [...list]
-        console.log('our list copy is: ', listCopy)
-        if (listCopy.length > 10) {
-          console.log('list copy is greater than 10, splicing...')
-          listCopy.splice(10)
-          console.log('spliced list copy is: ', listCopy)
-        }
-        return listCopy.map(obj => {
-          return {value: obj.İlaç, label: obj.İlaç}
-        })
-        // console.log('mapping list copy...')
-      }
-    
-      // const submitHandeler = () => {
-      //   const formValid = sartRadio?
-      //   [urunAdiValid, hedefValid, adetFiyatValid, toplamFiyatValid, alimSartValid, sartValid, aciklamaValid, dateValid]
-      //   :
-      //   [urunAdiValid, hedefValid, adetFiyatValid, toplamFiyatValid, alimSartValid, aciklamaValid, dateValid]
-      //   let formValidArr = []
-      //   for (let i = 0; i < formValid.length; i++) {
-      //     formValidArr[i] = Object.keys(formValid[i])
-      //   }
-      //   for (let i = 0; i < formValidArr.length; i++) {
-      //     if (formValidArr[i].indexOf('invalid') >= 0) {
-      //       return alert('found missing info: ', formValidArr[i])
-      //     }
-      //   }
-      //   alert('all good!: ')
-      // }
-    
-      // const [sartRadio, setSartRadio] = useState(false)
-      // const [urunAdiValid, setUrunAdiValid] = useState({invalid: true})
-      // const [urunAdi, setUrunAdi] = useState("")
-      // const [hedefValid, setHedefValid] = useState({invalid: true})
-      // const [hedef, setHedef] = useState(0)
-      // const [adetFiyat, setAdetFiyat] = useState(0)
-      // const [adetFiyatValid, setAdetFiyatValid] = useState({invalid: true})
-      // const [toplamFiyat, setToplamFiyat] = useState(0)
-      // const [toplamFiyatValid, setToplamFiyatValid] = useState({invalid: true})
-      // const [alimSartValid, setAlimSartValid] = useState({invalid: true})
-      // const [sartToplam, setSartToplam] = useState(0)
-      // const [sartAdet, setSartAdet] = useState(0)
-      // const [sartValid, setSartValid] = useState({invalid: true})
-      // const [aciklama, setAciklama] = useState("")
-      // const [aciklamaValid, setAciklamaValid] = useState({invalid: true})
-      // const [date, setDate] = useState("")
-      // const [dateValid, setDateValid] = useState({invalid: true})
-      
-      
-      const medicineList = useSelector(state => state.medicineList)
-      // const dispatch = useDispatch()
-    
-      // useEffect(() => {
-      //   if (adetFiyat > 0 && toplamFiyat > 0) {
-      //     setAdetFiyatValid({valid: true})
-      //     setToplamFiyatValid({valid: true})
-      //   }
-      // }, [adetFiyat, toplamFiyat])
 
-      const options = [
-        { value: 'chocolate', label: 'Chocolate' },
-        { value: 'strawberry', label: 'Strawberry' },
-        { value: 'vanilla', label: 'Vanilla' }
-      ]
- 
+  const [state, dispatch] = useReducer(yeniTeklifReducer, initialState);
+  const { medicineSearch, goal, unit, total, condition, conditionGoal, description, date, verifyModal } = state;
+  const [warning, setWarning] = useState(false)
+
+  const useFocus = () => {
+    const htmlElRef = useRef(null)
+    const setFocus = () => {htmlElRef.current &&  htmlElRef.current.focus()}
+    
+    return [ htmlElRef, setFocus ] 
+  }
+  const [inputRef, setInputFocus] = useFocus()
+
+  
+  const searchList = async () => {
+    dispatch({type: "ISLOADING_TRUE"})
+    const res = await fetch('/api/data/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': `Bearer ${document.cookie.slice(11)} `
+      },
+      body: JSON.stringify({input: medicineSearch.input})
+    })
+    console.log(res.status)
+
+    if (res.status === 200) {
+      const fetchData = await res.json()
+      console.log( "before splicing...", fetchData);
+      if (fetchData.length > 50) {
+        fetchData.splice(50)
+      }
+      console.log( "...after splicing", fetchData);
+      setInputFocus()
+      dispatch({type: "SET_DATA", payload: fetchData})
+      dispatch({type: "ISLOADING_FALSE"})
+    }
+     else if (res.status === 404) {
+      dispatch({type: "MEDICINE_NOT_FOUND"})
+      dispatch({type: "SET_MEDICINE_INPUT", payload: "ÜRÜNÜNÜZ BULUNMADI"})
+    }
+  }
+
   return (
     <>
+
+    <CModal 
+    show={verifyModal.isInfoMissing} 
+    onClose={() => dispatch({type : "VERIFY_MODAL_TOGGLE"})}
+    color="danger"
+    centered
+    >
+      <CModalHeader closeButton>
+        <CModalTitle>EKSIK BİLGİ</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <h5>Lütfen eksik bilgileriniz tamamlayınız!</h5>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" onClick={() => dispatch({type : "VERIFY_MODAL_TOGGLE"})}>Kapat</CButton>
+      </CModalFooter>
+    </CModal>
+
     <CCard>
         <CCardHeader>
-            Ürün
-            <small> ekle</small>
+            Talep
+            <small> oluştur</small>
         </CCardHeader>
         <CCardBody>
         <CForm className="form-horizontal">
@@ -195,17 +100,38 @@ const UrunEkle = () => {
                 <CLabel htmlFor="text-input" ><b> Ürün Adı</b></CLabel>
               </CCol>
               <CCol xs="12" md="6">
-                {/* <CInput list = "medicine-list" placeholder="İlaç ismini giriniz" />
+                <CInputGroup>
+                  <CInputGroupPrepend>
+                    {
+                      medicineSearch.isLoading ?
+                      <CButton type="button" color="primary" onClick = {searchList} >
+                        <div className="spinner-border text-danger" style = {{height : "20px", width: "20px"}} role="status">
+                          <span className="sr-only">Loading...</span>
+                        </div>  Ara
+                     </CButton>
+                      :
+                      <CButton type="button" color="primary" onClick = {searchList} ><CIcon name="cil-magnifying-glass" /> Ara</CButton>
+                    }
+                  </CInputGroupPrepend>
+                  <CInput innerRef={inputRef} value = {medicineSearch.input} placeholder= "ilaç adı verya barkodunu giriniz"
+                   list = "medicine-list" invalid = {medicineSearch.invalid} valid = {medicineSearch.valid}
+                   onChange = {(e) => dispatch({type: "SET_MEDICINE_INPUT", payload: e.target.value}) }/>
+                </CInputGroup>
                 <datalist id = "medicine-list">
-                </datalist> */}
-                <Select backspaceRemovesValue autoFocus onChange = {handleChange} placeholder = "seçiniz" options = {medicineDataListHandeler(medicineList)} />
+                  {
+                    medicineSearch.data.map((obj, i) => {
+                      return <option key = {i} >{obj.medicine} -- {obj.barcode} </option>
+                    })
+                  }
+                </datalist>
                 <CFormText>Almak istediğiniz ürün</CFormText>
               </CCol>
               <CCol md="2">
                 <CLabel htmlFor="text-input"><b> Hedef</b></CLabel>
               </CCol>
               <CCol md="2">
-                <CInput type = "number"/>
+                <CInput type = "number" placeholder = "60" valid = {goal.valid} invalid = {goal.invalid}
+                 onChange = {(e) => dispatch({type: "SET_GOAL_INPUT", payload: e.target.value})} value = {goal.input} />
                 <CFormText>Ulaşmak istediğiniz alım hedefi</CFormText>
               </CCol>
             </CFormGroup>
@@ -222,7 +148,8 @@ const UrunEkle = () => {
                     <CLabel htmlFor="text-input">Her adet</CLabel>
                   </div>
                   <div className = "col-md-6">
-                    <CInput />
+                    <CInput type = "number" valid = {unit.valid} invalid = {unit.invalid} value = {unit.input}
+                     onChange = {(e) => dispatch({type: "SET_UNIT_PRICE_INPUT", payload: e.target.value})} />
                     <CFormText>Birim fiyatını giriniz</CFormText>
                   </div>
                 </div>
@@ -231,7 +158,8 @@ const UrunEkle = () => {
                     <CLabel htmlFor="text-input" >Toplam</CLabel>
                   </div>
                   <div className = "col-md-6">
-                    <CInput />
+                    <CInput type = "number" valid = {total.valid} invalid = {total.invalid} value = {total.input}
+                     onChange = {(e) => dispatch({type: "SET_TOTAL_PRICE_INPUT", payload: e.target.value})} />
                     <CFormText>Toplam fiyatını giriniz</CFormText>
                   </div>
                 </div> 
@@ -246,24 +174,28 @@ const UrunEkle = () => {
                   </div>
                   <div className = "col-md-6">
                     <CFormGroup variant="custom-radio" inline>
-                      <CInputRadio custom id="inline-radio1" name="inline-radios" value="yes" />
+                      <CInputRadio custom id="inline-radio1" name="inline-radios" value="yes" valid = {condition.valid} invalid = {condition.invalid}
+                       onChange = {e => dispatch({type: "IS_CONDITION", payload: e.target.value})} />
                       <CLabel variant="custom-checkbox" htmlFor="inline-radio1">Var</CLabel>
                     </CFormGroup>
                     <CFormGroup variant="custom-radio" inline>
-                      <CInputRadio custom id="inline-radio2" name="inline-radios" value="no" />
+                      <CInputRadio custom id="inline-radio2" name="inline-radios" value="no" valid = {condition.valid} invalid = {condition.invalid}
+                       onChange = {e => dispatch({type: "IS_CONDITION", payload: e.target.value})} />
                       <CLabel variant="custom-checkbox" htmlFor="inline-radio2">Yok</CLabel>
                     </CFormGroup>
                   </div>
                 </div>
-                <div className = "row align-items-center">
+                <div className = {`${condition.isCondition ? "" : "hidden"} row align-items-center `} >
                   <div className = "col-md-4">
                     <CLabel htmlFor="text-input"><b> Şartı</b></CLabel>
                   </div>
                   <div className = "col-md-8">
-                    <div style = {{display: "flex", alignItems: "center"}} >
-                      <CInput style = {{maxWidth : "100px ", maxHeight: "35px"}} className = "form-control" placeholder = "70" type = "number" />
-                      <p style = {{fontSize : "25px", marginTop: "15px"}} >+</p>
-                      <CInput style = {{maxWidth : "100px", maxHeight: "35px"}} className = "form-control" placeholder = "8" type = "number" />
+                    <div className = "conditionGoalDiv" >
+                      <CInput className = "form-control conditionGoalInput" placeholder = "70" type = "number" valid = {conditionGoal.valid} invalid = {conditionGoal.invalid} 
+                      onChange = {(e) => dispatch({type: "SET_CONDITION_GOAL_INPUT1", payload: e.target.value})} />
+                      <p className = "conditionGoalPlus" >+</p>
+                      <CInput className = "form-control conditionGoalInput" placeholder = "8" type = "number" valid = {conditionGoal.valid} invalid = {conditionGoal.invalid}
+                      onChange = {(e) => dispatch({type: "SET_CONDITION_GOAL_INPUT2", payload: e.target.value})} />
                     </div>
                   </div>
                 </div>
@@ -281,19 +213,89 @@ const UrunEkle = () => {
                   name="textarea-input" 
                   id="textarea-input" 
                   rows="9"
-                  placeholder="Açıklamanızı giriniz..." 
+                  placeholder="Açıklamanızı giriniz..."
+                  onChange = {e => dispatch({type: "SET_DESCRIPTION_VALUE", payload: e.target.value})}
+                  valid = {description.valid}
+                  invalid = {description.invalid}
                 />
               </CCol>
               <CCol xs="12" md="1">
               </CCol>
               <CCol md="3">
                 <CLabel htmlFor="date-input"><b>Bitiş tarih</b></CLabel>
-                <CInput type="date" id="date-input" name="date-input" />
+                <CInput type="date" id="date-input" name="date-input" valid = {date.valid} invalid = {date.invalid}
+                 onChange = {e => dispatch({type: "SET_DATE_INPUT", payload: e.target.value})} />
               </CCol>
             </CFormGroup>
           </CForm>
         </CCardBody>
-        <CButton color="primary">Teklif oluştur</CButton>
+        <CButton color="primary" onClick = {() => dispatch({type : "VERIFY_MODAL_TOGGLE"}) } >Teklif oluştur</CButton>
+        
+
+        {/* My app is receiving NaN for certain values in this modal, that's why I'm rendering it
+        conditinally after user inputs all the required fields */}
+
+        {
+          verifyModal.on ? 
+        <CModal 
+        show={verifyModal.on} 
+        onClose={() => dispatch({type : "VERIFY_MODAL_TOGGLE"})}
+        color="warning"
+        centered
+        >
+          <CModalHeader closeButton>
+            <CModalTitle>Talep Özeti</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+          <table className="table align-middle">
+            <tbody>
+              <tr>
+                <th scope="row">Ürün Adı</th>
+                <td>{medicineSearch.input}</td>
+              </tr>
+              <tr>
+                <th scope="row">Hedef</th>
+                <td>{goal.input}</td>
+              </tr>
+              <tr>
+                <th scope="row">Depo Birim Fiyat</th>
+                <td>{total.input / goal.input}</td>
+              </tr>
+              <tr>
+                <th scope="row">Depo Toplam Fiyat</th>
+                <td>{unit.input * goal.input}</td>
+              </tr>
+              <tr>
+                <th scope="row">Alım Şart</th>
+                <td>{condition.isCondition ? "VAR" : "YOK"}</td>
+              </tr>
+              {
+                condition.isCondition ?
+                <tr>
+                  <th scope="row">Şart Hedefi</th>
+                  <td>{conditionGoal.input1} + {conditionGoal.input2} </td>
+                </tr>
+                : null
+              }
+              <tr>
+                <th scope="row">Açıklama</th>
+                <td>Larry the Bird</td>
+              </tr>
+              <tr>
+                <th scope="row">Bitiş Tarih</th>
+                <td>Larry the Bird</td>
+              </tr>
+            </tbody>
+          </table>
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="primary" onClick={() => dispatch({type : "VERIFY_MODAL_TOGGLE"})}>Onayla</CButton>
+            <CButton color="warning" onClick={() => dispatch({type : "VERIFY_MODAL_TOGGLE"})}>İptal et</CButton>{' '}
+          </CModalFooter>
+        </CModal>
+        :
+        null
+        }
     </CCard>
     </>
   )

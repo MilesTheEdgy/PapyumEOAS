@@ -19,24 +19,24 @@ class App extends Component {
 
   componentDidMount() {
     // fetches the medicineList
-    const fetchMedicineData = async () => {
-      const res = await fetch(`/api/data/products`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'authorization': `Bearer ${document.cookie.slice(11)} `
-          }
-        })
-      if (res.status === 200) {
-          const resData = await res.json()
-          console.log('URUN EKLE resData is: ', resData)
-          const arr = resData.map(obj => {
-              return { İlaç: obj.medicine, barKod: obj.barcode, ATC_Kodu: obj.ATC_code , reçeteTürü: obj.prescription_type }
-          })
-          // setData(arr)
-          this.props.dispatch({type: "FILL_MEDICINE_LIST", medicineList: arr})
-      }
-    }
+    // const fetchMedicineData = async () => {
+    //   const res = await fetch(`/api/data/products`, {
+    //       method: 'GET',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'authorization': `Bearer ${document.cookie.slice(11)} `
+    //       }
+    //     })
+    //   if (res.status === 200) {
+    //       const resData = await res.json()
+    //       console.log('URUN EKLE resData is: ', resData)
+    //       const arr = resData.map(obj => {
+    //           return { İlaç: obj.medicine, barKod: obj.barcode, ATC_Kodu: obj.ATC_code , reçeteTürü: obj.prescription_type }
+    //       })
+    //       // setData(arr)
+    //       this.props.dispatch({type: "FILL_MEDICINE_LIST", medicineList: arr})
+    //   }
+    // }
     //runs once to check if user is already logged in, so user doesn't attempt to re-login
     const isUserCookieValid = async () => {
       const response = await fetch(`/api`, {
@@ -54,7 +54,7 @@ class App extends Component {
         this.props.dispatch({type: 'FILL_USER_INFO', bakiye: data.bakiye})
         this.props.dispatch({type: 'LOG_IN'})
         this.props.history.push('/dashboard')
-        fetchMedicineData()
+        // fetchMedicineData()
       }
     }
   isUserCookieValid()
