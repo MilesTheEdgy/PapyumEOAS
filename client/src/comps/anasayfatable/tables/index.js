@@ -9,6 +9,7 @@ export const initialState = {
   hedefeKalanIs0: false,
   pickedRows: [],
   isCollapsed: false,
+  isOnHold: false,
 }
 
 export function reducer (state, action) {
@@ -41,6 +42,7 @@ export function reducer (state, action) {
 
 
     case "ADD_ROW":
+      console.log('ADD_ROW is triggered, payload is: ', action.payload)
       return {
         ...state,
         rows: [
@@ -52,7 +54,7 @@ export function reducer (state, action) {
     case "HEDEF_HESAPLA_COLLAPSED_MINE":
       const posterPledgeMine = action.payload
       const hedefMine = action.hedef
-      const toplamHedefMine = state.pickedRows.reduce((accumulator, current) => accumulator + current.pledged, posterPledgeMine);
+      const toplamHedefMine = state.pickedRows.reduce((accumulator, current) => accumulator + current.pledge, posterPledgeMine);
       const hedefeKalanMine = hedefMine - toplamHedefMine
       if (hedefeKalanMine === 0) {
         return {
@@ -111,6 +113,19 @@ export function reducer (state, action) {
           userInputJoin: input
         }
       }
+
+    case "SET_STATUS":
+      switch (action.payload) {
+        case "APPROVED":
+          return {
+            ...state,
+            isOnHold: false
+          }
+      
+        default:
+          return state
+
+      }
   
     default:
       return state
@@ -145,11 +160,26 @@ export const fields = [
 
 export function getBadge (status) {
   switch (status) {
-    case 'Active': return 'success'
+    case 'APPROVED': return 'success'
     case 'Inactive': return 'secondary'
-    case 'beklemede': return 'warning'
+    case 'ON_HOLD': return 'warning'
     case 'Banned': return 'danger'
     default: return 'primary'
+  }
+}
+
+export function getStatus (status) {
+  switch (status) {
+    case 'ON_HOLD': return 'Beklemede'
+    case 'APPROVED': return 'Tamamlandı'
+    default: return status
+  }
+}
+
+export function getCondition (status) {
+  switch (status) {
+    case 'NONE': return <p>Yok</p>
+    default: return <p style = {{color: "	#321fdb"}}> {status} </p>
   }
 }
 
@@ -170,7 +200,7 @@ export function toggleDetails(index, details, setDetails, setOrder, setTotal, se
 export function whichCollapsedToRender (reduxUser, dataUser, item, index, setOrder, total, bakiyeSonra) {
   if (reduxUser === dataUser) {
     return <CollapseMine item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
-  } else {
-    return <CollapseJoin item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
-  }
+  } // else {
+  //   return <CollapseJoin item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
+  // }
 }

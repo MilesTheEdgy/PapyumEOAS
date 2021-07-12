@@ -1,9 +1,10 @@
 const express = require("express");
-const jwt = require("jsonwebtoken")
 const PORT = process.env.PORT || 3001;
 const app = express();
 const dotenv = require('dotenv');
 const pool = require("./db")
+const { verifyNewBid, createNewBid } = require("./bids/bids")
+const { generateAccessToken, authenticateToken } = require("./token/token")
 
 dotenv.config();
 process.env.TOKEN_SECRET;
@@ -287,28 +288,8 @@ const eczDataBakiyehrkt = [
 ]
 
 
-function generateAccessToken(data) {
-  return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '1000s' });
-  //add eczane name as well ?
-}
 
-function authenticateToken(req, res, next) {
-  console.log('verifiying token...')
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-  // console.log(`the token being verified: ${authHeader.split(' ')[1]}`);
-  if (token == null) {
-    return res.sendStatus(401)
-  }
-  jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-    if (err) {
-      console.log(err);
-      return res.sendStatus(403)
-    }
-    req.user = user
-    next()
-  })
-}
+
 
 ////////////////////////////////////////
 // ******** LOGIN AND AUTH ********** //
@@ -316,7 +297,7 @@ function authenticateToken(req, res, next) {
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === "hayat" && password === "boss") {
-    const token = generateAccessToken({ username: req.body.username , ID: 1, role : "eczane" });
+    const token = generateAccessToken({ username: req.body.username, eczaneName: "Hayat Eczanesi", ID: 1, role : "eczane" });
     res.status(200).json({username, eczaneName: "Hayat Eczanesi", ID: 1, bakiye: 500, token});
   } else {
     res.status(401).json("not authorized")
@@ -324,17 +305,84 @@ app.post('/api/login', (req, res) => {
 })
 
 app.post('/api', authenticateToken, (req, res) => {
-  const { username, ID } = req.user
-  console.log(req.user);
-  res.status(200).json({username, eczaneName: "Hayat Eczanesi", ID, bakiye: 500});
+  const { username, eczaneName , ID } = req.user
+  res.status(200).json({username, eczaneName, ID, bakiye: 500});
 })
 
 ////////////////////////////////////////
 // ************ TABLES ************** //
 ////////////////////////////////////////
-app.get('/api/data/table/tum', authenticateToken, (req, res) => {
+app.get('/api/data/table/tum', authenticateToken, async (req, res) => {
   // tum teklifler
-  res.status(200).json(eczData)
+  try {
+    const query = await pool.query("SELECT * FROM applications")
+    // console.log(query.rows);
+    let arr = query.rows
+    let joinerArr = []
+    console.log('original unmodifed array is: ', arr)
+    for (let i = 0; i < arr.length; i++) {
+      console.log('I loop number: ', i )
+      if (arr[i].joiners && arr[i].joiner_pledges) {
+        console.log('arr[i].joiners is true, exectuing J loop...')
+        for (let j = 0; j < arr[i].joiners.length; j++) {
+          console.log("taking these values: ", arr[i].joiners[j], "and storing them in an obj in an arr joinerArr");
+          joinerArr = [
+            ...joinerArr,
+              {
+                name: arr[i].joiners[j],
+                pledge: arr[i].joiner_pledges[j]
+              }
+          ]
+        }
+        console.log('assiging the joinerArr to the original arr accoring to I loop', i, "index")
+        Object.assign(arr[i], {joiners: joinerArr})
+      }
+      joinerArr = []
+      console.log('modifed arr index is: ', arr[i]);
+      console.log('finished I loop number: ', i)
+    }
+    console.log('arr1 is: ', arr[1])
+    console.log('arr2 is: ', arr[2])
+    let arr2 = arr.map(obj => {
+      if (obj.joiners) {
+        return {
+          id: obj.id,
+          product_name: obj.product_name,
+          goal: obj.goal,
+          condition: obj.condition,
+          price: obj.price,
+          poster_pledge: obj.poster_pledge,
+          description: obj.description,
+          status: obj.status,
+          date: obj.date,
+          submitter: obj.submitter,
+          final_date: obj.final_date,
+          joiners: obj.joiners,
+        }
+      } else {
+        return {
+          id: obj.id,
+          product_name: obj.product_name,
+          goal: obj.goal,
+          condition: obj.condition,
+          price: obj.price,
+          poster_pledge: obj.poster_pledge,
+          description: obj.description,
+          status: obj.status,
+          date: obj.date,
+          submitter: obj.submitter,
+          final_date: obj.final_date,
+          joiners: obj.joiners,
+          joiner_pledges: obj.joiner_pledges
+        }
+      }
+    })
+    res.status(200).json(arr)
+    
+  } catch (error) {
+    console.log(error);  
+    res.status(500).json("server error")
+  }
 })
 
 app.get('/api/data/table/bekleyen', authenticateToken, (req, res) => {
@@ -386,6 +434,39 @@ app.post('/api/data/products', authenticateToken, async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(500).json("server errror")
+  }
+})
+
+
+app.post('/api/bid/new', authenticateToken, verifyNewBid, async (req, res) => {
+  try {
+    const { body, user } = req
+    const insertNewBid = await createNewBid(body, user)
+    if (insertNewBid) {
+      res.status(200).json("Application was sent successfully")
+    } else {
+      res.status(500).json("Server error")
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("Server error")
+  }
+})
+
+app.post('/api/bid/approve', authenticateToken, async (req, res) => {
+  try {
+    const { body, user } = req
+    const { selectedRows, id} = body
+    const query = await pool.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2", [id, user.eczaneName])
+    console.log(query);
+    if (query.rowCount !== 0) {
+      res.status(200).json("your application was updated successfully")
+    } else {
+      res.status(400).json("failed to update application, client error.")
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("Server error")
   }
 })
 

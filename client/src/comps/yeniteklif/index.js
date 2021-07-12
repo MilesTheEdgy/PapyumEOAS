@@ -1,3 +1,5 @@
+
+
 export const initialState = {
     medicineSearch: {
         data: [],
@@ -9,6 +11,12 @@ export const initialState = {
     },
 
     goal: {
+        input: 0,
+        valid: false,
+        invalid: true,
+    },
+
+    pledge: {
         input: 0,
         valid: false,
         invalid: true,
@@ -52,7 +60,10 @@ export const initialState = {
 
     verifyModal: {
         on: false,
-        isInfoMissing: false
+        isInfoMissing: false,
+        isLoading: false,
+        isSubmitSuccess: false,
+        isSubmitFail: false
     }
 }
 
@@ -63,7 +74,7 @@ export const yeniTeklifReducer = (state, action) => {
         ////////////////////////////////////////
         case "SET_MEDICINE_INPUT":
             for (let i = 0; i < state.medicineSearch.data.length; i++) {
-                if (action.payload === `${state.medicineSearch.data[i].medicine} -- ${state.medicineSearch.data[i].barcode}` ) {
+                if (action.payload === `${state.medicineSearch.data[i].medicine}--${state.medicineSearch.data[i].barcode}` ) {
                     return {
                         ...state,
                         medicineSearch: {
@@ -127,7 +138,9 @@ export const yeniTeklifReducer = (state, action) => {
         ////////////////////////////////////////
 
         case "SET_GOAL_INPUT":
-            if (action.payload <= 0) {
+            const goalNum1 = Number(action.payload);
+            const pledgeNum1 = Number(state.pledge.input)
+            if (goalNum1 <= 0 || pledgeNum1 >= goalNum1) {
                 return {
                     ...state,
                     goal: {
@@ -148,11 +161,41 @@ export const yeniTeklifReducer = (state, action) => {
                 }
             }
 
+        
+            ////////////////////////////////////////
+        // ************ PLEDGE HANDLER ************** //
+        ////////////////////////////////////////
+
+        case "SET_PLEDGE_INPUT":
+            const pledgeNum = Number(action.payload);
+            const goalNum = Number(state.goal.input)
+            if (pledgeNum <= 0 || pledgeNum >= goalNum) {
+                return {
+                    ...state,
+                    pledge: {
+                        ...state.pledge,
+                        input: action.payload,
+                        invalid: true,
+                        valid: false
+                    }
+                }
+            }
+            return {
+                ...state,
+                pledge: {
+                    ...state.pledge,
+                    input: action.payload,
+                    invalid: false,
+                    valid: true
+                }
+            }
+
         ////////////////////////////////////////
       // ************ UNIT PRICE HANDLER ************** //
         ////////////////////////////////////////
 
         case "SET_UNIT_PRICE_INPUT":
+            let math2 = action.payload * state.goal.input
             if (action.payload <= 0) {
                 return {
                     ...state,
@@ -174,7 +217,7 @@ export const yeniTeklifReducer = (state, action) => {
                 },
                 total: {
                     ...state.total,
-                    input: action.payload * state.goal.input,
+                    input: math2.toFixed(2),
                     invalid: false,
                     valid: true
                 }
@@ -349,12 +392,13 @@ export const yeniTeklifReducer = (state, action) => {
 
         case "VERIFY_MODAL_TOGGLE":
 
-            const { medicineSearch, goal, unit, total, condition, conditionGoal, description, date } = state;
+            const { medicineSearch, goal, pledge, unit, total, condition, description, date } = state;
             let arr
             if (condition.isCondition === false) {
                 const stateObj = {
                     medicineSearch,
                     goal,
+                    pledge,
                     unit,
                     total,
                     condition,
@@ -385,6 +429,149 @@ export const yeniTeklifReducer = (state, action) => {
                     on: !state.verifyModal.on
                 },
             }
+        case "FORM_SUBMIT_LOADING":
+            return {
+                ...state,
+                verifyModal: {
+                    ...state.verifyModal,
+                    on: false,
+                    isLoading: !state.verifyModal.isLoading
+                }
+            }
+
+        case "SUBMIT_SUCCESS":
+            return {
+                ...state,
+                medicineSearch: {
+                    data: [],
+                    input: "",
+                    isLoading: false,
+                    isNotFound: false,
+                    valid: false,
+                    invalid: true,
+                },
+            
+                goal: {
+                    input: 0,
+                    valid: false,
+                    invalid: true,
+                },
+            
+                pledge: {
+                    input: 0,
+                    valid: false,
+                    invalid: true,
+                },
+            
+                unit: {
+                    input: 0,
+                    valid: false,
+                    invalid: true
+                },
+            
+                total: {
+                    input: 0,
+                    invalid: true,
+                    valid: false
+                },
+            
+                condition: {
+                    isCondition: false,
+                    valid: false,
+                    invalid: true
+                },
+                conditionGoal: {
+                    input1: 0,
+                    input2: 0,
+                    valid: false,
+                    invalid: true
+                },
+            
+                description: {
+                    input: "",
+                    valid: false,
+                    invalid: true
+                },
+            
+                date: {
+                    input: "",
+                    valid: false,
+                    invalid: true
+                },
+                verifyModal: {
+                    ...state.verifyModal,
+                    on: false,
+                    isSubmitSuccess: !state.verifyModal.isSubmitSuccess
+                }
+            }
+
+        case "SUBMIT_FAIL":
+            return {
+                ...state,
+                medicineSearch: {
+                    data: [],
+                    input: "",
+                    isLoading: false,
+                    isNotFound: false,
+                    valid: false,
+                    invalid: true,
+                },
+            
+                goal: {
+                    input: 0,
+                    valid: false,
+                    invalid: true,
+                },
+            
+                pledge: {
+                    input: 0,
+                    valid: false,
+                    invalid: true,
+                },
+            
+                unit: {
+                    input: 0,
+                    valid: false,
+                    invalid: true
+                },
+            
+                total: {
+                    input: 0,
+                    invalid: true,
+                    valid: false
+                },
+            
+                condition: {
+                    isCondition: false,
+                    valid: false,
+                    invalid: true
+                },
+                conditionGoal: {
+                    input1: 0,
+                    input2: 0,
+                    valid: false,
+                    invalid: true
+                },
+            
+                description: {
+                    input: "",
+                    valid: false,
+                    invalid: true
+                },
+            
+                date: {
+                    input: "",
+                    valid: false,
+                    invalid: true
+                },
+                verifyModal: {
+                    ...state.verifyModal,
+                    on: false,
+                    isSubmitFail: !state.verifyModal.isSubmitFail
+                }
+            }
+    
+
 
         default:
             return state

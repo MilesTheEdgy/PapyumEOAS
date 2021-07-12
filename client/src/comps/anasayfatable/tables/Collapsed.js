@@ -8,12 +8,50 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
 
     const [state, dispatch] = useReducer(reducer, initialState);
 
+    const approveBid = async () => {
+
+        console.log(item.durum);
+
+        // let selectedUsers = []
+        // for (let i = 0; i < state.rows.length; i++) {
+        //     if (state.rows[i].clicked === true) {
+        //         selectedUsers.push(state.rows[i].name)
+        //     }
+        // }
+        // console.log(selectedUsers);
+        // if (state.hedefeKalanMine === 0) {
+        //     const res = await fetch('/api/bid/approve', {
+        //             method: 'POST',
+        //             headers: {
+        //             'Content-Type': 'application/json',
+        //             'authorization': `Bearer ${document.cookie.slice(11)} `
+        //             },
+        //             body: JSON.stringify({
+        //             selectedUsers: selectedUsers,
+        //             id: item.id
+        //             })
+        //         })
+        //     if (res.status === 200) {
+        //         console.log(true);
+        //     } else {
+        //         console.log(false);
+        //     }
+        // }
+        
+    }
+
+
     useEffect(() => {
-        const { katılanlar } = item
-        for (let i = 0 ; i < item.katılanlar.length; i++) {
-            dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
+        console.log(item);
+        if (item.katılanlar) {
+            const { katılanlar } = item
+            for (let i = 0 ; i < item.katılanlar.length; i++) {
+                dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
+            }
         }
+        // console.log('dispatch args are: ', item.pledge, item.hedef)
         dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
+        dispatch({type: "SET_STATUS", payload: item.durum})
         //eslint-disable-next-line
     }, [])
 
@@ -39,17 +77,17 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
                     <table className = "table table-striped collapsedMine-table">
                         <tbody>
                             {
-                            item.katılanlar.map((element, i) => {
+                            item.katılanlar && item.katılanlar.map((element, i) => {
                         return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
                                     <td>
                                         <input type="checkbox" id='joiner1' name={element.name}
                                         onChange = {(e) => {
-                                        dispatch({type: "TOGGLE_ECZANE", payload: e.target.name})
-                                        dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
+                                            dispatch({type: "TOGGLE_ECZANE", payload: e.target.name})
+                                            dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
                                         }} />
                                     </td>
                                     <td><label htmlFor = "joiner1"><b>{element.name}</b></label></td>
-                                    <td><h5>{element.pledged} / {item.hedef}</h5></td>
+                                    <td><h5>{element.pledge} / {item.hedef}</h5></td>
                                 </tr>
                                 })
                             }
@@ -57,10 +95,16 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
                     </table>
                 </CCol>
             </CFormGroup>
-            <CFormGroup row className = "collapsedMine-footerControlButtons">
-                <CButton color = "danger" onClick = {() => console.log(state)} >Teklifi sil</CButton>
-                <CButton  color = "success" onClick = {() => console.log(index)} >Onayla</CButton>
-            </CFormGroup>
+            {
+                state.isOnHold && <CFormGroup row className = "collapsedMine-footerControlButtons">
+                    <CButton color = "danger" >Teklifi sil</CButton>
+                    <CButton  color = "success" onClick = {() => approveBid()} >Onayla</CButton>
+                </CFormGroup>
+            }
+                 {/* <CFormGroup row className = "collapsedMine-footerControlButtons">
+                    <CButton color = "danger" >Teklifi sil</CButton>
+                    <CButton  color = "success" onClick = {() => approveBid()} >Onayla</CButton>
+                </CFormGroup> */}
             </>
     )
 }
@@ -71,9 +115,9 @@ export function CollapseJoin ({item, index, setOrder, total, bakiyeSonra}) {
 
     useEffect(() => {
         const { katılanlar } = item
-        for (let i = 0 ; i < item.katılanlar.length; i++) {
-            dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
-        }
+        // for (let i = 0 ; i < item.katılanlar.length; i++) {
+        //     dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
+        // }
         dispatch({type: "HEDEF_HESAPLA_COLLAPSED_JOIN", payload: item.pledge, hedef: item.hedef})
         //eslint-disable-next-line
     }, [])
@@ -100,7 +144,7 @@ export function CollapseJoin ({item, index, setOrder, total, bakiyeSonra}) {
             <table className = "table table-striped collapsedMine-table">
                 <tbody>
                     {
-                    item.katılanlar.map((element, i) => {
+                    item.katılanlar && item.katılanlar.map((element, i) => {
                 return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
                             <td><label htmlFor = "joiner1"><b>{element.name}</b></label></td>
                             <td><h5>{element.pledged} / {item.hedef}</h5></td>
