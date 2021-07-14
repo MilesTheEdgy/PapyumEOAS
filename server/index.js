@@ -479,8 +479,40 @@ app.post('/api/bid/new', authenticateToken, verifyNewBid, async (req, res) => {
 
 app.post('/api/bid/approve', authenticateToken, async (req, res) => {
 
-  console.log( req.body, req.user)
-  const query = await pool.query("SELECT * FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName])
+  function setBidJoiners(selectedUsers, joiners) {
+    let verifiedArray = [];
+    for (let i = 0; i < joiners.length; i++) {
+
+      for (let j = 0; j < selectedUsers.length; j++) {
+
+        if (joiners[i] === selectedUsers[j]) {
+          verifiedArray.push(selectedUsers[j])
+        }
+      }
+    }
+
+    return verifiedArray
+  }
+  // console.log( req.body, req.user)
+  const query = await pool.query("SELECT id, goal, price, poster_pledge, joiners, status FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName]);
+  // console.log(query.rows);
+  const { id, goal, price, poster_pledge, joiners, status } = query.rows[0];
+  if (status !== 'ON_HOLD') {
+    console.log('wtf')
+    return res.status(400).json("client error failed to pass bid approval verification")
+  }
+
+  const verifiedJoiners = setBidJoiners(req.body.selectedUsers, joiners)
+  console.log(verifiedJoiners);
+
+
+
+
+
+  // //updating application setting status to APPROVED where application id and token user pharmacy name matches, returning application id
+  // const updateQuery = await pool.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2 RETURNING id", [id, req.user.eczaneName])
+
+  // const transactionQuery = await pool.query()
   res.status(200).json(query.rows)
   // const client = await pool.connect()
   // try {

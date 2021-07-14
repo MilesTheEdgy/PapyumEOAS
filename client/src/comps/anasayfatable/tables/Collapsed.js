@@ -8,7 +8,7 @@ import "./collapsed.css"
 export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
 
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { isBidApproveLoading } = state
+    const { isLoading } = state
 
     const approveBid = async () => {
         dispatch({type: "APPROVE_BID", payload: {type: "LOADING"}})      
@@ -19,7 +19,7 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
             }
         }
         console.log(selectedUsers);
-        if (state.hedefeKalanMine === 0) {
+        if (state.hedefeKalanIs0) {
             const res = await fetch('/api/bid/approve', {
                     method: 'POST',
                     headers: {
@@ -50,12 +50,11 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
         // console.log('dispatch args are: ', item.pledge, item.hedef)
         dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
         dispatch({type: "SET_STATUS", payload: item.durum})
-        console.log(state.isOnHold);
         //eslint-disable-next-line
     }, [])
 
     return (
-        <Loader isLoading = {isBidApproveLoading} >
+        <Loader isLoading = {isLoading} >
             <CModal // Bid Changes Alert Modal 
             show={state.modal.on} 
             onClose={() => dispatch({type : "APPROVE_BID_LOADING", payload: {type: "CLOSE"}})}
@@ -114,7 +113,7 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
                 state.isOnHold && 
                 <CFormGroup row className = "collapsedMine-footerControlButtons">
                     <CButton color = "danger" >Teklifi sil</CButton>
-                    <CButton  color = "success" onClick = {() => approveBid()} >Onayla</CButton>
+                    <CButton disabled = {!state.hedefeKalanIs0} color = "success" onClick = {() => approveBid()} >Onayla</CButton>
                 </CFormGroup>
             }
         </Loader>

@@ -74,7 +74,6 @@ export function reducer (state, action) {
       }
 
     case "ADD_ROW":
-      console.log('ADD_ROW is triggered, payload is: ', action.payload)
       return {
         ...state,
         rows: [
@@ -150,7 +149,6 @@ export function reducer (state, action) {
       }
 
     case "SET_STATUS":
-      console.log(action.payload);
       switch (action.payload) {
         case "APPROVED":
           return {
@@ -196,31 +194,21 @@ export function reducer (state, action) {
               color: "danger"
             }
           }
-        case "MISSING_INFO":
+
+        case "CLOSE_MODAL&LOADER":
           return {
             ...state,
+            isloading: false,
             modal: {
               ...state.modal,
-              on: true,
-              header: "HATA",
-              body: "Lütfen Hedefinizi Kapatmadan Teklifi Onaylamayın",
-              color: "warning"
+              on: false,
+              header: "",
+              body: "",
+              color: ""
             }
           }
-          case "CLOSE_MODAL&LOADER":
-            return {
-              ...state,
-              isloading: false,
-              modal: {
-                ...state.modal,
-                on: false,
-                header: "",
-                body: "",
-                color: ""
-              }
-            }
         default:
-          break;
+          return
       }
   
     default:
