@@ -43,10 +43,9 @@ const TumTeklifler = () => {
             let bgColor = ""
             switch (obj.status) {
               case "APPROVED":
-                bgColor = "rgb(55, 229, 148, 0.25)"
-                break;
+                return bgColor = "rgb(55, 229, 148, 0.25)"
               case "DELETED":
-                bgColor = "red"
+                return bgColor = "red"
               default:
                 break;
             }

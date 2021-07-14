@@ -42,13 +42,14 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
 
 
     useEffect(() => {
-        console.log(item);
-        if (item.katılanlar) {
-            const { katılanlar } = item
-            for (let i = 0 ; i < item.katılanlar.length; i++) {
-                dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
-            }
-        }
+        // console.log(item);
+        // if (item.katılanlar) {
+        //     console.log('OUR STUPID FUCKING LENGTH IS: ', item.katılanlar.length)
+        //     const { katılanlar } = item
+        //     for (let i = 0 ; i < item.katılanlar.length; i++) {
+        //         dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
+        //     }
+        // }
         // console.log('dispatch args are: ', item.pledge, item.hedef)
         dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
         dispatch({type: "SET_STATUS", payload: item.durum})
@@ -111,13 +112,33 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
 
 export function CollapseJoin ({item, index, setOrder, total, bakiyeSonra}) {
 
+
+    //state.userInputJoin
+
     const [state, dispatch] = useReducer(reducer, initialState);
 
+    const onSubmit = async () => {
+        console.log(state.userInputJoin);
+
+        const res = await fetch('/api/bid/join', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${document.cookie.slice(11)} `
+              },
+              body: JSON.stringify({
+                userInputJoin: state.userInputJoin,
+                bid_id: item.id
+              })
+            })
+        if (res.status === 200) {
+            console.log("sent userInputJoin to server successfully");
+        } else {
+            console.log("userInputJoin was not sent to server");
+        }
+    }
+
     useEffect(() => {
-        const { katılanlar } = item
-        // for (let i = 0 ; i < item.katılanlar.length; i++) {
-        //     dispatch({type: "ADD_ROW", payload: {...katılanlar[i], clicked: false}})
-        // }
         dispatch({type: "HEDEF_HESAPLA_COLLAPSED_JOIN", payload: item.pledge, hedef: item.hedef})
         //eslint-disable-next-line
     }, [])
@@ -147,7 +168,7 @@ export function CollapseJoin ({item, index, setOrder, total, bakiyeSonra}) {
                     item.katılanlar && item.katılanlar.map((element, i) => {
                 return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
                             <td><label htmlFor = "joiner1"><b>{element.name}</b></label></td>
-                            <td><h5>{element.pledged} / {item.hedef}</h5></td>
+                            <td><h5>{element.pledge} / {item.hedef}</h5></td>
                         </tr>
                         })
                     }
@@ -173,7 +194,8 @@ export function CollapseJoin ({item, index, setOrder, total, bakiyeSonra}) {
             <p style = {{marginLeft: "10px", color: isBelow0(bakiyeSonra) }}>{bakiyeSonra} TL</p>
             </div>
             <div style = {{marginLeft: "20px"}} >
-            <CButton color = "success" onClick = {() => console.log("item is: ", item, "and index is: ", index)} >Onayla</CButton>
+            <CButton color = "success" onClick = {() => onSubmit()} >Onayla</CButton>
+            <CButton color = "success" onClick = {() => console.log(item.id)} >test</CButton>
             </div>
         </CFormGroup>
         </>

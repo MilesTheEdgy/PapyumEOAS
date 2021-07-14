@@ -1,8 +1,9 @@
 const express = require("express");
-const PORT = process.env.PORT || 3001;
-const app = express();
 const dotenv = require('dotenv');
 const pool = require("./db")
+const bcrypt = require("bcrypt")
+const app = express();
+const PORT = process.env.PORT || 3001;
 const { verifyNewBid, createNewBid } = require("./bids/bids")
 const { generateAccessToken, authenticateToken } = require("./token/token")
 
@@ -294,13 +295,36 @@ const eczDataBakiyehrkt = [
 ////////////////////////////////////////
 // ******** LOGIN AND AUTH ********** //
 ////////////////////////////////////////
-app.post('/api/login', (req, res) => {
+
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  if (username === "hayat" && password === "boss") {
-    const token = generateAccessToken({ username: req.body.username, eczaneName: "Hayat Eczanesi", ID: 1, role : "eczane" });
-    res.status(200).json({username, eczaneName: "Hayat Eczanesi", ID: 1, bakiye: 500, token});
-  } else {
-    res.status(401).json("not authorized")
+  try {
+    const query = await pool.query('SELECT id, username, hash, balance, pharmacy_name FROM users WHERE username = $1', [username])
+    if (username === query.rows[0].username) {
+      bcrypt.compare(password, query.rows[0].hash, function(err, result) {
+        if (err) {
+          return res.status(401).json("not authorized")
+        } else if (result) {
+          const token = generateAccessToken({
+            username: req.body.username,
+            eczaneName: query.rows[0].pharmacy_name,
+            ID: query.rows[0].id,
+            role : "eczane"
+          });
+          res.status(200).json({
+            username,
+            eczaneName: `${query.rows[0].pharmacy_name} Eczanesi`,
+            ID: 1,
+            bakiye: query.rows[0].balance,
+            token
+          });
+        }
+      });  
+    }
+    
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json("server error when logging in...")
   }
 })
 
@@ -319,13 +343,13 @@ app.get('/api/data/table/tum', authenticateToken, async (req, res) => {
     // console.log(query.rows);
     let arr = query.rows
     let joinerArr = []
-    console.log('original unmodifed array is: ', arr)
+    // console.log('original unmodifed array is: ', arr)
     for (let i = 0; i < arr.length; i++) {
-      console.log('I loop number: ', i )
+      // console.log('I loop number: ', i )
       if (arr[i].joiners && arr[i].joiner_pledges) {
-        console.log('arr[i].joiners is true, exectuing J loop...')
+        // console.log('arr[i].joiners is true, exectuing J loop...')
         for (let j = 0; j < arr[i].joiners.length; j++) {
-          console.log("taking these values: ", arr[i].joiners[j], "and storing them in an obj in an arr joinerArr");
+          // console.log("taking these values: ", arr[i].joiners[j], "and storing them in an obj in an arr joinerArr");
           joinerArr = [
             ...joinerArr,
               {
@@ -334,15 +358,15 @@ app.get('/api/data/table/tum', authenticateToken, async (req, res) => {
               }
           ]
         }
-        console.log('assiging the joinerArr to the original arr accoring to I loop', i, "index")
+        // console.log('assiging the joinerArr to the original arr accoring to I loop', i, "index")
         Object.assign(arr[i], {joiners: joinerArr})
       }
       joinerArr = []
-      console.log('modifed arr index is: ', arr[i]);
-      console.log('finished I loop number: ', i)
+      // console.log('modifed arr index is: ', arr[i]);
+      // console.log('finished I loop number: ', i)
     }
-    console.log('arr1 is: ', arr[1])
-    console.log('arr2 is: ', arr[2])
+    // console.log('arr1 is: ', arr[1])
+    // console.log('arr2 is: ', arr[2])
     let arr2 = arr.map(obj => {
       if (obj.joiners) {
         return {
@@ -420,10 +444,10 @@ app.post('/api/data/products', authenticateToken, async (req, res) => {
     const result = Number(input)
     let query
     if (Number.isNaN(result)) {
-      console.log('fetching according to medicine name')
+      // console.log('fetching according to medicine name')
       query = await pool.query("SELECT medicine, barcode FROM products WHERE medicine LIKE '%' || $1 || '%';", [input.toUpperCase()])
     } else if (!Number.isNaN(result)) {
-      console.log('fetching according to barcode number')
+      // console.log('fetching according to barcode number')
       query = await pool.query("SELECT medicine, barcode FROM products WHERE barcode::text LIKE '%' || $1 || '%';", [input])
     }
     if (query.rows.length == 0) {
@@ -454,19 +478,49 @@ app.post('/api/bid/new', authenticateToken, verifyNewBid, async (req, res) => {
 })
 
 app.post('/api/bid/approve', authenticateToken, async (req, res) => {
+
+  console.log( req.body, req.user)
+  const query = await pool.query("SELECT * FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName])
+  res.status(200).json(query.rows)
+  // const client = await pool.connect()
+  // try {
+  //   await client.query('BEGIN')
+
+  //   const { body, user } = req
+  //   const { selectedRows, id} = body
+  //   const query = await client.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2 RETURNING id", [id, user.eczaneName])
+  //   // console.log(query);
+  //   if (query.rowCount !== 0) {
+
+  //     await client.query("INSERT INTO transactions VALUES")
+
+  //     await client.query('COMMIT')
+  //     res.status(200).json("your application was updated successfully")
+  //   } else {
+  //     await client.query('ROLLBACK')
+  //     res.status(400).json("failed to update application, client error.")
+  //   }
+  // } catch (error) {
+  //   console.log(error);
+  //   await client.query('ROLLBACK')
+  //   res.status(500).json("Server error")
+  // } finally {
+
+  // }
+})
+
+app.post('/api/bid/join', authenticateToken, async (req, res) => {
   try {
-    const { body, user } = req
-    const { selectedRows, id} = body
-    const query = await pool.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2", [id, user.eczaneName])
-    console.log(query);
-    if (query.rowCount !== 0) {
-      res.status(200).json("your application was updated successfully")
-    } else {
-      res.status(400).json("failed to update application, client error.")
-    }
+    const { userInputJoin, bid_id } = req.body
+    const { user } = req
+    console.log(userInputJoin);
+    console.log(user);
+    const query = await pool.query("UPDATE applications SET joiners = array_append(joiners, $1), joiner_pledges = array_append(joiner_pledges, $2) WHERE id = $3",
+    [user.eczaneName, userInputJoin, bid_id])
+    return res.status(200).json("nice")
   } catch (error) {
     console.log(error);
-    res.status(500).json("Server error")
+    return res.status(500).json("server error when updating/joining bid")
   }
 })
 

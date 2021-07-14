@@ -73,9 +73,12 @@ export function reducer (state, action) {
       }
 
     case "HEDEF_HESAPLA_COLLAPSED_JOIN":
+      console.log('accounting...')
       const posterPledgeJoin = action.payload
+      console.log("posterPledgeJoin is: ", action.payload);
       const hedefJoin = action.hedef
-      const toplamHedefJoin = state.rows.reduce((accumulator, current) => accumulator + current.pledged, posterPledgeJoin);
+      console.log("hedefJoin is: ", action.hedef);
+      const toplamHedefJoin = state.rows.reduce((accumulator, current) => accumulator + current.pledge, posterPledgeJoin);
       const hedefeKalanJoin = hedefJoin - toplamHedefJoin
       if (hedefeKalanJoin === 0) {
         return {
@@ -200,7 +203,7 @@ export function toggleDetails(index, details, setDetails, setOrder, setTotal, se
 export function whichCollapsedToRender (reduxUser, dataUser, item, index, setOrder, total, bakiyeSonra) {
   if (reduxUser === dataUser) {
     return <CollapseMine item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
-  } // else {
-  //   return <CollapseJoin item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
-  // }
+  } else {
+    return <CollapseJoin item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
+  }
 }

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken")
 
 
 function generateAccessToken(data) {
-    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '604800s' });
+    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: '204800s' });
     //add eczane name as well ?
 }
   
