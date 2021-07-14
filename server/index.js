@@ -479,40 +479,43 @@ app.post('/api/bid/new', authenticateToken, verifyNewBid, async (req, res) => {
 
 app.post('/api/bid/approve', authenticateToken, async (req, res) => {
 
-  function setBidJoiners(selectedUsers, joiners) {
+  function setBidJoiners(selectedUsers, joiners, joiner_pledges) {
     let verifiedArray = [];
+    // console.log("verifying array: ", selectedUsers, " against: ", joiners)
     for (let i = 0; i < joiners.length; i++) {
-
+      // console.log("A loop: ", i)
       for (let j = 0; j < selectedUsers.length; j++) {
-
-        if (joiners[i] === selectedUsers[j]) {
-          verifiedArray.push(selectedUsers[j])
-        }
+        // console.log("------ B loop: ", j)
+        if (selectedUsers[j] === joiners[i]) {
+          // console.log('------ MATCH: ', selectedUsers[j], " is equal to: ", joiners[i])
+          // console.log("pushing the values", selectedUsers[j], " and ", joiner_pledges[i])
+          verifiedArray.push([selectedUsers[j], joiner_pledges[i]])
+        } // else {
+          // console.log('------ NO MATCH: ', selectedUsers[j], " is NOT equal to: ", joiners[i])
+        // }
+        // console.log("------ Looping B")
       }
+      // console.log("Looping A")
     }
-
     return verifiedArray
   }
-  // console.log( req.body, req.user)
-  const query = await pool.query("SELECT id, goal, price, poster_pledge, joiners, status FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName]);
-  // console.log(query.rows);
-  const { id, goal, price, poster_pledge, joiners, status } = query.rows[0];
+  const query = await pool.query("SELECT id, goal, price, poster_pledge, joiners, joiner_pledges , status FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName]);
+  const { id, goal, price, poster_pledge, joiners, joiner_pledges, status } = query.rows[0];
   if (status !== 'ON_HOLD') {
-    console.log('wtf')
     return res.status(400).json("client error failed to pass bid approval verification")
   }
 
-  const verifiedJoiners = setBidJoiners(req.body.selectedUsers, joiners)
+  const verifiedJoiners = setBidJoiners(req.body.selectedUsers, joiners, joiner_pledges)
   console.log(verifiedJoiners);
 
+  
 
-
-
-
-  // //updating application setting status to APPROVED where application id and token user pharmacy name matches, returning application id
+  //updating application setting status to APPROVED where application id and token user pharmacy name matches, returning application id
   // const updateQuery = await pool.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2 RETURNING id", [id, req.user.eczaneName])
 
-  // const transactionQuery = await pool.query()
+
+
+  // const transactionQuery = await pool.query("SELECT ")
   res.status(200).json(query.rows)
   // const client = await pool.connect()
   // try {
@@ -545,8 +548,17 @@ app.post('/api/bid/join', authenticateToken, async (req, res) => {
   try {
     const { userInputJoin, bid_id } = req.body
     const { user } = req
-    console.log(userInputJoin);
-    console.log(user);
+    // console.log(userInputJoin);
+    // console.log(user);
+    const verifyQuery = await pool.query("SELECT joiners, joiner_pledges FROM applications WHERE id = $1", [bid_id])
+    if (verifyQuery.rows.joiners) {
+      for (let i = 0; i < verifyQuery.rows[0].joiners.length; i++) {
+        console.log(verifyQuery.rows[0].joiners[i])
+        if (user.eczaneName === verifyQuery.rows[0].joiners[i]) {
+          return res.status(406).json("Unable to insert when user has already inserted")
+        }
+      }
+    }
     const query = await pool.query("UPDATE applications SET joiners = array_append(joiners, $1), joiner_pledges = array_append(joiner_pledges, $2) WHERE id = $3",
     [user.eczaneName, userInputJoin, bid_id])
     return res.status(200).json("nice")

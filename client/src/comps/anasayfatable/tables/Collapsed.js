@@ -112,7 +112,7 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
             {
                 state.isOnHold && 
                 <CFormGroup row className = "collapsedMine-footerControlButtons">
-                    <CButton color = "danger" >Teklifi sil</CButton>
+                    <CButton color = "danger">Teklifi sil</CButton>
                     <CButton disabled = {!state.hedefeKalanIs0} color = "success" onClick = {() => approveBid()} >Onayla</CButton>
                 </CFormGroup>
             }
@@ -121,7 +121,6 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
 }
 
 export function CollapseJoin ({reduxUser, item, index, setOrder, total, bakiyeSonra}) {
-
 
     //state.userInputJoin
 
