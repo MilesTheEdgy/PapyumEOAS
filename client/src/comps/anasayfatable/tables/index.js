@@ -10,6 +10,13 @@ export const initialState = {
   pickedRows: [],
   isCollapsed: false,
   isOnHold: false,
+  isloading: false,
+  modal: {
+    on: false,
+    header: "",
+    body: "",
+    color: ""
+  },
 }
 
 export function reducer (state, action) {
@@ -39,7 +46,32 @@ export function reducer (state, action) {
           pickedRows: pickedRowsCopy
         }
       }
+    case "TOGGLE_ECZANE_JOIN":
+      const index_join = state.rows.findIndex(row => row.name ===action.payload)
+      console.log("index: ", index_join);
+      const newArray_join = [...state.rows]
+      console.log("newArray: ", newArray_join);
+      newArray[index].clicked = !state.rows[index].clicked
 
+      if (newArray[index].clicked === true) {
+        return {
+          ...state,
+          rows: newArray,
+          pickedRows: [
+            ...state.pickedRows,
+            newArray[index]
+          ]
+        }
+      } else {
+        const pickedRowsCopy = state.pickedRows
+        const idxToRemove = pickedRowsCopy.findIndex(row => row.name ===action.payload)
+        pickedRowsCopy.splice(idxToRemove, 1)
+        return {
+          ...state,
+          rows: newArray,
+          pickedRows: pickedRowsCopy
+        }
+      }
 
     case "ADD_ROW":
       console.log('ADD_ROW is triggered, payload is: ', action.payload)
@@ -73,11 +105,11 @@ export function reducer (state, action) {
       }
 
     case "HEDEF_HESAPLA_COLLAPSED_JOIN":
-      console.log('accounting...')
+      // console.log('accounting...')
       const posterPledgeJoin = action.payload
-      console.log("posterPledgeJoin is: ", action.payload);
+      // console.log("posterPledgeJoin is: ", action.payload);
       const hedefJoin = action.hedef
-      console.log("hedefJoin is: ", action.hedef);
+      // console.log("hedefJoin is: ", action.hedef);
       const toplamHedefJoin = state.rows.reduce((accumulator, current) => accumulator + current.pledge, posterPledgeJoin);
       const hedefeKalanJoin = hedefJoin - toplamHedefJoin
       if (hedefeKalanJoin === 0) {
@@ -118,16 +150,77 @@ export function reducer (state, action) {
       }
 
     case "SET_STATUS":
+      console.log(action.payload);
       switch (action.payload) {
         case "APPROVED":
           return {
             ...state,
             isOnHold: false
           }
-      
+        case "ON_HOLD":
+          return {
+            ...state,
+            isOnHold: true
+          }
         default:
           return state
 
+      }
+
+    case "APPROVE_BID":
+      switch (action.payload.type) {
+        case "LOADING":
+          return {
+            ...state,
+            isloading: true
+          }
+        case "SUCCESS":
+          return {
+            ...state,
+            modal: {
+              ...state.modal,
+              on: true,
+              header: "BAŞARILI",
+              body: "Değişikleriniz Başarıyla Tamamlanmıştır",
+              color: "success"
+            }
+          }
+        case "FAILURE":
+          return {
+            ...state,
+            modal: {
+              ...state.modal,
+              on: true,
+              header: "HATA",
+              body: "Bir Hata Olmuştur, lütfen daha sonra tekrar deneyin",
+              color: "danger"
+            }
+          }
+        case "MISSING_INFO":
+          return {
+            ...state,
+            modal: {
+              ...state.modal,
+              on: true,
+              header: "HATA",
+              body: "Lütfen Hedefinizi Kapatmadan Teklifi Onaylamayın",
+              color: "warning"
+            }
+          }
+          case "CLOSE_MODAL&LOADER":
+            return {
+              ...state,
+              isloading: false,
+              modal: {
+                ...state.modal,
+                on: false,
+                header: "",
+                body: "",
+                color: ""
+              }
+            }
+        default:
+          break;
       }
   
     default:
@@ -204,6 +297,6 @@ export function whichCollapsedToRender (reduxUser, dataUser, item, index, setOrd
   if (reduxUser === dataUser) {
     return <CollapseMine item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
   } else {
-    return <CollapseJoin item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
+    return <CollapseJoin reduxUser = {reduxUser} item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
   }
 }

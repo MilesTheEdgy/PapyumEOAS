@@ -43,9 +43,11 @@ const TumTeklifler = () => {
             let bgColor = ""
             switch (obj.status) {
               case "APPROVED":
-                return bgColor = "rgb(55, 229, 148, 0.25)"
+                bgColor = "rgb(55, 229, 148, 0.25)";
+                break;
               case "DELETED":
-                return bgColor = "red"
+                bgColor = "red";
+                break
               default:
                 break;
             }
@@ -64,7 +66,7 @@ const TumTeklifler = () => {
               bgColor: bgColor
             }
           })
-          console.log("DATA FROM FETCH AFTER MUTI IS: ", dataArr);
+          // console.log("DATA FROM FETCH AFTER MUTI IS: ", dataArr);
           setData(dataArr)
           setLoading(false)
         }
