@@ -60,6 +60,27 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { isLoading, modal } = state
 
+    const removeBid = async () => {
+        dispatch({type: "APPROVE_BID", payload: {type: "LOADING_ON"}})
+        const res = await fetch('/api/bid', {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${document.cookie.slice(11)} `
+              },
+              body: JSON.stringify({
+                bid_id: item.id
+              })
+            })
+        if (res.status === 200) {
+            dispatch({type: "MODAL_DISPLAY", payload : {type: "SUCCESS"}})
+            dispatch({type: "APPROVE_BID", payload: {type: "LOADING_OFF"}})      
+        } else {
+            dispatch({type: "MODAL_DISPLAY", payload : {type: "FAILURE"}})
+            dispatch({type: "APPROVE_BID", payload: {type: "LOADING_OFF"}})
+        }
+    }
+
     const approveBid = async () => {
         dispatch({type: "APPROVE_BID", payload: {type: "LOADING_ON"}})      
         let selectedUsers = []
@@ -134,7 +155,7 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
             {
                 state.isOnHold && 
                 <CFormGroup row className = "collapsedMine-footerControlButtons">
-                    <CButton color = "danger">Teklifi sil</CButton>
+                    <CButton color = "danger" onClick = {() => removeBid()} >Teklifi sil</CButton>
                     <CButton disabled = {!state.hedefeKalanIs0} color = "success" onClick = {() => approveBid()} >Onayla</CButton>
                 </CFormGroup>
             }
