@@ -79,8 +79,9 @@ const TumTeklifler = () => {
     }, [])
 
     useEffect(() => {
-      if (order > 0) {
-        setTotal(order * data[clickedItemIndex].birimFiyat)
+      if (order >= 0) {
+        // if stupid thing dont work add another if statement to data[clickedItemIndex].birimFiyat
+        setTotal(order * data[clickedItemIndex]?.birimFiyat)
         setBakiyeSonra(bakiye - total)
       }
     }, [order, total, clickedItemIndex, bakiye, data])
@@ -181,7 +182,7 @@ const TumTeklifler = () => {
                               <CCard style = {{backgroundColor: item.bgColor}}>
                                 <CCardHeader>Detaylar</CCardHeader>
                                 <CCardBody>
-                                  {whichCollapsedToRender(eczaneName, item.eczane, item, index, setOrder, total, bakiyeSonra)}
+                                  {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
                                 </CCardBody>
                               </CCard>
                             </CCol>

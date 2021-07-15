@@ -615,20 +615,22 @@ app.post('/api/bid/join', authenticateToken, async (req, res) => {
   try {
     const { userInputJoin, bid_id } = req.body
     const { user } = req
-    // console.log(userInputJoin);
-    // console.log(user);
+
+    if (userInputJoin === 0 || userInputJoin === null || userInputJoin === undefined) {
+      return res.status(406).json("Unable to insert when value equals 0 or undefined")
+    }
+
     const verifyQuery = await pool.query("SELECT joiners, joiner_pledges FROM applications WHERE id = $1", [bid_id])
-    if (verifyQuery.rows.joiners) {
+    if (verifyQuery.rows[0].joiners) {
       for (let i = 0; i < verifyQuery.rows[0].joiners.length; i++) {
-        console.log(verifyQuery.rows[0].joiners[i])
         if (user.eczaneName === verifyQuery.rows[0].joiners[i]) {
           return res.status(406).json("Unable to insert when user has already inserted")
         }
       }
     }
-    const query = await pool.query("UPDATE applications SET joiners = array_append(joiners, $1), joiner_pledges = array_append(joiner_pledges, $2) WHERE id = $3",
+    await pool.query("UPDATE applications SET joiners = array_append(joiners, $1), joiner_pledges = array_append(joiner_pledges, $2) WHERE id = $3",
     [user.eczaneName, userInputJoin, bid_id])
-    return res.status(200).json("nice")
+    return res.status(200).json("your order was submitted")
   } catch (error) {
     console.log(error);
     return res.status(500).json("server error when updating/joining bid")

@@ -5,7 +5,11 @@ export const initialState = {
   totalPledges: 0,
   hedefeKalanMine: 0,
   hedefeKalanJoin: 0,
-  userInputJoin: 0,
+  userDynamicInput: {
+    input: 0,
+    total: 0,
+    balanceAfterPurchase: 0
+  },
   hedefeKalanIs0: false,
   pickedRows: [],
   isCollapsed: false,
@@ -128,26 +132,38 @@ export function reducer (state, action) {
         }
       }
 
-    case "HEDEFE_EKLE_INPUT_COLLAPSED_JOIN":
-      const input = action.payload;
-      if (typeof input === "string") {
-        if (input === "") {
-          return {
-            ...state,
-            userInputJoin: 0
-          }
-        }
-        let parsedInput = parseInt(input)
-        return {
-          ...state,
-          userInputJoin: parsedInput
-        }
-      } else {
-        return {
-          ...state,
-          userInputJoin: input
-        }
-      }
+    // case "HEDEFE_EKLE_INPUT_COLLAPSED_JOIN":
+    //   const input = action.payload;
+    //   if (typeof input === "string") {
+    //     if (input === "") {
+    //       return {
+    //         ...state,
+    //         userDynamicInput: {
+    //           input: 0,
+    //           total: 0,
+    //           balanceAfterPurchase: 0
+    //         }
+    //       }
+    //     }
+    //     let parsedInput = parseInt(input)
+    //     return {
+    //       ...state,
+    //       userDynamicInput: {
+    //         input: parsedInput,
+    //         total: 0,
+    //         balanceAfterPurchase: 0
+    //       }
+    //     }
+    //   } else {
+    //     return {
+    //       ...state,
+    //       userDynamicInput: {
+    //         input: input,
+    //         total: 0,
+    //         balanceAfterPurchase: 0
+    //       }
+    //     }
+    //   }
 
     case "SET_STATUS":
       switch (action.payload) {
@@ -169,11 +185,22 @@ export function reducer (state, action) {
 
     case "APPROVE_BID":
       switch (action.payload.type) {
-        case "LOADING":
+        case "LOADING_ON":
           return {
             ...state,
             isloading: true
           }
+        case "LOADING_OFF":
+          return {
+            ...state,
+            isloading: false
+          }
+        default:
+          return
+      }
+
+    case "MODAL_DISPLAY":
+      switch (action.payload.type) {
         case "SUCCESS":
           return {
             ...state,
@@ -196,11 +223,9 @@ export function reducer (state, action) {
               color: "danger"
             }
           }
-
-        case "CLOSE_MODAL&LOADER":
+        case "CLOSE":
           return {
             ...state,
-            isloading: false,
             modal: {
               ...state.modal,
               on: false,
@@ -209,8 +234,9 @@ export function reducer (state, action) {
               color: ""
             }
           }
+      
         default:
-          return
+          return;
       }
   
     default:
@@ -283,10 +309,10 @@ export function toggleDetails(index, details, setDetails, setOrder, setTotal, se
     setDetails(newDetails)
     }
 
-export function whichCollapsedToRender (reduxUser, dataUser, item, index, setOrder, total, bakiyeSonra) {
+export function whichCollapsedToRender (reduxUser, dataUser, item, index, order, setOrder, total, bakiyeSonra) {
   if (reduxUser === dataUser) {
     return <CollapseMine item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
   } else {
-    return <CollapseJoin reduxUser = {reduxUser} item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
+    return <CollapseJoin reduxUser = {reduxUser} item = {item} index = {index} order = {order} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
   }
 }
