@@ -17,6 +17,7 @@ export const initialState = {
     body: "",
     color: ""
   },
+  isNotPending: false
 }
 
 export function reducer (state, action) {
@@ -153,7 +154,8 @@ export function reducer (state, action) {
         case "APPROVED":
           return {
             ...state,
-            isOnHold: false
+            isOnHold: false,
+            isNotPending: true
           }
         case "ON_HOLD":
           return {

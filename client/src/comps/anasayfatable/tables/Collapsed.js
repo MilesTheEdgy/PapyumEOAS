@@ -5,6 +5,39 @@ import { isBelow0, initialState, reducer } from ".";
 import "./style.css"
 import "./collapsed.css"
 
+function CollapseMineTable({item, state, dispatch}) {
+    console.log(item.durum)
+    switch (item.durum) {
+        case "APPROVED":
+            return (
+                <table className = "table table-striped collapsedMine-table">
+                    <tbody>
+                        {
+                        item.katılanlar && item.katılanlar.map((element, i) => {
+                    return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
+                                <td>
+                                    <input type="checkbox" id='joiner1' name={element.name} disabled = {state.isNotPending}
+                                    onChange = {(e) => {
+                                        dispatch({type: "TOGGLE_ECZANE", payload: e.target.name})
+                                        dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
+                                    }} />
+                                </td>
+                                <td><label><b>{element.name}</b></label></td>
+                                <td><h5>{element.pledge} / {item.hedef}</h5></td>
+                            </tr>
+                            })
+                        }
+                    </tbody>
+                </table>
+                )
+        default:
+            return (
+                <table className = "table table-striped collapsedMine-table">
+                </table>
+                )
+        }
+}
+
 export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
 
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -88,25 +121,7 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
                 </CCol>
                 <CCol xs="12" md="6">
                     <CLabel>Katılanlar:</CLabel>
-                    <table className = "table table-striped collapsedMine-table">
-                        <tbody>
-                            {
-                            item.katılanlar && item.katılanlar.map((element, i) => {
-                        return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
-                                    <td>
-                                        <input type="checkbox" id='joiner1' name={element.name}
-                                        onChange = {(e) => {
-                                            dispatch({type: "TOGGLE_ECZANE", payload: e.target.name})
-                                            dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
-                                        }} />
-                                    </td>
-                                    <td><label htmlFor = "joiner1"><b>{element.name}</b></label></td>
-                                    <td><h5>{element.pledge} / {item.hedef}</h5></td>
-                                </tr>
-                                })
-                            }
-                        </tbody>
-                    </table>
+                    <CollapseMineTable item = {item} state = {state} dispatch = {dispatch}  />
                 </CCol>
             </CFormGroup>
             {
@@ -117,6 +132,36 @@ export function CollapseMine ({item, index, setOrder, total, bakiyeSonra}) {
                 </CFormGroup>
             }
         </Loader>
+    )
+}
+
+
+function CollapseJoinTables ({item, state, dispatch}) {
+    return (
+        <table className = "table table-striped collapsedMine-table">
+            <tbody>
+                {
+                item.katılanlar && item.katılanlar.map((element, i) => {
+            return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
+                        { state.isNotPending && element.isCurrentUser ?
+                            <td>
+                                <input type="checkbox" id='joiner1' name={element.name}
+                                onChange = {(e) => {
+                                    dispatch({type: "TOGGLE_ECZANE", payload: e.target.name})
+                                }} />
+                            </td>
+                            :
+                            <td>
+                                <input type="checkbox" id='joiner1' name={element.name} disabled />
+                            </td>
+                        }
+                        <td><label htmlFor = "joiner1"><b>{element.name}</b></label></td>
+                        <td><h5>{element.pledge} / {item.hedef}</h5></td>
+                    </tr>
+                    })
+                }
+            </tbody>
+        </table>
     )
 }
 
@@ -181,30 +226,7 @@ export function CollapseJoin ({reduxUser, item, index, setOrder, total, bakiyeSo
             </CCol>
             <CCol xs="12" md="6">
             <CLabel>Katılanlar:</CLabel>
-                <table className = "table table-striped collapsedMine-table">
-                    <tbody>
-                        {
-                        item.katılanlar && item.katılanlar.map((element, i) => {
-                    return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
-                                { element.isCurrentUser ?
-                                    <td>
-                                        <input type="checkbox" id='joiner1' name={element.name}
-                                        onChange = {(e) => {
-                                            dispatch({type: "TOGGLE_ECZANE", payload: e.target.name})
-                                        }} />
-                                    </td>
-                                    :
-                                    <td>
-                                        <input type="checkbox" id='joiner1' name={element.name} disabled />
-                                    </td>
-                                }
-                                <td><label htmlFor = "joiner1"><b>{element.name}</b></label></td>
-                                <td><h5>{element.pledge} / {item.hedef}</h5></td>
-                            </tr>
-                            })
-                        }
-                    </tbody>
-                </table>
+            <CollapseJoinTables item = {item} state = {state} dispatch = {dispatch} />
             <div style = {{display: "flex", justifyContent: "center", alignItems: "center"}}>
                 <h5 style = {{marginLeft: "15px"}} >Siz</h5>
                 <CInput style = {{maxWidth: "150px", marginLeft: "20px"}} type="number" placeholder="örnek: 15" 
@@ -232,3 +254,26 @@ export function CollapseJoin ({reduxUser, item, index, setOrder, total, bakiyeSo
         </>
 )
 }
+
+
+
+
+{/* <table className = "table table-striped collapsedMine-table">
+<tbody>
+    {
+    item.katılanlar && item.katılanlar.map((element, i) => {
+return <tr key = {i} style = {{backgroundColor: state.rows[i]?.clicked? "rgba(18, 54, 216, 0.514)" : "", color: "black"}} >
+            <td>
+                <input type="checkbox" id='joiner1' name={element.name} disabled = {state.isNotPending}
+                onChange = {(e) => {
+                    dispatch({type: "TOGGLE_ECZANE", payload: e.target.name})
+                    dispatch({type: "HEDEF_HESAPLA_COLLAPSED_MINE", payload: item.pledge, hedef: item.hedef})
+                }} />
+            </td>
+            <td><label><b>{element.name}</b></label></td>
+            <td><h5>{element.pledge} / {item.hedef}</h5></td>
+        </tr>
+        })
+    }
+</tbody>
+</table> */}

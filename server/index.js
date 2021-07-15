@@ -328,9 +328,15 @@ app.post('/api/login', async (req, res) => {
   }
 })
 
-app.post('/api', authenticateToken, (req, res) => {
-  const { username, eczaneName , ID } = req.user
-  res.status(200).json({username, eczaneName, ID, bakiye: 500});
+app.post('/api', authenticateToken, async (req, res) => {
+  try {
+    const { username, eczaneName , ID } = req.user
+    const query = await pool.query("SELECT balance FROM users WHERE pharmacy_name = $1", [eczaneName])
+    res.status(200).json({username, eczaneName, ID, bakiye: query.rows[0].balance});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("server error occurred when fetching data from api")
+  }
 })
 
 ////////////////////////////////////////
@@ -479,69 +485,130 @@ app.post('/api/bid/new', authenticateToken, verifyNewBid, async (req, res) => {
 
 app.post('/api/bid/approve', authenticateToken, async (req, res) => {
 
-  function setBidJoiners(selectedUsers, joiners, joiner_pledges) {
-    let verifiedArray = [];
-    // console.log("verifying array: ", selectedUsers, " against: ", joiners)
-    for (let i = 0; i < joiners.length; i++) {
-      // console.log("A loop: ", i)
-      for (let j = 0; j < selectedUsers.length; j++) {
-        // console.log("------ B loop: ", j)
-        if (selectedUsers[j] === joiners[i]) {
-          // console.log('------ MATCH: ', selectedUsers[j], " is equal to: ", joiners[i])
-          // console.log("pushing the values", selectedUsers[j], " and ", joiner_pledges[i])
-          verifiedArray.push([selectedUsers[j], joiner_pledges[i]])
-        } // else {
-          // console.log('------ NO MATCH: ', selectedUsers[j], " is NOT equal to: ", joiners[i])
-        // }
-        // console.log("------ Looping B")
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+
+    function setBuyerSellerValues(selectedUsers, joiners, joiner_pledges, price) {
+      let joinersArray = [];
+      let pledgesArray = [];
+      let pledgesTotal = 0
+      // console.log("verifying array: ", selectedUsers, " against: ", joiners)
+      for (let i = 0; i < joiners.length; i++) {
+        // console.log("A loop: ", i)
+        for (let j = 0; j < selectedUsers.length; j++) {
+          // console.log("------ B loop: ", j)
+          if (selectedUsers[j] === joiners[i]) {
+            // console.log('------ MATCH: ', selectedUsers[j], " is equal to: ", joiners[i])
+            // console.log("pushing the values", selectedUsers[j], " and ", joiner_pledges[i])
+            // joinersArray.push([selectedUsers[j], joiner_pledges[i]])
+            joinersArray.push(selectedUsers[j])
+            pledgesArray.push(joiner_pledges[i] * price)
+            pledgesTotal = pledgesTotal + joiner_pledges[i]
+          } // else {
+            // console.log('------ NO MATCH: ', selectedUsers[j], " is NOT equal to: ", joiners[i])
+          // }
+          // console.log("------ Looping B")
+        }
+        // console.log("Looping A")
       }
-      // console.log("Looping A")
+      return [joinersArray, pledgesArray, pledgesTotal]
     }
-    return verifiedArray
-  }
-  const query = await pool.query("SELECT id, goal, price, poster_pledge, joiners, joiner_pledges , status FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName]);
-  const { id, goal, price, poster_pledge, joiners, joiner_pledges, status } = query.rows[0];
-  if (status !== 'ON_HOLD') {
-    return res.status(400).json("client error failed to pass bid approval verification")
-  }
-
-  const verifiedJoiners = setBidJoiners(req.body.selectedUsers, joiners, joiner_pledges)
-  console.log(verifiedJoiners);
-
+    function setBuyerBalance(users, verifiedUsers, totalOfPurchase) {
+      let arr = []
+      // console.log(users);
+      console.log(verifiedUsers)
+      console.log(totalOfPurchase);
+      for (let i = 0; i < verifiedUsers.length; i++) {
+        console.log('A loop ', i, verifiedUsers[i])
+        for (let j = 0; j < users.length; j++) {
+          console.log('---- B loop', j, users[j])
+          if (verifiedUsers[i] === users[j].pharmacy_name) {
+            console.log('---- MATCH: ', users[j].pharmacy_name)
+            console.log('---- totalOfPurchase:  ', totalOfPurchase[i], 'user balance: ', users[j].balance)
+            arr.push(Number(users[j].balance) - Number(totalOfPurchase[i]) )
+          }          
+        }
+      }
+      return arr
+    }
+    function sellerBalance(usersArray, reqBodyUser) {
+      let balance = 1
+      for (let i = 0; i < usersArray.length; i++) {
+        if (reqBodyUser === usersArray[i].pharmacy_name) {
+          balance = usersArray[i].balance
+          return balance
+        }
+      }
+    }
+    const query = await client.query("SELECT id, goal, price, poster_pledge, joiners, joiner_pledges, status, submitter FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName]);
+    const { id, goal, price, poster_pledge, joiners, joiner_pledges, status, submitter } = query.rows[0];
+    if (status !== 'ON_HOLD') {
+      return res.status(400).json("client error failed to pass bid approval verification")
+    }
+    
+    const usersQuery = await client.query("SELECT * FROM users;")
   
+    // the balance the submitter (seller) currently has
+    const submitterBalance = sellerBalance(usersQuery.rows, req.user.eczaneName)
+    // array of arrays which has [list of buyers, total for each buyer, the amount of items the seller with purchase]
+    const transactionArray = setBuyerSellerValues(req.body.selectedUsers, joiners, joiner_pledges, price)
+    // verifies the balance the buyers currently have then sets the new balance, returns array of each newly set balance
+    const buyersNewBalance = setBuyerBalance(usersQuery.rows, req.body.selectedUsers, transactionArray[1])
+    console.log(buyersNewBalance)
+    // total for seller (+)
+    const sellerTotal = transactionArray[2] * price
+    // the newly set balance after purchase, current balance + sold items total
+    const sellerBalanceAfter = Number(submitterBalance) + Number(sellerTotal)
 
-  //updating application setting status to APPROVED where application id and token user pharmacy name matches, returning application id
-  // const updateQuery = await pool.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2 RETURNING id", [id, req.user.eczaneName])
+    ///////////////*******///////////////DEBUG SESSION////////********////////////////////////////
+    
+    // console.log(id)
+    // console.log(submitter)
+    // console.log(sellerTotal)
+    // console.log(sellerBalanceAfter)
+    // console.log(transactionArray[0])
+    // console.log(transactionArray[1])
+    // // console.log(buyersNewBalance)
+    // console.log(`INSERT INTO transactions (application_id, seller, seller_amount, seller_balance_after, buyers, buyers_amount, buyers_balance_after, date) \n
+    //  VALUES (${id}, ${submitter}, ${sellerTotal}, ${sellerBalanceAfter}, [${transactionArray[0]}], [${transactionArray[1]}], [${buyersNewBalance}], current_timestamp)`);
+  
+    // for (let i = 0; i < transactionArray[0].length; i++) {
+    //   console.log(`UPDATE users SET balance = ${buyersNewBalance[i]} WHERE pharmacy_name = ${transactionArray[0][i]}`)
+    // }
+    // console.log(`UPDATE users SET balance = ${sellerBalanceAfter} WHERE pharmacy_name = ${submitter}`, [sellerBalanceAfter, submitter])
+
+    ///////////////*******///////////////DEBUG SESSION////////********////////////////////////////
+
+    const transactionQueryText = "INSERT INTO transactions (application_id, seller, seller_amount, seller_balance_after, buyers, buyers_amount, buyers_balance_after, date) VALUES ($1, $2, $3, $4, $5, $6, $7, current_timestamp)"
+    const transactionQueryArgs = [id, submitter, sellerTotal, sellerBalanceAfter, transactionArray[0], transactionArray[1], buyersNewBalance]
+    await client.query(transactionQueryText, transactionQueryArgs)
+  
+    //updating each individual buyer balance through a for loop
+    for (let i = 0; i < transactionArray[0].length; i++) {
+      await client.query("UPDATE users SET balance = $1 WHERE pharmacy_name = $2", [ buyersNewBalance[i], transactionArray[0][i] ])
+    }
+
+    // updating submitter balance
+    await client.query("UPDATE users SET balance = $1 WHERE pharmacy_name = $2", [sellerBalanceAfter, submitter])
+  
+    // setting application to approved
+    await client.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2", [id, req.user.eczaneName])
+  
+    await client.query('COMMIT')
+    
+    //responding with success
+    res.status(200).json(query.rows)
 
 
+  } catch (e) {
+    await client.query('ROLLBACK')
+    console.log(e)
+    return res.status(500).json("server error when approving bid")
 
-  // const transactionQuery = await pool.query("SELECT ")
-  res.status(200).json(query.rows)
-  // const client = await pool.connect()
-  // try {
-  //   await client.query('BEGIN')
-
-  //   const { body, user } = req
-  //   const { selectedRows, id} = body
-  //   const query = await client.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2 RETURNING id", [id, user.eczaneName])
-  //   // console.log(query);
-  //   if (query.rowCount !== 0) {
-
-  //     await client.query("INSERT INTO transactions VALUES")
-
-  //     await client.query('COMMIT')
-  //     res.status(200).json("your application was updated successfully")
-  //   } else {
-  //     await client.query('ROLLBACK')
-  //     res.status(400).json("failed to update application, client error.")
-  //   }
-  // } catch (error) {
-  //   console.log(error);
-  //   await client.query('ROLLBACK')
-  //   res.status(500).json("Server error")
-  // } finally {
-
-  // }
+  } finally {
+    client.release()
+  }
 })
 
 app.post('/api/bid/join', authenticateToken, async (req, res) => {
