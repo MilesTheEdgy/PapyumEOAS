@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CLabel, CRow } from "@coreui/react";
+import { CDataTable, CBadge, CButton, CCollapse, CCol, CLabel, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
 import { useSelector } from "react-redux";
 import { fields, getBadge, getStatus, getCondition, toggleDetails, whichCollapsedToRender } from "../";
@@ -7,22 +7,20 @@ import "../style.css"
 
 const BekleyenTeklifler = () => {
 
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState([])
-  const [details, setDetails] = useState([])
-  const [clickedItemIndex, setClickedItemIndex] = useState(0)
-  const [order, setOrder] = useState(0)
-  const [total, setTotal] = useState(0)
-  const [bakiyeSonra, setBakiyeSonra] = useState(0)
-  
-  const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
-  const bakiye = useSelector(state => state.user.userInfo.bakiye)
+    const [loading, setLoading] = useState(true)
+    const [data, setData] = useState([])
+    const [details, setDetails] = useState([])
+    const [clickedItemIndex, setClickedItemIndex] = useState(0)
+    const [order, setOrder] = useState(0)
+    const [total, setTotal] = useState(0)
+    const [bakiyeSonra, setBakiyeSonra] = useState(0)
+    
+    const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
+    const bakiye = useSelector(state => state.user.userInfo.bakiye)
   
 
     useEffect(() => {
-      const fetchData = async () => {
-        console.log('Fetching items for BEKLEYEN teklifler')
-  
+      const fetchData = async () => {  
         const res = await fetch(`/api/data/table/bekleyen`, {
           headers: {
             'Content-Type': 'application/json',
@@ -32,7 +30,6 @@ const BekleyenTeklifler = () => {
   
         if (res.status === 200) {
           const data = await res.json()
-          // console.log(data);
           const dataArr = data.map((obj, i) => {
             let bgColor = ""
             switch (obj.status) {
@@ -50,7 +47,7 @@ const BekleyenTeklifler = () => {
               durum: obj.status,
               eczane: obj.submitter,
               hedef: obj.goal,
-              id: obj.id,
+              ID: obj.id,
               kampanya: obj.condition,
               pledge: obj.poster_pledge,
               sonTarih: obj.final_date,
@@ -60,12 +57,9 @@ const BekleyenTeklifler = () => {
               bgColor: bgColor
             }
           })
-          // console.log("DATA FROM FETCH AFTER MUTI IS: ", dataArr);
           setData(dataArr)
           setLoading(false)
         }
-  
-        console.log('finished fetching for BEKLEYEN teklifler')
       }
 
       fetchData()
@@ -74,7 +68,6 @@ const BekleyenTeklifler = () => {
 
     useEffect(() => {
       if (order >= 0) {
-        // if stupid thing dont work add another if statement to data[clickedItemIndex].birimFiyat
         setTotal(order * data[clickedItemIndex]?.birimFiyat)
         setBakiyeSonra(bakiye - total)
       }
@@ -88,10 +81,7 @@ const BekleyenTeklifler = () => {
         </CCol>
       </CRow>
       <CRow>
-      {
-          loading ?
-          <Loader />
-          :
+        <Loader isLoading = {loading} >
           <CCol>
             <div style = {{border: "solid 1px rgb(83, 83, 223, 0.35)"}} >
               <CDataTable
@@ -101,7 +91,6 @@ const BekleyenTeklifler = () => {
                 columnFilter
                 footer
                 itemsPerPage={50}
-                hover
                 sorter
                 pagination
                 border
@@ -171,16 +160,9 @@ const BekleyenTeklifler = () => {
                       (item, index)=>{
                         return (
                         <CCollapse show={details.includes(index)}>
-                          <CCardBody>
-                            <CCol xs="12" sm="12">
-                              <CCard style = {{backgroundColor: item.bgColor}}>
-                                <CCardHeader>Detaylar</CCardHeader>
-                                <CCardBody>
-                                  {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
-                                </CCardBody>
-                              </CCard>
+                            <CCol sm = "12">
+                              {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
                             </CCol>
-                          </CCardBody>
                         </CCollapse>
                       )
                     }
@@ -188,7 +170,7 @@ const BekleyenTeklifler = () => {
               />
             </div>
           </CCol>
-        }
+        </Loader>
       </CRow>
       </>
       )

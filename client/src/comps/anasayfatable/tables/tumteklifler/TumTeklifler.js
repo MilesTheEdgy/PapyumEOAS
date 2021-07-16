@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CLabel, CRow } from "@coreui/react";
+import { CDataTable, CBadge, CButton, CCollapse, CCol, CLabel, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
 import { useSelector } from "react-redux";
 import { fields, getBadge, getStatus, getCondition, toggleDetails, whichCollapsedToRender } from "../";
@@ -27,8 +27,6 @@ const TumTeklifler = () => {
 
     useEffect(() => {
       const fetchData = async () => {
-        console.log('fetching items for TUM teklifler')
-  
         const res = await fetch(`/api/data/table/tum`, {
           headers: {
             'Content-Type': 'application/json',
@@ -38,7 +36,6 @@ const TumTeklifler = () => {
   
         if (res.status === 200) {
           const data = await res.json()
-          // console.log(data);
           const dataArr = data.map((obj, i) => {
             let bgColor = ""
             switch (obj.status) {
@@ -56,7 +53,7 @@ const TumTeklifler = () => {
               durum: obj.status,
               eczane: obj.submitter,
               hedef: obj.goal,
-              id: obj.id,
+              ID: obj.id,
               kampanya: obj.condition,
               pledge: obj.poster_pledge,
               sonTarih: obj.final_date,
@@ -66,12 +63,9 @@ const TumTeklifler = () => {
               bgColor: bgColor
             }
           })
-          // console.log("DATA FROM FETCH AFTER MUTI IS: ", dataArr);
           setData(dataArr)
           setLoading(false)
         }
-  
-        console.log('finished fetching for TUM teklifler')
       }
 
       fetchData()
@@ -80,7 +74,6 @@ const TumTeklifler = () => {
 
     useEffect(() => {
       if (order >= 0) {
-        // if stupid thing dont work add another if statement to data[clickedItemIndex].birimFiyat
         setTotal(order * data[clickedItemIndex]?.birimFiyat)
         setBakiyeSonra(bakiye - total)
       }
@@ -94,10 +87,7 @@ const TumTeklifler = () => {
         </CCol>
       </CRow>
       <CRow>
-      {
-          loading ?
-          <Loader />
-          :
+        <Loader isLoading = {loading}>
           <CCol>
             <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
               <CDataTable
@@ -107,7 +97,6 @@ const TumTeklifler = () => {
                 columnFilter
                 footer
                 itemsPerPage={50}
-                hover
                 sorter
                 pagination
                 border
@@ -177,16 +166,9 @@ const TumTeklifler = () => {
                       (item, index)=>{
                         return (
                         <CCollapse show={details.includes(index)}>
-                          <CCardBody>
-                            <CCol xs="12" sm="12">
-                              <CCard style = {{backgroundColor: item.bgColor}}>
-                                <CCardHeader>Detaylar</CCardHeader>
-                                <CCardBody>
-                                  {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
-                                </CCardBody>
-                              </CCard>
+                            <CCol sm = "12">
+                              {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
                             </CCol>
-                          </CCardBody>
                         </CCollapse>
                       )
                     }
@@ -194,7 +176,7 @@ const TumTeklifler = () => {
               />
             </div>
           </CCol>
-        }
+        </Loader>
       </CRow>
       </>
       )

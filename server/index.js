@@ -269,28 +269,6 @@ const eczDataBekleyen = [
 }
 ]
 
-const eczDataBakiyehrkt = [
-  {
-    ID: 0,
-    İlaç: "PARACETOL",
-    eczane: "Hayat Eczanesi",
-    tür: "Satış",
-    tarih: "2018/01/09",
-    bakiye: "500"
-  },
-  {
-    ID: 1,
-    İlaç: "DEPRECAMOL",
-    eczane: "Başka Eczanesi",
-    tür: "Alış",
-    tarih: "2018/01/09",
-    bakiye: "150"
-  },
-]
-
-
-
-
 
 ////////////////////////////////////////
 // ******** LOGIN AND AUTH ********** //
@@ -299,7 +277,7 @@ const eczDataBakiyehrkt = [
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const query = await pool.query('SELECT id, username, hash, balance, pharmacy_name FROM users WHERE username = $1', [username])
+    const query = await pool.query('SELECT id, username, hash, balance, pharmacy_name FROM users WHERE username = $1;', [username])
     if (username === query.rows[0].username) {
       bcrypt.compare(password, query.rows[0].hash, function(err, result) {
         if (err) {
@@ -331,7 +309,7 @@ app.post('/api/login', async (req, res) => {
 app.post('/api', authenticateToken, async (req, res) => {
   try {
     const { username, eczaneName , ID } = req.user
-    const query = await pool.query("SELECT balance FROM users WHERE pharmacy_name = $1", [eczaneName])
+    const query = await pool.query("SELECT balance FROM users WHERE pharmacy_name = $1;", [eczaneName])
     res.status(200).json({username, eczaneName, ID, bakiye: query.rows[0].balance});
   } catch (error) {
     console.log(error);
@@ -345,7 +323,7 @@ app.post('/api', authenticateToken, async (req, res) => {
 app.get('/api/data/table/tum', authenticateToken, async (req, res) => {
   // tum teklifler
   try {
-    const query = await pool.query("SELECT * FROM applications")
+    const query = await pool.query("SELECT * FROM applications;")
     // console.log(query.rows);
     let arr = query.rows
     let joinerArr = []
@@ -415,14 +393,147 @@ app.get('/api/data/table/tum', authenticateToken, async (req, res) => {
   }
 })
 
-app.get('/api/data/table/bekleyen', authenticateToken, (req, res) => {
-  res.status(200).json(eczDataBekleyen)
-})
+app.get('/api/data/table/bekleyen', authenticateToken, async (req, res) => {
+  try {
+    const query = await pool.query("SELECT * FROM applications WHERE status = 'ON_HOLD';")
+    // console.log(query.rows);
+    let arr = query.rows
+    let joinerArr = []
+    // console.log('original unmodifed array is: ', arr)
+    for (let i = 0; i < arr.length; i++) {
+      // console.log('I loop number: ', i )
+      if (arr[i].joiners && arr[i].joiner_pledges) {
+        // console.log('arr[i].joiners is true, exectuing J loop...')
+        for (let j = 0; j < arr[i].joiners.length; j++) {
+          // console.log("taking these values: ", arr[i].joiners[j], "and storing them in an obj in an arr joinerArr");
+          joinerArr = [
+            ...joinerArr,
+              {
+                name: arr[i].joiners[j],
+                pledge: arr[i].joiner_pledges[j]
+              }
+          ]
+        }
+        // console.log('assiging the joinerArr to the original arr accoring to I loop', i, "index")
+        Object.assign(arr[i], {joiners: joinerArr})
+      }
+      joinerArr = []
+      // console.log('modifed arr index is: ', arr[i]);
+      // console.log('finished I loop number: ', i)
+    }
+    // console.log('arr1 is: ', arr[1])
+    // console.log('arr2 is: ', arr[2])
+    let arr2 = arr.map(obj => {
+      if (obj.joiners) {
+        return {
+          id: obj.id,
+          product_name: obj.product_name,
+          goal: obj.goal,
+          condition: obj.condition,
+          price: obj.price,
+          poster_pledge: obj.poster_pledge,
+          description: obj.description,
+          status: obj.status,
+          date: obj.date,
+          submitter: obj.submitter,
+          final_date: obj.final_date,
+          joiners: obj.joiners,
+        }
+      } else {
+        return {
+          id: obj.id,
+          product_name: obj.product_name,
+          goal: obj.goal,
+          condition: obj.condition,
+          price: obj.price,
+          poster_pledge: obj.poster_pledge,
+          description: obj.description,
+          status: obj.status,
+          date: obj.date,
+          submitter: obj.submitter,
+          final_date: obj.final_date,
+          joiners: obj.joiners,
+          joiner_pledges: obj.joiner_pledges
+        }
+      }
+    })
+    res.status(200).json(arr)
+    
+  } catch (error) {
+    console.log(error);  
+    res.status(500).json("server error")
+  }})
 
-app.get('/api/data/table/hareket', authenticateToken, (req, res) => {
-  res.status(200).json(eczDataBakiyehrkt)
-})
-
+  app.get('/api/data/table/sizin', authenticateToken, async (req, res) => {
+    try {
+      const query = await pool.query("SELECT * FROM applications WHERE submitter = $1;", [req.user.eczaneName])
+      // console.log(query.rows);
+      let arr = query.rows
+      let joinerArr = []
+      // console.log('original unmodifed array is: ', arr)
+      for (let i = 0; i < arr.length; i++) {
+        // console.log('I loop number: ', i )
+        if (arr[i].joiners && arr[i].joiner_pledges) {
+          // console.log('arr[i].joiners is true, exectuing J loop...')
+          for (let j = 0; j < arr[i].joiners.length; j++) {
+            // console.log("taking these values: ", arr[i].joiners[j], "and storing them in an obj in an arr joinerArr");
+            joinerArr = [
+              ...joinerArr,
+                {
+                  name: arr[i].joiners[j],
+                  pledge: arr[i].joiner_pledges[j]
+                }
+            ]
+          }
+          // console.log('assiging the joinerArr to the original arr accoring to I loop', i, "index")
+          Object.assign(arr[i], {joiners: joinerArr})
+        }
+        joinerArr = []
+        // console.log('modifed arr index is: ', arr[i]);
+        // console.log('finished I loop number: ', i)
+      }
+      // console.log('arr1 is: ', arr[1])
+      // console.log('arr2 is: ', arr[2])
+      let arr2 = arr.map(obj => {
+        if (obj.joiners) {
+          return {
+            id: obj.id,
+            product_name: obj.product_name,
+            goal: obj.goal,
+            condition: obj.condition,
+            price: obj.price,
+            poster_pledge: obj.poster_pledge,
+            description: obj.description,
+            status: obj.status,
+            date: obj.date,
+            submitter: obj.submitter,
+            final_date: obj.final_date,
+            joiners: obj.joiners,
+          }
+        } else {
+          return {
+            id: obj.id,
+            product_name: obj.product_name,
+            goal: obj.goal,
+            condition: obj.condition,
+            price: obj.price,
+            poster_pledge: obj.poster_pledge,
+            description: obj.description,
+            status: obj.status,
+            date: obj.date,
+            submitter: obj.submitter,
+            final_date: obj.final_date,
+            joiners: obj.joiners,
+            joiner_pledges: obj.joiner_pledges
+          }
+        }
+      })
+      res.status(200).json(arr)
+      
+    } catch (error) {
+      console.log(error);  
+      res.status(500).json("server error")
+    }})
 
 ////////////////////////////////////////
 // ************ PRODUCTS ************** //
@@ -541,16 +652,20 @@ app.post('/api/bid/approve', authenticateToken, async (req, res) => {
         }
       }
     }
-    const query = await client.query("SELECT id, goal, price, poster_pledge, joiners, joiner_pledges, status, submitter FROM applications WHERE id = $1 and submitter = $2", [req.body.id, req.user.eczaneName]);
+
+    console.log(req.body)
+    const query = await client.query("SELECT id, goal, price, poster_pledge, joiners, joiner_pledges, status, submitter, transaction_id FROM applications WHERE id = $1 and submitter = $2;", [req.body.id, req.user.eczaneName]);
+    console.log(query.rows)
     const { id, goal, price, poster_pledge, joiners, joiner_pledges, status, submitter } = query.rows[0];
     if (status !== 'ON_HOLD') {
       return res.status(400).json("client error failed to pass bid approval verification")
     }
+
     
     const usersQuery = await client.query("SELECT * FROM users;")
   
     // the balance the submitter (seller) currently has
-    const submitterBalance = sellerBalance(usersQuery.rows, req.user.eczaneName)
+    const submitterBalance = sellerBalance(usersQuery.rows, req.user.eczaneName)  
     // array of arrays which has [list of buyers, total for each buyer, the amount of items the seller with purchase]
     const transactionArray = setBuyerSellerValues(req.body.selectedUsers, joiners, joiner_pledges, price)
     // verifies the balance the buyers currently have then sets the new balance, returns array of each newly set balance
@@ -560,6 +675,8 @@ app.post('/api/bid/approve', authenticateToken, async (req, res) => {
     const sellerTotal = transactionArray[2] * price
     // the newly set balance after purchase, current balance + sold items total
     const sellerBalanceAfter = Number(submitterBalance) + Number(sellerTotal)
+
+    const transaction_id = query.rows[0].transaction_id
 
     ///////////////*******///////////////DEBUG SESSION////////********////////////////////////////
     
@@ -580,20 +697,20 @@ app.post('/api/bid/approve', authenticateToken, async (req, res) => {
 
     ///////////////*******///////////////DEBUG SESSION////////********////////////////////////////
 
-    const transactionQueryText = "INSERT INTO transactions (application_id, seller, seller_amount, seller_balance_after, buyers, buyers_amount, buyers_balance_after, date) VALUES ($1, $2, $3, $4, $5, $6, $7, current_timestamp)"
-    const transactionQueryArgs = [id, submitter, sellerTotal, sellerBalanceAfter, transactionArray[0], transactionArray[1], buyersNewBalance]
+    const transactionQueryText = "INSERT INTO transactions (transaction_id, seller, seller_amount, seller_balance_after, buyers, buyers_amount, buyers_balance_after, date) VALUES ($1, $2, $3, $4, $5, $6, $7, current_timestamp);"
+    const transactionQueryArgs = [transaction_id, submitter, sellerTotal, sellerBalanceAfter, transactionArray[0], transactionArray[1], buyersNewBalance]
     await client.query(transactionQueryText, transactionQueryArgs)
   
     //updating each individual buyer balance through a for loop
     for (let i = 0; i < transactionArray[0].length; i++) {
-      await client.query("UPDATE users SET balance = $1 WHERE pharmacy_name = $2", [ buyersNewBalance[i], transactionArray[0][i] ])
+      await client.query("UPDATE users SET balance = $1 WHERE pharmacy_name = $2;", [ buyersNewBalance[i], transactionArray[0][i] ])
     }
 
     // updating submitter balance
-    await client.query("UPDATE users SET balance = $1 WHERE pharmacy_name = $2", [sellerBalanceAfter, submitter])
+    await client.query("UPDATE users SET balance = $1 WHERE pharmacy_name = $2;", [sellerBalanceAfter, submitter])
   
     // setting application to approved
-    await client.query("UPDATE applications SET status = 'APPROVED' WHERE id = $1 AND submitter = $2", [id, req.user.eczaneName])
+    await client.query("UPDATE applications SET status = 'APPROVED', status_change_date = current_timestamp WHERE id = $1 AND submitter = $2;", [id, req.user.eczaneName])
   
     await client.query('COMMIT')
     
@@ -620,20 +737,116 @@ app.post('/api/bid/join', authenticateToken, async (req, res) => {
       return res.status(406).json("Unable to insert when value equals 0 or undefined")
     }
 
-    const verifyQuery = await pool.query("SELECT joiners, joiner_pledges FROM applications WHERE id = $1", [bid_id])
-    if (verifyQuery.rows[0].joiners) {
+    const verifyQuery = await pool.query("SELECT joiners, joiner_pledges FROM applications WHERE id = $1;", [bid_id])
+    if (verifyQuery.rows[0]?.joiners) {
       for (let i = 0; i < verifyQuery.rows[0].joiners.length; i++) {
         if (user.eczaneName === verifyQuery.rows[0].joiners[i]) {
           return res.status(406).json("Unable to insert when user has already inserted")
         }
       }
     }
-    await pool.query("UPDATE applications SET joiners = array_append(joiners, $1), joiner_pledges = array_append(joiner_pledges, $2) WHERE id = $3",
+
+    await pool.query("UPDATE applications SET joiners = array_append(joiners, $1), joiner_pledges = array_append(joiner_pledges, $2) WHERE id = $3;",
     [user.eczaneName, userInputJoin, bid_id])
     return res.status(200).json("your order was submitted")
   } catch (error) {
     console.log(error);
     return res.status(500).json("server error when updating/joining bid")
+  }
+})
+
+app.delete('/api/bid', authenticateToken, async (req, res) => {
+  try {
+    const { bid_id } = req.body
+    const { eczaneName } = req.user
+    await pool.query("DELETE FROM applications WHERE id = $1 AND submitter = $2;", [bid_id, eczaneName])
+    return res.status(200).json("bid deletion success")
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json("Failure when deleting bid")
+  }
+})
+
+app.get('/api/data/table/hareket', async (req, res) => {
+  const eczDataBakiyehrkt = [
+    {
+      ID: 2,
+      application_id: 43,
+      İlaç: "PARACETOL",
+      eczane: "Hayat Eczanesi",
+      tür: "Alış",
+      hedef: 80,
+      pledge: 20,
+      tarih: "2018/01/09",
+      bakiye: -500,
+      joiners: [
+        {
+          eczane: "İstanbul Eczanesi",
+          pledge: 25,
+          bakiye: -648
+        },
+        {
+          eczane: "Samsun Eczanesi",
+          pledge: 35,
+          bakiye: -648 
+        }
+      ]
+    },
+    {
+      ID: 3,
+      application_id: 38,
+      İlaç: "PARACETOL",
+      eczane: "İstanbul Eczanesi",
+      tür: "Satış",
+      hedef: 100,
+      pledge: 35,
+      tarih: "2018/01/09",
+      bakiye: 500,
+      joiners: [
+        {
+          eczane: "Gül Eczanesi",
+          pledge: 25,
+          bakiye: -648
+        },
+        {
+          eczane: "Başak Eczanesi",
+          pledge: 35,
+          bakiye: -648 
+        }
+      ]
+    },
+  ]
+
+  try {
+      const getTransactionArray = (transactions, applications) => {
+        let arr = []
+        for (let i = 0; i < transactions.length; i++) {
+          arr.push({
+            ID: transactions[i].transaction_id,
+            application_id: transactions[i].application_id,
+            medicine: applications[i].product_name,
+          })
+        }
+        return arr
+      }
+
+      const query = await pool.query("SELECT transactions.transaction_id, applications.id, applications.product_name, transactions.seller, applications.goal, applications.poster_pledge, transactions.date, transactions.seller_balance_after, transactions.buyers, applications.joiner_pledges, transactions.buyers_balance_after FROM transactions, applications;")
+      console.log(query.rows)
+      console.log('------')
+      console.log('------')
+      res.status(200).json("success")
+
+
+      // const transactionQuery = await pool.query("SELECT * FROM transactions WHERE seller = $1 OR buyers && ARRAY [$1]::VARCHAR[] ", ['Adem Eczanesi'])
+      // const transactionMedicineList = transactionQuery.rows.map(obj => {
+      //   return obj.application_id
+      // })
+      // const applicationQuery = await pool.query("SELECT product_name, id, goal, joiners, joiner_pledges FROM applications WHERE id = ANY($1::INT[])", [transactionMedicineList])
+            
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).json("ERROR")
   }
 })
 

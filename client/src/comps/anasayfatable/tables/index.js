@@ -1,4 +1,5 @@
-import { CollapseMine, CollapseJoin } from "./Collapsed"
+import CollapseMine from "./CollapseMine"
+import CollapseJoin from "./CollapsedJoin"
 
 export const initialState = {
   rows: [],
@@ -254,6 +255,7 @@ export function isBelow0 (number) {
 }
 
 export const fields = [
+  {key: 'ID',  _style: { width: '5%'} },
   { key: 'eczane', _style: { width: '10%'} },
   { key: 'İlaç', _style: { width: '30%'} },
   'hedef',
@@ -311,8 +313,8 @@ export function toggleDetails(index, details, setDetails, setOrder, setTotal, se
 
 export function whichCollapsedToRender (reduxUser, dataUser, item, index, order, setOrder, total, bakiyeSonra) {
   if (reduxUser === dataUser) {
-    return <CollapseMine item = {item} index = {index} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
+    return <CollapseMine item = {item} />
   } else {
-    return <CollapseJoin reduxUser = {reduxUser} item = {item} index = {index} order = {order} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
+    return <CollapseJoin reduxUser = {reduxUser} item = {item} order = {order} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
   }
 }

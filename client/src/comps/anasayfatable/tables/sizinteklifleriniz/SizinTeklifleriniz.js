@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CLabel, CRow } from "@coreui/react";
+import { CDataTable, CBadge, CButton, CCollapse, CCol, CLabel, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
 import { useSelector } from "react-redux";
 import { fields, getBadge, getStatus, getCondition, toggleDetails, whichCollapsedToRender } from "../";
 import "../style.css"
-  
+
 const SizinTeklifleriniz = () => {
 
-  
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState([])
     const [details, setDetails] = useState([])
@@ -21,9 +20,7 @@ const SizinTeklifleriniz = () => {
   
 
     useEffect(() => {
-      const fetchData = async () => {
-        console.log('fetching items for SIZIN teklifler')
-  
+      const fetchData = async () => {  
         const res = await fetch(`/api/data/table/sizin`, {
           headers: {
             'Content-Type': 'application/json',
@@ -33,7 +30,6 @@ const SizinTeklifleriniz = () => {
   
         if (res.status === 200) {
           const data = await res.json()
-          // console.log(data);
           const dataArr = data.map((obj, i) => {
             let bgColor = ""
             switch (obj.status) {
@@ -51,7 +47,7 @@ const SizinTeklifleriniz = () => {
               durum: obj.status,
               eczane: obj.submitter,
               hedef: obj.goal,
-              id: obj.id,
+              ID: obj.id,
               kampanya: obj.condition,
               pledge: obj.poster_pledge,
               sonTarih: obj.final_date,
@@ -61,12 +57,9 @@ const SizinTeklifleriniz = () => {
               bgColor: bgColor
             }
           })
-          // console.log("DATA FROM FETCH AFTER MUTI IS: ", dataArr);
           setData(dataArr)
+          setLoading(false)
         }
-        
-        setLoading(false)
-        console.log('finished fetching for SIZIN teklifler')
       }
 
       fetchData()
@@ -74,8 +67,8 @@ const SizinTeklifleriniz = () => {
     }, [])
 
     useEffect(() => {
-      if (order > 0) {
-        setTotal(order * data[clickedItemIndex].birimFiyat)
+      if (order >= 0) {
+        setTotal(order * data[clickedItemIndex]?.birimFiyat)
         setBakiyeSonra(bakiye - total)
       }
     }, [order, total, clickedItemIndex, bakiye, data])
@@ -89,7 +82,7 @@ const SizinTeklifleriniz = () => {
       </CRow>
       <CRow>
         <Loader isLoading = {loading} >
-        <CCol>
+          <CCol>
             <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
               <CDataTable
                 header
@@ -98,7 +91,6 @@ const SizinTeklifleriniz = () => {
                 columnFilter
                 footer
                 itemsPerPage={50}
-                hover
                 sorter
                 pagination
                 border
@@ -168,16 +160,9 @@ const SizinTeklifleriniz = () => {
                       (item, index)=>{
                         return (
                         <CCollapse show={details.includes(index)}>
-                          <CCardBody>
-                            <CCol xs="12" sm="12">
-                              <CCard style = {{backgroundColor: item.bgColor}}>
-                                <CCardHeader>Detaylar</CCardHeader>
-                                <CCardBody>
-                                  {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
-                                </CCardBody>
-                              </CCard>
+                            <CCol sm = "12">
+                              {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
                             </CCol>
-                          </CCardBody>
                         </CCollapse>
                       )
                     }
