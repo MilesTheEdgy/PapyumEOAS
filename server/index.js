@@ -830,9 +830,9 @@ app.get('/api/data/table/hareket', async (req, res) => {
         return arr
       }
 
-      const query = await pool.query("SELECT transactions.transaction_id, applications.id, applications.product_name, transactions.seller, applications.goal, applications.poster_pledge, transactions.date, transactions.seller_balance_after, transactions.buyers, applications.joiner_pledges, transactions.buyers_balance_after FROM transactions, applications;")
-      console.log(query.rows)
+      const query = await pool.query("SELECT transactions.transaction_id, applications.id, applications.product_name, transactions.seller, applications.goal, applications.poster_pledge, transactions.date, transactions.seller_balance_after, transactions.buyers, applications.joiners, applications.joiner_pledges, transactions.buyers_balance_after FROM applications INNER JOIN transactions ON applications.transaction_id = transactions.transaction_id WHERE transactions.seller = $1 OR transactions.buyers && ARRAY [$1]::VARCHAR[] ;", ['Başak Eczanesi'])
       console.log('------')
+      console.log(query.rows)
       console.log('------')
       res.status(200).json("success")
 
