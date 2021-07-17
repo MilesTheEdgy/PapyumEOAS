@@ -63,25 +63,7 @@ const changeState = (state = initialState, { type, ...rest }) => {
         }
       }
     case 'LOG_OUT':
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          session: {
-            ...state.user.session,
-            isLogged: false
-          },
-          userSettings: {
-            ...state.user.userSettings,
-            eczaneName: "",
-            username: ""
-          },
-          userInfo: {
-            ...state.user.userInfo,
-            bakiye: 0
-          }
-        }
-      }
+      return initialState
     case 'SET_DASHBOARD_TABLE':
       return {
         ...state,

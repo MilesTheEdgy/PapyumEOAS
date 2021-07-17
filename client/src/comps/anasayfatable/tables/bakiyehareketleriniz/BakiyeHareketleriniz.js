@@ -3,9 +3,7 @@ import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHe
 import Loader from "src/comps/loader/Loader";
 import { useSelector } from "react-redux";
 
-function BakiyeHareketleriTable({item}) {
-
-  const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
+function BakiyeHareketleriTable({item, eczaneName}) {
 
   return (
     <CCardBody>
@@ -23,6 +21,7 @@ function BakiyeHareketleriTable({item}) {
                       <th scope="col">#</th>
                       <th scope="col">Alıcı Eczane</th>
                       <th scope="col">Adet</th>
+                      <th scope="col">Toplam</th>
                       <th scope="col">Bakiye</th>
                     </tr>
                   </thead>
@@ -30,8 +29,9 @@ function BakiyeHareketleriTable({item}) {
                           <tr>
                             <th scope="row">1</th>
                             <td>{item.eczane === eczaneName ? <b>{item.eczane}</b> : <p>{item.eczane}</p>}</td>
-                            <td>{item.pledge}/{item.hedef}</td>
-                            <td style = {{color: "green"}}>+{item.bakiye}</td>
+                            <td>{item.pledge}/{item.hedef} </td>
+                            <td style = {{color: "green"}}>+{item.total.toFixed(2)}</td>
+                            <td>{item.bakiye.toFixed(2)}</td>
                           </tr>
                   </tbody>
                   <thead style = {{backgroundColor: "rgb(229, 83, 83, 0.75)"}}>
@@ -39,6 +39,7 @@ function BakiyeHareketleriTable({item}) {
                       <th scope="col">#</th>
                       <th scope="col">Katılan Eczaneler</th>
                       <th scope="col">Adet</th>
+                      <th scope="col">Toplam</th>
                       <th scope="col">Bakiye</th>
                     </tr>
                   </thead>
@@ -51,7 +52,8 @@ function BakiyeHareketleriTable({item}) {
                               <th scope="row">{i+1}</th>
                               <td><b>{obj.eczane}</b></td>
                               <td>{obj.pledge}/{item.hedef}</td>
-                              <td style = {{color: "red"}}>{obj.bakiye}</td>
+                              <td style = {{color: "red"}}>-{obj.total.toFixed(2)}</td>
+                              <td>{obj.bakiye.toFixed(2)}</td>
                             </tr>
                         )
                         return (
@@ -59,7 +61,8 @@ function BakiyeHareketleriTable({item}) {
                               <th scope="row">{i+1}</th>
                               <td>{obj.eczane}</td>
                               <td>{obj.pledge}/{item.hedef}</td>
-                              <td style = {{color: "red"}}>{obj.bakiye}</td>
+                              <td style = {{color: "red"}}>-{obj.total.toFixed(2)}</td>
+                              <td>{obj.bakiye.toFixed(2)}</td>
                           </tr>
                         )
                       })
@@ -75,59 +78,11 @@ function BakiyeHareketleriTable({item}) {
   )
 }
 
-const eczDataBakiyehrkt = [
-  {
-    ID: 2,
-    application_id: 43,
-    İlaç: "PARACETOL",
-    eczane: "Hayat Eczanesi",
-    tür: "Alış",
-    hedef: 80,
-    pledge: 20,
-    tarih: "2018/01/09",
-    bakiye: -500,
-    joiners: [
-      {
-        eczane: "İstanbul Eczanesi",
-        pledge: 25,
-        bakiye: -648
-      },
-      {
-        eczane: "Samsun Eczanesi",
-        pledge: 35,
-        bakiye: -648 
-      }
-    ]
-  },
-  {
-    ID: 3,
-    application_id: 38,
-    İlaç: "PARACETOL",
-    eczane: "İstanbul Eczanesi",
-    tür: "Satış",
-    hedef: 100,
-    pledge: 35,
-    tarih: "2018/01/09",
-    bakiye: 500,
-    joiners: [
-      {
-        eczane: "Gül Eczanesi",
-        pledge: 25,
-        bakiye: -648
-      },
-      {
-        eczane: "Başak Eczanesi",
-        pledge: 35,
-        bakiye: -648 
-      }
-    ]
-  },
-]
-
 const BakiyeHareketleriniz = () => {
+    const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
     const [details, setDetails] = useState([])
+    const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
-    const [loading, setLoading] = useState(true)
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -143,10 +98,10 @@ const BakiyeHareketleriniz = () => {
   
     const fields = [
       { key: 'ID', _style: { width: '10%'} },
-      { key: 'İlaç', _style: { width: '20%'} },
+      { key: 'İlaç', _style: { width: '35%'} },
       { key: 'tür'},
       'tarih',
-      'bakiye',
+      'toplam',
       {
         key: 'show_details',
         label: '',
@@ -167,7 +122,7 @@ const BakiyeHareketleriniz = () => {
     const plusOrMinus = (status) => {
       switch (status) {
         case 'Satış': return '+'
-        case 'Alış': return
+        case 'Alış': return '-'
         default: return 'bir sorun olmuştur'
       }
     }
@@ -179,26 +134,40 @@ const BakiyeHareketleriniz = () => {
         default: return ''
       }
     }
-
     useEffect(() => {
-
-      const fetchData = async () => {  
-        const res = await fetch(`/api/data/table/hareket`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'authorization': `Bearer ${document.cookie.slice(11)} `
-          }
-        })
-  
+      const fetchData = async () => {
+        setLoading(true)
+        const res = await fetch('/api/data/table/hareket', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${document.cookie.slice(11)} `
+              }
+            })
         if (res.status === 200) {
-          const data = await res.json()
+          const fetchedData = await res.json()
+          console.log(fetchedData)
+          const data = fetchedData.map(obj => {
+            return {
+              ID: obj.transaction_id,
+              application_id: obj.id,
+              İlaç: obj.product_name,
+              eczane: obj.seller,
+              tür: obj.seller === eczaneName ? "Satış" : "Alış",
+              hedef: obj.goal,
+              pledge: obj.poster_pledge,
+              tarih: new Date(obj.date),
+              total: parseFloat(obj.seller_amount, 10),
+              bakiye: parseFloat(obj.seller_balance_after, 10),
+              joiners: obj.verJoiners
+            }
+          })
           setData(data)
           setLoading(false)
         }
       }
-
       fetchData()
-
+      // eslint-disable-next-line
     }, [])
   
     return (
@@ -214,7 +183,7 @@ const BakiyeHareketleriniz = () => {
           <div style = {{border: "solid 1px rgb(249, 177, 21, 0.35)"}} >
             <CDataTable
               header
-              items={eczDataBakiyehrkt}
+              items={data}
               fields={fields}
               columnFilter
               footer
@@ -236,11 +205,17 @@ const BakiyeHareketleriniz = () => {
                     <b style = {{color: turCustomizing(item.tür)}}>{item.tür}</b>
                   </td>
                   ),
-                'bakiye':
+                'tarih':
+                (item)=>(
+                  <td>
+                    <p>{item.tarih.getFullYear()}-{item.tarih.getMonth()+1}-{item.tarih.getDate()}</p>
+                  </td>
+                  ),
+                'toplam':
                 (item)=>(
                   <td>
                     <CBadge style = {{minWidth: "50px", fontSize: "15px"}} color={bakiyeBadge(item.tür)}>
-                      {plusOrMinus(item.tür)}{item.bakiye}TL
+                      {plusOrMinus(item.tür)}{item.total.toFixed(2)} TL
                     </CBadge>
                   </td>
                 ),
@@ -264,7 +239,7 @@ const BakiyeHareketleriniz = () => {
                     (item, index)=>{
                       return (
                         <CCollapse show={details.includes(index)}>
-                          <BakiyeHareketleriTable item = {item} />
+                          <BakiyeHareketleriTable item = {item} eczaneName = {eczaneName} />
                         </CCollapse>
                     )
                   }

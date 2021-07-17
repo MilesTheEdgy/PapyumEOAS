@@ -11,264 +11,6 @@ dotenv.config();
 process.env.TOKEN_SECRET;
 
 app.use(express.json());
-    
-const eczData = [
-  {
-      id: 0,
-      eczane: "Hayat Eczanesi",
-      İlaç: "PARACETOL",
-      pledge: 10,
-      hedef: 25,
-      kampanya: "15 + 4",
-      birimFiyat: 29,
-      sonTarih: "2018/01/09",
-      durum: "beklemede",
-      description: "Birşeyler yapalım arkadaşlar xDDD",
-      katılanlar: [
-        {
-          name: "Miles Eczanesi",
-          pledged: 4
-        },
-        {
-          name: "Phoenix Eczanesi",
-          pledged: 9
-        },
-        {
-          name: "Emily Eczanesi",
-          pledged: 6
-        }
-      ]
-  },
-  {
-      id: 1,
-      eczane: "Birgül Eczanesi",
-      İlaç: "STEROIDS",
-      pledge: 15,
-      hedef: 55,
-      kampanya: "15 + 4",
-      birimFiyat: 29,
-      sonTarih: "2018/01/01",
-      durum: "beklemede",
-      katılanlar: [
-        {
-          name: "Hayat Eczanesi",
-          pledged: 15
-        },
-        {
-          name: "Başka Eczanesi",
-          pledged: 5
-        },
-        {
-          name: "Samsun Eczanesi",
-          pledged: 4
-        }
-      ]
-  },
-  {
-      id: 2,
-      eczane: "Dolmuş Eczanesi",
-      İlaç: "FAKE JUICE",
-      pledge: 15,
-      hedef: 55,
-      kampanya: "15 + 4",
-      birimFiyat: 32,
-      sonTarih: "2018/04/25",
-      durum: "beklemede",
-      katılanlar: [
-        {
-          name: "Hayat Eczanesi",
-          pledged: 15
-        },
-        {
-          name: "Başka Eczanesi",
-          pledged: 5
-        },
-        {
-          name: "Samsun Eczanesi",
-          pledged: 4
-        }
-      ]
-  },
-  {
-      id: 3,
-      eczane: "Başka Eczanesi",
-      İlaç: "BAŞKAMAMOL",
-      pledge: 15,
-      hedef: 55,
-      kampanya: "15 + 4",
-      birimFiyat: 73,
-      sonTarih: "2018/08/01",
-      durum: "beklemede",
-      katılanlar: [
-        {
-          name: "Hayat Eczanesi",
-          pledged: 15
-        },
-        {
-          name: "Başka Eczanesi",
-          pledged: 5
-        },
-        {
-          name: "Samsun Eczanesi",
-          pledged: 4
-        }
-      ]
-  },
-  {
-    id: 4,
-    eczane: "Hayat Eczanesi",
-    İlaç: "PARACETOL",
-    pledge: 15,
-    hedef: 88,
-    kampanya: "15 + 4",
-    birimFiyat: 59,
-    sonTarih: "2018/01/09",
-    durum: "beklemede",
-    katılanlar: [
-      {
-        name: "Hayat Eczanesi",
-        pledged: 15
-      },
-      {
-        name: "Başka Eczanesi",
-        pledged: 5
-      },
-      {
-        name: "Samsun Eczanesi",
-        pledged: 4
-      }
-    ]
-},
-{
-    id: 5,
-    eczane: "Birgül Eczanesi",
-    İlaç: "STEROIDS",
-    pledge: 15,
-    hedef: 55,
-    kampanya: "15 + 4",
-    birimFiyat: 53,
-    sonTarih: "2018/01/01",
-    durum: "beklemede",
-    katılanlar: [
-      {
-        name: "Hayat Eczanesi",
-        pledged: 15
-      },
-      {
-        name: "Başka Eczanesi",
-        pledged: 5
-      },
-      {
-        name: "Samsun Eczanesi",
-        pledged: 4
-      }
-    ]
-},
-{
-    id: 6,
-    eczane: "Dolmuş Eczanesi",
-    İlaç: "FAKE JUICE",
-    pledge: 15,
-    hedef: 55,
-    kampanya: "15 + 4",
-    birimFiyat: 13,
-    sonTarih: "2018/04/25",
-    durum: "beklemede",
-    katılanlar: [
-      {
-        name: "Hayat Eczanesi",
-        pledged: 15
-      },
-      {
-        name: "Başka Eczanesi",
-        pledged: 5
-      },
-      {
-        name: "Samsun Eczanesi",
-        pledged: 4
-      }
-    ]
-},
-{
-    id: 7,
-    eczane: "Başka Eczanesi",
-    İlaç: "BAŞKAMAMOL",
-    pledge: 15,
-    hedef: 55,
-    kampanya: "15 + 4",
-    birimFiyat: 17,
-    sonTarih: "2018/08/01",
-    durum: "beklemede",
-    katılanlar: [
-      {
-        name: "Hayat Eczanesi",
-        pledged: 15
-      },
-      {
-        name: "Başka Eczanesi",
-        pledged: 5
-      },
-      {
-        name: "Samsun Eczanesi",
-        pledged: 4
-      }
-    ]
-}
-]
-
-const eczDataBekleyen = [
-  {
-      id: 0,
-      eczane: "Hayat Eczanesi",
-      İlaç: "PARACETOL",
-      hedef: "20/50",
-      kampanya: "15 + 4",
-      birimFiyat: "39 TL",
-      sonTarih: "2018/01/09",
-      durum: "beklemede"
-  },
-  {
-      id: 1,
-      eczane: "Birgül Eczanesi",
-      İlaç: "STEROIDS",
-      hedef: "15/25",
-      kampanya: "15 + 4",
-      birimFiyat: "16 TL",
-      sonTarih: "2018/01/01",
-      durum: "beklemede"
-  },
-  {
-      id: 2,
-      eczane: "Dolmuş Eczanesi",
-      İlaç: "FAKE JUICE",
-      hedef: "69/100",
-      kampanya: "15 + 4",
-      birimFiyat: "99 TL",
-      sonTarih: "2018/04/25",
-      durum: "beklemede"
-  },
-  {
-      id: 3,
-      eczane: "Başka Eczanesi",
-      İlaç: "BAŞKAMAMOL",
-      hedef: "13/46",
-      kampanya: "15 + 4",
-      birimFiyat: "498 TL",
-      sonTarih: "2018/08/01",
-      durum: "beklemede"
-  },
-  {
-    id: 4,
-    eczane: "Hayat Eczanesi",
-    İlaç: "PARACETOL",
-    hedef: "20/50",
-    kampanya: "15 + 4",
-    birimFiyat: "39 TL",
-    sonTarih: "2018/01/09",
-    durum: "beklemede"
-}
-]
-
 
 ////////////////////////////////////////
 // ******** LOGIN AND AUTH ********** //
@@ -660,7 +402,6 @@ app.post('/api/bid/approve', authenticateToken, async (req, res) => {
     if (status !== 'ON_HOLD') {
       return res.status(400).json("client error failed to pass bid approval verification")
     }
-
     
     const usersQuery = await client.query("SELECT * FROM users;")
   
@@ -767,83 +508,43 @@ app.delete('/api/bid', authenticateToken, async (req, res) => {
   }
 })
 
-app.get('/api/data/table/hareket', async (req, res) => {
-  const eczDataBakiyehrkt = [
-    {
-      ID: 2,
-      application_id: 43,
-      İlaç: "PARACETOL",
-      eczane: "Hayat Eczanesi",
-      tür: "Alış",
-      hedef: 80,
-      pledge: 20,
-      tarih: "2018/01/09",
-      bakiye: -500,
-      joiners: [
-        {
-          eczane: "İstanbul Eczanesi",
-          pledge: 25,
-          bakiye: -648
-        },
-        {
-          eczane: "Samsun Eczanesi",
-          pledge: 35,
-          bakiye: -648 
-        }
-      ]
-    },
-    {
-      ID: 3,
-      application_id: 38,
-      İlaç: "PARACETOL",
-      eczane: "İstanbul Eczanesi",
-      tür: "Satış",
-      hedef: 100,
-      pledge: 35,
-      tarih: "2018/01/09",
-      bakiye: 500,
-      joiners: [
-        {
-          eczane: "Gül Eczanesi",
-          pledge: 25,
-          bakiye: -648
-        },
-        {
-          eczane: "Başak Eczanesi",
-          pledge: 35,
-          bakiye: -648 
-        }
-      ]
-    },
-  ]
-
+app.get('/api/data/table/hareket', authenticateToken, async (req, res) => {
   try {
-      const getTransactionArray = (transactions, applications) => {
-        let arr = []
-        for (let i = 0; i < transactions.length; i++) {
-          arr.push({
-            ID: transactions[i].transaction_id,
-            application_id: transactions[i].application_id,
-            medicine: applications[i].product_name,
-          })
-        }
-        return arr
-      }
+      function setBuyerSellerValues(queryRows) {
+        console.log(queryRows)
 
-      const query = await pool.query("SELECT transactions.transaction_id, applications.id, applications.product_name, transactions.seller, applications.goal, applications.poster_pledge, transactions.date, transactions.seller_balance_after, transactions.buyers, applications.joiners, applications.joiner_pledges, transactions.buyers_balance_after FROM applications INNER JOIN transactions ON applications.transaction_id = transactions.transaction_id WHERE transactions.seller = $1 OR transactions.buyers && ARRAY [$1]::VARCHAR[] ;", ['Başak Eczanesi'])
-      console.log('------')
-      console.log(query.rows)
-      console.log('------')
-      res.status(200).json("success")
-
-
-      // const transactionQuery = await pool.query("SELECT * FROM transactions WHERE seller = $1 OR buyers && ARRAY [$1]::VARCHAR[] ", ['Adem Eczanesi'])
-      // const transactionMedicineList = transactionQuery.rows.map(obj => {
-      //   return obj.application_id
-      // })
-      // const applicationQuery = await pool.query("SELECT product_name, id, goal, joiners, joiner_pledges FROM applications WHERE id = ANY($1::INT[])", [transactionMedicineList])
+        console.log("FUNCTION START:")
+        
+        for (let i = 0; i < queryRows.length; i++) {
+          Object.assign(queryRows[i], {verJoiners: []})
+          for (let b = 0; b < queryRows[i].buyers.length; b++) {
+            // console.log("---- LOOPING B: ", b)
             
-    
+            // console.log("---- B: Values Are: ", queryRows[i].buyers[b])
+            for (let c = 0; c < queryRows[i].joiners.length; c++) {
+              // console.log("------ LOOPING C: ", c)
+
+              // console.log("------ C: Values Are: ", queryRows[b].joiners[c])
+              if (queryRows[i].buyers[b] === queryRows[i].joiners[c]) {
+                // console.log("------ FOUND MATCH: ", queryRows[i].buyers[b], " AND ", queryRows[i].joiners[c])
+                queryRows[i].verJoiners.push({
+                  eczane: queryRows[i].joiners[c],
+                  pledge: queryRows[i].joiner_pledges[c],
+                  total: queryRows[i].buyers_amount[b],
+                  bakiye: queryRows[i].buyers_balance_after[b]
+                })
+              }
+            }
+          }
+          // console.log(queryRows[i].verJoiners)
+        }
+
+        return queryRows
+      }
+      const query = await pool.query("SELECT transactions.transaction_id, applications.id, applications.product_name, transactions.seller, transactions.seller_amount, applications.goal, applications.poster_pledge, transactions.date, transactions.seller_balance_after, transactions.buyers, applications.joiners, applications.joiner_pledges, transactions.buyers_amount, transactions.buyers_balance_after FROM applications INNER JOIN transactions ON applications.transaction_id = transactions.transaction_id WHERE transactions.seller = $1 OR transactions.buyers && ARRAY [$1]::VARCHAR[] ;", [req.user.eczaneName])
+      const buyerSellerValues = setBuyerSellerValues(query.rows)
+
+      res.status(200).json(buyerSellerValues)
   } catch (error) {
     console.log(error)
     res.status(500).json("ERROR")
