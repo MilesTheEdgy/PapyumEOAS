@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function BakiyeHareketleriTable({item, eczaneName}) {
 
@@ -29,7 +29,7 @@ function BakiyeHareketleriTable({item, eczaneName}) {
                           <tr>
                             <th scope="row">1</th>
                             <td>{item.eczane === eczaneName ? <b>{item.eczane}</b> : <p>{item.eczane}</p>}</td>
-                            <td>{item.pledge}/{item.hedef} </td>
+                            <td>{item.pledge}/<b>{item.hedef}</b></td>
                             <td style = {{color: "green"}}>+{item.total.toFixed(2)}</td>
                             <td>{item.bakiye.toFixed(2)}</td>
                           </tr>
@@ -51,7 +51,7 @@ function BakiyeHareketleriTable({item, eczaneName}) {
                             <tr key = {i} >
                               <th scope="row">{i+1}</th>
                               <td><b>{obj.eczane}</b></td>
-                              <td>{obj.pledge}/{item.hedef}</td>
+                              <td>{obj.pledge}/<b>{item.hedef}</b></td>
                               <td style = {{color: "red"}}>-{obj.total.toFixed(2)}</td>
                               <td>{obj.bakiye.toFixed(2)}</td>
                             </tr>
@@ -60,7 +60,7 @@ function BakiyeHareketleriTable({item, eczaneName}) {
                           <tr key = {i}>
                               <th scope="row">{i+1}</th>
                               <td>{obj.eczane}</td>
-                              <td>{obj.pledge}/{item.hedef}</td>
+                              <td>{obj.pledge}/<b>{item.hedef}</b></td>
                               <td style = {{color: "red"}}>-{obj.total.toFixed(2)}</td>
                               <td>{obj.bakiye.toFixed(2)}</td>
                           </tr>
@@ -83,6 +83,7 @@ const BakiyeHareketleriniz = () => {
     const [details, setDetails] = useState([])
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
+    const mainDispatch = useDispatch()
   
     const toggleDetails = (index) => {
       const position = details.indexOf(index)
@@ -164,6 +165,8 @@ const BakiyeHareketleriniz = () => {
           })
           setData(data)
           setLoading(false)
+        } else if (res.status === 401 ||res.status === 403) {
+          mainDispatch({type: "LOG_OUT"})
         }
       }
       fetchData()

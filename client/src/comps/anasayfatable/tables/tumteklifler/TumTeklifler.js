@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCol, CLabel, CRow } from "@coreui/react";
 import Loader from "src/comps/loader/Loader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fields, getBadge, getStatus, getCondition, toggleDetails, whichCollapsedToRender } from "../";
 import "../style.css"
 
@@ -20,6 +20,7 @@ const TumTeklifler = () => {
     const [order, setOrder] = useState(0)
     const [total, setTotal] = useState(0)
     const [bakiyeSonra, setBakiyeSonra] = useState(0)
+    const mainDispatch = useDispatch()
     
     const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
     const bakiye = useSelector(state => state.user.userInfo.bakiye)
@@ -65,6 +66,8 @@ const TumTeklifler = () => {
           })
           setData(dataArr)
           setLoading(false)
+        } else if (res.status === 401 ||res.status === 403) {
+          mainDispatch({type: "LOG_OUT"})
         }
       }
 

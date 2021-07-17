@@ -2,12 +2,11 @@ import React from "react";
 import { CModal, CModalHeader, CModalTitle, CModalFooter, CModalBody, CButton } from "@coreui/react"
 
 function Modal(props) {
-    const [modalOn, modalToggle] = React.useState(true)
     if (props.dispatch) {
         return (
             <CModal 
             show={props.on} 
-            onClose={() => modalToggle(!modalOn)}
+            onClose={() => props.dispatch({type : "MODAL_DISPLAY", payload: {type: "CLOSE"}})}
             color={props.color}
             centered
             >
@@ -25,8 +24,8 @@ function Modal(props) {
     } else {
         return (
             <CModal 
-            show={modalOn}
-            onClose={() => props.dispatch({type : "MODAL_DISPLAY", payload: {type: "CLOSE"}})}
+            show={props.modalclose}
+            onClose={() => props.modalclose}
             color={props.color}
             centered
             >
@@ -37,7 +36,7 @@ function Modal(props) {
                     <h5>{props.body}</h5>
                 </CModalBody>
                 <CModalFooter>
-                    <CButton color="secondary" onClick={() => modalToggle(!modalOn)}>Kapat</CButton>
+                    <CButton color="secondary" onClick={() => props.modalclose}>Kapat</CButton>
                 </CModalFooter>
             </CModal>
         )

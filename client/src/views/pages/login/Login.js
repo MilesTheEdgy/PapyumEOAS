@@ -12,17 +12,30 @@ import {
   CInputGroup,
   CInputGroupPrepend,
   CInputGroupText,
-  CRow
+  CRow,
+  CModal,
+  CModalHeader,
+  CModalBody,
+  CModalTitle,
+  CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { useDispatch } from 'react-redux'
+import Loader from 'src/comps/loader/Loader'
 
 const Login = () => {
   const dispatch = useDispatch()
   const history = useHistory()
   const [username, setUsername] = React.useState("")
   const [password, setPassword] = React.useState("")
+  const [modal, setModal] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const modalObj = {
+    header: "HATA",
+    body: "LÜTFEN BİLGİLERİNİZİ KONTROL EDİN"
+  }
   const submitHandeler = async () => {
+    setLoading(true)
     const response = await fetch(`/api/login`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -34,8 +47,8 @@ const Login = () => {
 
     if (response.status === 200) {
       const data = await response.json()
-      console.log(data);
       document.cookie = `pyecztoken=${data.token}`
+      setLoading(false)
       dispatch({type: 'LOG_IN'})
       dispatch({type: 'FILL_USER_SETTINGS', eczaneName: data.eczaneName, username: data.username})
       dispatch({type: 'FILL_USER_INFO', bakiye: data.bakiye})
@@ -43,6 +56,7 @@ const Login = () => {
     }
      else if (response.status === 401) {
       console.log('failed login')
+      setModal(true)
     }
      else {
       console.log('server error')
@@ -50,7 +64,24 @@ const Login = () => {
   }
 
   return (
-    <div className="c-app c-default-layout flex-row align-items-center">
+    <Loader isLoading = {loading}>
+      <div className="c-app c-default-layout flex-row align-items-center">
+        <CModal 
+        show={modal} 
+        onClose={() => setModal(false)}
+        color='warning'
+        centered
+        >
+            <CModalHeader closeButton>
+                <CModalTitle> {modalObj.header} </CModalTitle>
+            </CModalHeader>
+            <CModalBody>
+                <h5>{modalObj.body}</h5>
+            </CModalBody>
+            <CModalFooter>
+                <CButton color="secondary" onClick={() => setModal(false)}>Kapat</CButton>
+            </CModalFooter>
+        </CModal>
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md="8">
@@ -104,6 +135,8 @@ const Login = () => {
         </CRow>
       </CContainer>
     </div>
+    </Loader>
+   
   )
 }
 

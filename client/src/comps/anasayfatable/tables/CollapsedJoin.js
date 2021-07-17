@@ -71,6 +71,28 @@ function CollapseJoin ({ reduxUser, item, order, setOrder, total, bakiyeSonra}) 
 
     const { modal, isLoading } = state;
 
+    const deleteJoin = async () => {
+        dispatch({type: "APPROVE_BID", payload : {type: "LOADING_ON"}})
+        const res = await fetch('/api/bid/join', {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${document.cookie.slice(11)} `
+              },
+              body: JSON.stringify({
+                bid_id: item.ID
+              })
+            })
+        if (res.status === 200) {
+            console.log("sent userInputJoin to server successfully");
+            dispatch({type: "MODAL_DISPLAY", payload: {type: "SUCCESS"}})
+        } else {
+            console.log("userInputJoin was not sent to server");
+            dispatch({type: "MODAL_DISPLAY", payload: {type: "FAILURE"}})
+        }
+        dispatch({type: "APPROVE_BID", payload : {type: "LOADING_OFF"}})
+    }
+
     const onSubmit = async () => {
         console.log(item)
         dispatch({type: "APPROVE_BID", payload : {type: "LOADING_ON"}})
@@ -152,23 +174,22 @@ function CollapseJoin ({ reduxUser, item, order, setOrder, total, bakiyeSonra}) 
             </CCardBody>
             {
             state.isOnHold &&
-                <CFormGroup row id = "collapsedJoin-footer" >
-                    <CCol md = "4">
-                        <span className = "collapsedJoiner-footerInfo">
-                            <CLabel>Toplam:</CLabel>
-                            <p style = {{marginLeft: "10px"}}> <b> {total.toFixed(2)} TL</b></p>
-                        </span>
-                        <span className = "collapsedJoiner-footerInfo">
-                            <CLabel>Sipraişten Sonra Bakiyeniz:</CLabel>
-                            <p style = {{marginLeft: "10px", color: isBelow0(bakiyeSonra) }}>{bakiyeSonra.toFixed(2)} TL</p>
-                        </span>
-                    </CCol>
-                   <CCol md = "2">
-                        <div >
-                            <CButton color = "success" onClick = {() => onSubmit()} >Onayla</CButton>
-                        </div>
-                   </CCol> 
-                </CFormGroup>
+            <CFormGroup row id = "collapsedJoin-footer" className = "justify-content-between" >
+                <CCol md = "4">
+                    <span className = "collapsedJoiner-footerInfo">
+                        <CLabel>Toplam:</CLabel>
+                        <p style = {{marginLeft: "10px"}}> <b> {total.toFixed(2)} TL</b></p>
+                    </span>
+                    <span className = "collapsedJoiner-footerInfo">
+                        <CLabel>Sipraişten Sonra Bakiyeniz:</CLabel>
+                        <p style = {{marginLeft: "10px", color: isBelow0(bakiyeSonra) }}>{bakiyeSonra.toFixed(2)} TL</p>
+                    </span>
+                </CCol>
+                <CCol md = "3">
+                    <CButton color = "danger" className = "btn-ghost-danger" onClick = {() => deleteJoin()} >SIL</CButton>
+                    <CButton color = "success" onClick = {() => onSubmit()} >ONAYLA</CButton>
+                </CCol>
+            </CFormGroup>
             }
         </Loader>
     )

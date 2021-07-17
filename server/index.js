@@ -20,6 +20,9 @@ app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const query = await pool.query('SELECT id, username, hash, balance, pharmacy_name FROM users WHERE username = $1;', [username])
+    if (query.rows.length === 0) {
+      return res.status(401).json("Not authorized")
+    }
     if (username === query.rows[0].username) {
       bcrypt.compare(password, query.rows[0].hash, function(err, result) {
         if (err) {
@@ -33,11 +36,13 @@ app.post('/api/login', async (req, res) => {
           });
           res.status(200).json({
             username,
-            eczaneName: `${query.rows[0].pharmacy_name} Eczanesi`,
+            eczaneName: query.rows[0].pharmacy_name,
             ID: 1,
             bakiye: query.rows[0].balance,
             token
           });
+        } else {
+          res.status(401).json("Not Authorized")
         }
       });  
     }
@@ -473,7 +478,7 @@ app.post('/api/bid/join', authenticateToken, async (req, res) => {
   try {
     const { userInputJoin, bid_id } = req.body
     const { user } = req
-
+    console.log(userInputJoin)
     if (userInputJoin === 0 || userInputJoin === null || userInputJoin === undefined) {
       return res.status(406).json("Unable to insert when value equals 0 or undefined")
     }
@@ -493,6 +498,41 @@ app.post('/api/bid/join', authenticateToken, async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json("server error when updating/joining bid")
+  }
+})
+
+app.delete('/api/bid/join', authenticateToken, async (req, res) => {
+  console.log("yoyo")
+  try {
+    const { bid_id } = req.body
+    const { user } = req
+
+    const verifyQuery = await pool.query("SELECT joiners, joiner_pledges FROM applications WHERE id = $1;", [bid_id])
+    const getArrayJoinerPledge = (queryRows, res) => {
+      let arr = []
+      if (queryRows[0]?.joiners) {
+        for (let i = 0; i < queryRows[0].joiners.length; i++) {
+          if (user.eczaneName === queryRows[0].joiners[i]) {
+            arr.push(queryRows[0].joiners[i], queryRows[0].joiner_pledges[i])
+            return arr
+          }
+        }
+      }
+      return arr
+    }
+
+    // returns an array, index 0 = joiner and index = 1 = joiner_pledge
+    const arrayJoinerPledge = getArrayJoinerPledge(verifyQuery.rows)
+    if (arrayJoinerPledge.length !== 2) {
+      return res.status(400).json("unable to find join record to delete")
+    }
+    await pool.query("UPDATE applications SET joiners = array_remove(joiners, $1), joiner_pledges = array_remove(joiner_pledges, $2) WHERE id = $3",
+    [arrayJoinerPledge[0], arrayJoinerPledge[1], bid_id])
+    return res.status(200).json("success")
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json("server error when deleting join")
   }
 })
 

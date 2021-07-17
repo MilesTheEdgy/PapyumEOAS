@@ -62,7 +62,7 @@ const TheHeader = () => {
 
       <CHeaderNav className = "align-items-center " >
           <strong className = "px-3" >Bakiye:</strong>
-          <strong className = "success" color = "success" > {userInfo.bakiye} TL</strong>
+          <strong className = "success" color = "success" > {Number(userInfo.bakiye).toFixed(2)} TL</strong>
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
