@@ -1,5 +1,5 @@
 import CollapseMine from "./CollapseMine"
-import CollapseJoin from "./CollapsedJoin"
+import CollapseJoin from "./CollapseJoin"
 
 export const initialState = {
   rows: [],

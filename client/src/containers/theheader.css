@@ -2,6 +2,10 @@
     color: rgba(0, 128, 0, 0.85);
 }
 
+.danger {
+    color: rgb(229, 83, 83);
+}
+
 .anaSayfa-mr {
     /* display: inline-block !important; */
     min-width: 80px;

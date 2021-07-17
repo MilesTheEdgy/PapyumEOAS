@@ -21,7 +21,7 @@ const WidgetsDropdown = () => {
       <CCol sm="6" lg="3">
         <CWidgetDropdown
           color="gradient-primary"
-          header="9.823"
+          // header="9.823"
           text="Sizin Teklifleriniz"
           footerSlot={
             <ChartLineSimple
@@ -46,7 +46,7 @@ const WidgetsDropdown = () => {
       <CCol sm="6" lg="3">
         <CWidgetDropdown
           color="gradient-info"
-          header="9.823"
+          // header="9.823"
           text="Bekleyen Teklifler"
           footerSlot={
             <ChartLineSimple
@@ -75,7 +75,7 @@ const WidgetsDropdown = () => {
       <CCol sm="6" lg="3">
         <CWidgetDropdown
           color="gradient-warning"
-          header="9.823"
+          // header="9.823"
           text="Bakiye Hareketleriniz"
           footerSlot={
             <ChartLineSimple
@@ -104,7 +104,7 @@ const WidgetsDropdown = () => {
       <CCol sm="6" lg="3">
         <CWidgetDropdown
           color="gradient-danger"
-          header="9.823"
+          // header="9.823"
           text="Tüm Teklifler"
           footerSlot={
             <ChartBarSimple

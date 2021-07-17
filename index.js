@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require('dotenv');
 const pool = require("./db")
 const bcrypt = require("bcrypt")
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const { verifyNewBid, createNewBid } = require("./bids/bids")
@@ -11,6 +12,9 @@ dotenv.config();
 process.env.TOKEN_SECRET;
 
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 
 ////////////////////////////////////////
 // ******** LOGIN AND AUTH ********** //
@@ -590,6 +594,10 @@ app.get('/api/data/table/hareket', authenticateToken, async (req, res) => {
     res.status(500).json("ERROR")
   }
 })
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

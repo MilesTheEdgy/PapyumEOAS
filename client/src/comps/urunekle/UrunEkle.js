@@ -63,13 +63,13 @@ const UrunEkle = () => {
         'barKod',
         'ATC_Kodu',
         'reçeteTürü',
-        {
-            key: 'show_details',
-            label: '',
-            _style: { width: '1%' },
-            sorter: false,
-            filter: false
-        }
+        // {
+        //     key: 'show_details',
+        //     label: '',
+        //     _style: { width: '1%' },
+        //     sorter: false,
+        //     filter: false
+        // }
      ]
     
     useEffect(() => {
@@ -102,9 +102,9 @@ const UrunEkle = () => {
             <small> ekle</small>
         </CCardHeader>
         <CCardBody>
-        <CAlert color="danger">
+        {/* <CAlert color="danger">
             Lütfen yeni bir ürün eklemeden, önce ÜRÜN SORGULAMA yaparak ürünün eklenmiş durumunu öğrenin.
-        </CAlert>
+        </CAlert> */}
         <CLabel>ÜRÜN SORGULAMA</CLabel>
         <CDataTable
               tableFilter
@@ -141,7 +141,7 @@ const UrunEkle = () => {
                     }
                 }}
         />
-        <CButton color = "warning" onClick = {() => showForm(true)} >Ürününz bulunmadı mı?</CButton>
+        {/* <CButton color = "warning" onClick = {() => showForm(true)} >Ürününz bulunmadı mı?</CButton> */}
 
         <div className = {`${form ? "" : "hidden"}`}>
             <div className = "split-margin"></div>

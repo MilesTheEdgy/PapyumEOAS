@@ -51,9 +51,9 @@ const TheHeader = () => {
         <CHeaderNavItem className="px-3" >
           <CHeaderNavLink className = "anaSayfa-mr" to="/dashboard">Ana Sayfa</CHeaderNavLink>
         </CHeaderNavItem>
-        <CHeaderNavItem  className="px-3">
+        {/* <CHeaderNavItem  className="px-3">
           <CHeaderNavLink to="/users">Eczaneler</CHeaderNavLink>
-        </CHeaderNavItem>
+        </CHeaderNavItem> */}
       </CHeaderNav>
 
       <CHeaderNav>
@@ -62,7 +62,7 @@ const TheHeader = () => {
 
       <CHeaderNav className = "align-items-center " >
           <strong className = "px-3" >Bakiye:</strong>
-          <strong className = "success" color = "success" > {Number(userInfo.bakiye).toFixed(2)} TL</strong>
+          <strong className = {`${Number(userInfo.bakiye).toFixed(2) > 0 ? "success" : "danger"}`} > {Number(userInfo.bakiye).toFixed(2)} TL</strong>
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
