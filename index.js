@@ -599,6 +599,7 @@ app.delete("/api/reset", authenticateToken, async (req, res) => {
   try {
     await pool.query("DELETE FROM applications;")
     await pool.query("DELETE FROM transactions;")
+    await pool.query("UPDATE users SET balance = 0;")
     res.status(200).json("success")
   } catch (error) {
     console.error(error);
