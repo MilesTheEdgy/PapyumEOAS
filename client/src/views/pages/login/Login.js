@@ -56,6 +56,7 @@ const Login = () => {
     }
      else if (response.status === 401) {
       console.log('failed login')
+      setLoading(false)
       setModal(true)
     }
      else {
@@ -122,11 +123,11 @@ const Login = () => {
                 <CCardBody className="text-center">
                   <div>
                     <h2>Hesap oluşturun</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                      labore et dolore magna aliqua.</p>
-                    <Link to="/register">
+                    {/* <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
+                      labore et dolore magna aliqua.</p> */}
+                    {/* <Link to="/register"> */}
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>Kayıt olun!</CButton>
-                    </Link>
+                    {/* </Link> */}
                   </div>
                 </CCardBody>
               </CCard>

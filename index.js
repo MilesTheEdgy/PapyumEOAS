@@ -595,6 +595,17 @@ app.get('/api/data/table/hareket', authenticateToken, async (req, res) => {
   }
 })
 
+app.delete("/api/reset", authenticateToken, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM applications;")
+    await pool.query("DELETE FROM transactions;")
+    res.status(200).json("success")
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("failed")
+  }
+})
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });
