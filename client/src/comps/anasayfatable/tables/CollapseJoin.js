@@ -143,7 +143,7 @@ function CollapseJoin ({ reduxUser, item, order, setOrder, total, bakiyeSonra}) 
                             name="textarea-input" 
                             id="textarea-input" 
                             rows="7"
-                            value = "Birşeyler yapalım arkadaşlar xDDD"
+                            value = {item.description}
                             readOnly
                         />
                         {

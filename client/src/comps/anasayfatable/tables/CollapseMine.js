@@ -157,7 +157,7 @@ function CollapseMine ({item}) {
                 {
                 state.isOnHold && 
                 <CFormGroup row className = "collapsedMine-footerControlButtons" id = "collapsedMine-footer">
-                    <CButton color = "danger" onClick = {() => removeBid()} >Teklifi sil</CButton>
+                    {/* <CButton color = "danger" onClick = {() => removeBid()} >Teklifi sil</CButton> */}
                     <CButton disabled = {!state.hedefeKalanIs0} color = "success" onClick = {() => approveBid()} >Onayla</CButton>
                 </CFormGroup>
                 }
