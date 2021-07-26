@@ -3,6 +3,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from "react-redux"
 import AuthHOC from './comps/authhoc/AuthHOC';
 import './scss/style.scss';
+import Loader from './comps/loader/Loader';
 
 const loading = (
   <div className="pt-3 text-center">
@@ -37,6 +38,7 @@ class App extends Component {
     //       this.props.dispatch({type: "FILL_MEDICINE_LIST", medicineList: arr})
     //   }
     // }
+
     //runs once to check if user is already logged in, so user doesn't attempt to re-login
     const isUserCookieValid = async () => {
       const response = await fetch(`/api`, {
@@ -63,14 +65,24 @@ class App extends Component {
   render() {
     return (
         <React.Suspense fallback={loading}>
+          <Loader isLoading = {this.props.isLoading}>
             <Switch>
               <AuthHOC>  {/* AuthHOC: if user is accessed: render layouth, if not, render Login and Register pages */}
                 <Route path="/" name="Home" render={props => <TheLayout {...props}/>} />
               </AuthHOC>
             </Switch>
+          </Loader>
         </React.Suspense>
     );
   }
 }
 
-export default connect()(withRouter(App));
+// getting the loading boolean value from REDUX STORE to use in LOADER component
+function mapStateToProps (state) {
+  return {
+    isLoading: state.isLoading
+  }
+}
+
+//binding redux STATE, redux DISPATCH and withRouter to APP component
+export default connect(mapStateToProps)(withRouter(App));

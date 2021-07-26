@@ -3,12 +3,11 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   CHeader,
   CToggler,
-  CHeaderBrand,
   CHeaderNav,
   CHeaderNavItem,
   CHeaderNavLink
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+// import CIcon from '@coreui/icons-react'
 
 import { 
   TheHeaderDropdown,

@@ -42,7 +42,7 @@
 }
 
 .sizintekliflerinizGradient {
-    background: radial-gradient(circle, rgba(50,31,219,1) 0%, rgba(34,9,149,1) 100%);
+    background: radial-gradient(circle, rgb(31, 155, 113) 0% ,rgb(41, 165, 83) 100% );
 }
 
 .bekleyentekliflerGradient {

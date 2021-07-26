@@ -64,9 +64,9 @@ const UrunEkle = () => {
     if (res.status === 200) {
       dispatch({type: "SUBMIT_SUCCESS"})
       const data = await res.json()
-      console.log(data);
+      // console.log(data);
     } else {
-      console.log('failed')
+      // console.log('failed')
       dispatch({type: "SUBMIT_FAIL"})
     }
   }
@@ -84,15 +84,15 @@ const UrunEkle = () => {
       },
       body: JSON.stringify({input: medicineSearch.input})
     })
-    console.log(res.status)
+    // console.log(res.status)
 
     if (res.status === 200) {
       const fetchData = await res.json()
-      console.log( "before splicing...", fetchData);
+      // console.log( "before splicing...", fetchData);
       if (fetchData.length > 50) {
         fetchData.splice(50)
       }
-      console.log( "...after splicing", fetchData);
+      // console.log( "...after splicing", fetchData);
       setInputFocus()
       dispatch({type: "SET_DATA", payload: fetchData})
       dispatch({type: "ISLOADING_FALSE"})

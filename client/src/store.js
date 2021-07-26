@@ -9,6 +9,7 @@ export const TUM_TEKLIFLER = "TUM_TEKLIFLER";
 
 const initialState = {
   sidebarShow: 'responsive',
+  isLoading: false,
   dashboardTable: BEKELEYEN_TEKLIFLER,
   user: {
     session: {
@@ -64,6 +65,19 @@ const changeState = (state = initialState, { type, ...rest }) => {
       }
     case 'LOG_OUT':
       return initialState
+
+    case "TOGGLE_LOADING_TRUE":
+      return {
+        ...state,
+        isLoading: true
+      }
+
+    case "TOGGLE_LOADING_FALSE":
+      return {
+        ...state,
+        isLoading: false
+      }
+
     case 'SET_DASHBOARD_TABLE':
       return {
         ...state,

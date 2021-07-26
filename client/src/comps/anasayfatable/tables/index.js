@@ -311,10 +311,10 @@ export function toggleDetails(index, details, setDetails, setOrder, setTotal, se
     setDetails(newDetails)
     }
 
-export function whichCollapsedToRender (reduxUser, dataUser, item, index, order, setOrder, total, bakiyeSonra) {
+export function whichCollapsedToRender (reduxUser, dataUser, item, index, order, setOrder, total, bakiyeSonra, fetchData, tableAPIstring) {
   if (reduxUser === dataUser) {
-    return <CollapseMine item = {item} />
+    return <CollapseMine item = {item} fetchData = {fetchData} tableAPIstring = {tableAPIstring} />
   } else {
-    return <CollapseJoin reduxUser = {reduxUser} item = {item} order = {order} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} />
+    return <CollapseJoin reduxUser = {reduxUser} item = {item} order = {order} setOrder = {setOrder} total = {total} bakiyeSonra = {bakiyeSonra} fetchData = {fetchData} tableAPIstring = {tableAPIstring} />
   }
 }

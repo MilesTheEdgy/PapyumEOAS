@@ -1,133 +1,55 @@
-import React from 'react'
-import {
-  CWidgetDropdown,
-  CRow,
-  CCol,
-  CDropdown,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdownToggle
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import ChartLineSimple from '../charts/ChartLineSimple'
-import ChartBarSimple from '../charts/ChartBarSimple'
-import { TUM_TEKLIFLER, BAKIYE_HAREKETLERI, BEKELEYEN_TEKLIFLER, SIZIN_TEKLIFLERINIZ} from "../../store"
-import { useDispatch } from 'react-redux'
+  import React from 'react'
+  import {
+    CWidgetDropdown,
+    CRow,
+    CCol,
+    CDropdown,
+    CDropdownMenu,
+    CDropdownItem,
+    CDropdownToggle,
+    CWidgetProgress
+  } from '@coreui/react'
+  import CIcon from '@coreui/icons-react'
+  import ChartLineSimple from '../charts/ChartLineSimple'
+  import ChartBarSimple from '../charts/ChartBarSimple'
+  import "./widgetsdropdown.css"
+  import { TUM_TEKLIFLER, BAKIYE_HAREKETLERI, BEKELEYEN_TEKLIFLER, SIZIN_TEKLIFLERINIZ} from "../../store"
+  import { useDispatch } from 'react-redux'
 
-const WidgetsDropdown = () => {
-  const dispatch = useDispatch()
-  return (
-    <CRow>
-      <CCol sm="6" lg="3">
-        <CWidgetDropdown
-          color="gradient-primary"
-          // header="9.823"
-          text="Sizin Teklifleriniz"
-          footerSlot={
-            <ChartLineSimple
-              pointed
-              className="c-chart-wrapper mt-3 mx-3"
-              style={{height: '70px'}}
-              pointHoverBackgroundColor="primary"
-            />
-          }
-        >
-          <CDropdown>
-            <CDropdownToggle color="transparent">
-              <CIcon name="cil-settings"/>
-            </CDropdownToggle>
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: SIZIN_TEKLIFLERINIZ})}>Görüntüle</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </CWidgetDropdown>
-      </CCol>
+  const WidgetsDropdown = () => {
+    const dispatch = useDispatch()
+    return (
+      <CRow>
+          <CCol xs="12" sm="6" lg="3">
+            <CWidgetProgress inverse color="success" variant="inverse"  footer="Size ait olan teklifler" className = "top-widget"
+              onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: SIZIN_TEKLIFLERINIZ})}>
+              <h3>Sizin Teklifleriniz</h3>
+              <span className = "top-widget-pointerIcon"><i className="fas fa-hand-pointer"></i></span>
+            </CWidgetProgress>
+          </CCol>
+          <CCol xs="12" sm="6" lg="3">
+            <CWidgetProgress inverse color="info" variant="inverse" footer="Beklemede olan tüm teklifler" className = "top-widget"
+              onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: BEKELEYEN_TEKLIFLER})}>
+              <h3>Bekleyen Teklifer</h3>
+              <span className = "top-widget-pointerIcon"><i className="fas fa-hand-pointer"></i></span>
+            </CWidgetProgress>
+          </CCol>
+          <CCol xs="12" sm="6" lg="3">
+            <CWidgetProgress inverse color="warning" variant="inverse"  footer="Eczanenizin bakiye hareketleri" className = "top-widget"
+              onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: BAKIYE_HAREKETLERI})}>
+              <h3>Bakiye Hareketleriniz</h3>
+              <span className = "top-widget-pointerIcon"><i className="fas fa-hand-pointer"></i></span>
+            </CWidgetProgress>
+          </CCol>
+          <CCol xs="12" sm="6" lg="3">
+            <CWidgetProgress inverse color="danger" variant="inverse"  footer="Tüm eczanelerin teklifleri" className = "top-widget"
+              onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: TUM_TEKLIFLER})}>
+              <h3>Tüm Teklifler</h3>
+              <span className = "top-widget-pointerIcon"><i className="fas fa-hand-pointer"></i></span>
+            </CWidgetProgress>
+          </CCol>
+      </CRow>
+    )
+  }
 
-      <CCol sm="6" lg="3">
-        <CWidgetDropdown
-          color="gradient-info"
-          // header="9.823"
-          text="Bekleyen Teklifler"
-          footerSlot={
-            <ChartLineSimple
-              pointed
-              className="mt-3 mx-3"
-              style={{height: '70px'}}
-              dataPoints={[1, 18, 9, 17, 34, 22, 11]}
-              pointHoverBackgroundColor="info"
-              options={{ elements: { line: { tension: 0.00001 }}}}
-              label="Members"
-              labels="months"
-            />
-          }
-        >
-          <CDropdown>
-            <CDropdownToggle caret={false} color="transparent">
-              <CIcon name="cil-location-pin"/>
-            </CDropdownToggle>
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: BEKELEYEN_TEKLIFLER})} >Görüntüle</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </CWidgetDropdown>
-      </CCol>
-
-      <CCol sm="6" lg="3">
-        <CWidgetDropdown
-          color="gradient-warning"
-          // header="9.823"
-          text="Bakiye Hareketleriniz"
-          footerSlot={
-            <ChartLineSimple
-              className="mt-3"
-              style={{height: '70px'}}
-              backgroundColor="rgba(255,255,255,.2)"
-              dataPoints={[78, 81, 80, 45, 34, 12, 40]}
-              options={{ elements: { line: { borderWidth: 2.5 }}}}
-              pointHoverBackgroundColor="warning"
-              label="Members"
-              labels="months"
-            />
-          }
-        >
-          <CDropdown>
-            <CDropdownToggle color="transparent">
-              <CIcon name="cil-settings"/>
-            </CDropdownToggle>
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: BAKIYE_HAREKETLERI})} >Görüntüle</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </CWidgetDropdown>
-      </CCol>
-
-      <CCol sm="6" lg="3">
-        <CWidgetDropdown
-          color="gradient-danger"
-          // header="9.823"
-          text="Tüm Teklifler"
-          footerSlot={
-            <ChartBarSimple
-              className="mt-3 mx-3"
-              style={{height: '70px'}}
-              backgroundColor="rgb(250, 152, 152)"
-              label="Members"
-              labels="months"
-            />
-          }
-        >
-          <CDropdown>
-            <CDropdownToggle caret className="text-white" color="transparent">
-              <CIcon name="cil-settings"/>
-            </CDropdownToggle>
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem onClick = {() => dispatch({type: "SET_DASHBOARD_TABLE", dashboardTable: TUM_TEKLIFLER})} >Görüntüle</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </CWidgetDropdown>
-      </CCol>
-    </CRow>
-  )
-}
-
-export default WidgetsDropdown
+  export default WidgetsDropdown

@@ -5,15 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fields, getBadge, getStatus, getCondition, toggleDetails, whichCollapsedToRender } from "../";
 import "../style.css"
 
-// const initialState = {
-//   bids: {
-
-//   }
-// }
-
 const TumTeklifler = () => {
-
-    const [loading, setLoading] = useState(true)
     const [data, setData] = useState([])
     const [details, setDetails] = useState([])
     const [clickedItemIndex, setClickedItemIndex] = useState(0)
@@ -21,57 +13,58 @@ const TumTeklifler = () => {
     const [total, setTotal] = useState(0)
     const [bakiyeSonra, setBakiyeSonra] = useState(0)
     const mainDispatch = useDispatch()
+    const tumTekliflerID = "/api/data/table/tum"
     
     const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
     const bakiye = useSelector(state => state.user.userInfo.bakiye)
-  
 
-    useEffect(() => {
-      const fetchData = async () => {
-        const res = await fetch(`/api/data/table/tum`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'authorization': `Bearer ${document.cookie.slice(11)} `
+    const fetchData = async (tableAPIstring) => {
+      mainDispatch({type: "TOGGLE_LOADING_TRUE"})
+      const res = await fetch(tableAPIstring, {
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': `Bearer ${document.cookie.slice(11)} `
+        }
+      })
+
+      if (res.status === 200) {
+        const data = await res.json()
+        const dataArr = data.map((obj, i) => {
+          let bgColor = ""
+          switch (obj.status) {
+            case "APPROVED":
+              bgColor = "rgb(55, 229, 148, 0.25)";
+              break;
+            case "DELETED":
+              bgColor = "red";
+              break
+            default:
+              break;
+          }
+          return {
+            birimFiyat: obj.price,
+            durum: obj.status,
+            eczane: obj.submitter,
+            hedef: obj.goal,
+            ID: obj.id,
+            kampanya: obj.condition,
+            pledge: obj.poster_pledge,
+            sonTarih: obj.final_date,
+            İlaç: obj.product_name,
+            description: obj.description,
+            katılanlar: obj.joiners,
+            bgColor: bgColor
           }
         })
-  
-        if (res.status === 200) {
-          const data = await res.json()
-          const dataArr = data.map((obj, i) => {
-            let bgColor = ""
-            switch (obj.status) {
-              case "APPROVED":
-                bgColor = "rgb(55, 229, 148, 0.25)";
-                break;
-              case "DELETED":
-                bgColor = "red";
-                break
-              default:
-                break;
-            }
-            return {
-              birimFiyat: obj.price,
-              durum: obj.status,
-              eczane: obj.submitter,
-              hedef: obj.goal,
-              ID: obj.id,
-              kampanya: obj.condition,
-              pledge: obj.poster_pledge,
-              sonTarih: obj.final_date,
-              İlaç: obj.product_name,
-              description: obj.description,
-              katılanlar: obj.joiners,
-              bgColor: bgColor
-            }
-          })
-          setData(dataArr)
-          setLoading(false)
-        } else if (res.status === 401 ||res.status === 403) {
-          mainDispatch({type: "LOG_OUT"})
-        }
+        setData(dataArr)
+      } else if (res.status === 401 ||res.status === 403) {
+        mainDispatch({type: "LOG_OUT"})
       }
+      mainDispatch({type: "TOGGLE_LOADING_FALSE"})
+    }
 
-      fetchData()
+    useEffect(() => {
+      fetchData("/api/data/table/tum")
 
     }, [])
 
@@ -90,7 +83,6 @@ const TumTeklifler = () => {
         </CCol>
       </CRow>
       <CRow>
-        <Loader isLoading = {loading}>
           <CCol>
             <div style = {{border: "solid 1px rgb(229, 83, 83, 0.35)"}} >
               <CDataTable
@@ -170,7 +162,7 @@ const TumTeklifler = () => {
                         return (
                         <CCollapse show={details.includes(index)}>
                             <CCol sm = "12">
-                              {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra)}
+                              {whichCollapsedToRender(eczaneName, item.eczane, item, index, order, setOrder, total, bakiyeSonra, fetchData, tumTekliflerID)}
                             </CCol>
                         </CCollapse>
                       )
@@ -179,7 +171,6 @@ const TumTeklifler = () => {
               />
             </div>
           </CCol>
-        </Loader>
       </CRow>
       </>
       )

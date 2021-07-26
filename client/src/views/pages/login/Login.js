@@ -55,12 +55,8 @@ const Login = () => {
       history.push('/dashboard')
     }
      else if (response.status === 401) {
-      console.log('failed login')
       setLoading(false)
       setModal(true)
-    }
-     else {
-      console.log('server error')
     }
   }
 

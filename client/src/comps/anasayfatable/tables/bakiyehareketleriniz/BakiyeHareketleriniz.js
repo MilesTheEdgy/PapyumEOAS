@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { CDataTable, CBadge, CButton, CCollapse, CCardBody, CCol, CCard, CCardHeader, CFormGroup, CLabel, CRow } from "@coreui/react";
-import Loader from "src/comps/loader/Loader";
 import { useDispatch, useSelector } from "react-redux";
 
 function BakiyeHareketleriTable({item, eczaneName}) {
@@ -81,7 +80,6 @@ function BakiyeHareketleriTable({item, eczaneName}) {
 const BakiyeHareketleriniz = () => {
     const eczaneName = useSelector(state => state.user.userSettings.eczaneName)
     const [details, setDetails] = useState([])
-    const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
     const mainDispatch = useDispatch()
   
@@ -137,7 +135,7 @@ const BakiyeHareketleriniz = () => {
     }
     useEffect(() => {
       const fetchData = async () => {
-        setLoading(true)
+        mainDispatch({type: "TOGGLE_LOADING_TRUE"})
         const res = await fetch('/api/data/table/hareket', {
               method: 'GET',
               headers: {
@@ -147,7 +145,7 @@ const BakiyeHareketleriniz = () => {
             })
         if (res.status === 200) {
           const fetchedData = await res.json()
-          console.log(fetchedData)
+          // console.log(fetchedData)
           const data = fetchedData.map(obj => {
             return {
               ID: obj.transaction_id,
@@ -164,7 +162,7 @@ const BakiyeHareketleriniz = () => {
             }
           })
           setData(data)
-          setLoading(false)
+          mainDispatch({type: "TOGGLE_LOADING_FALSE"})
         } else if (res.status === 401 ||res.status === 403) {
           mainDispatch({type: "LOG_OUT"})
         }
@@ -181,7 +179,6 @@ const BakiyeHareketleriniz = () => {
       </CCol>
     </CRow>
     <CRow>
-      <Loader isLoading = {loading} >
           <CCol>
           <div style = {{border: "solid 1px rgb(249, 177, 21, 0.35)"}} >
             <CDataTable
@@ -250,7 +247,6 @@ const BakiyeHareketleriniz = () => {
             />
           </div>
         </CCol>
-      </Loader>
     </CRow>
     </>
     )

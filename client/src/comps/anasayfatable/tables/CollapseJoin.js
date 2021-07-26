@@ -65,7 +65,7 @@ function CollapseJoinTables ({item, state, dispatch}) {
     }
 }
 
-function CollapseJoin ({ reduxUser, item, order, setOrder, total, bakiyeSonra}) {
+function CollapseJoin ({ reduxUser, item, order, setOrder, total, bakiyeSonra, fetchData, tableAPIstring}) {
 
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -86,6 +86,7 @@ function CollapseJoin ({ reduxUser, item, order, setOrder, total, bakiyeSonra}) 
         if (res.status === 200) {
             console.log("sent userInputJoin to server successfully");
             dispatch({type: "MODAL_DISPLAY", payload: {type: "SUCCESS"}})
+            await fetchData(tableAPIstring)
         } else {
             console.log("userInputJoin was not sent to server");
             dispatch({type: "MODAL_DISPLAY", payload: {type: "FAILURE"}})
@@ -111,6 +112,7 @@ function CollapseJoin ({ reduxUser, item, order, setOrder, total, bakiyeSonra}) 
         if (res.status === 200) {
             console.log("sent userInputJoin to server successfully");
             dispatch({type: "MODAL_DISPLAY", payload: {type: "SUCCESS"}})
+            await fetchData(tableAPIstring)
         } else {
             console.log("userInputJoin was not sent to server");
             dispatch({type: "MODAL_DISPLAY", payload: {type: "FAILURE"}})
