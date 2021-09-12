@@ -9,6 +9,7 @@
 /client/build
 
 # misc
+.env
 /client/.eslintcache
 /client/.DS_Store
 /client/.idea
