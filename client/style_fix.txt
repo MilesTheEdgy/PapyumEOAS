@@ -1,0 +1,4 @@
+// If styling breaks, run these commands:
+
+npm uninstall @coreui/coreui @coreui/icons @coreui/icons-react @coreui/react core-js
+npm i @coreui/coreui@3.4.0 @coreui/icons@2.0.1 @coreui/icons-react@1.1.0 @coreui/react@3.4.6 core-js@3.16.0
